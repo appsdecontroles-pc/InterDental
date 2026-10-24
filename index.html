@@ -196,6 +196,17 @@ tbody tr.click:hover td{background:var(--surface2)}
 .portal span{font-size:12px;color:var(--mute);display:block;font-weight:600}
 .portal b{font-family:var(--f-mono);font-size:14px;overflow-wrap:anywhere}
 
+/* Excel */
+.colpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 14px}
+.colpick .check{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12.5px;padding:3px 4px 3px 10px;border-radius:999px}
+.chip button{border:0;background:transparent;color:inherit;cursor:pointer;font-size:15px;line-height:1;padding:0 4px}
+.addcol{display:flex;gap:8px;max-width:420px}
+.drop{border:1.5px dashed var(--line);border-radius:12px;padding:18px;display:grid;gap:8px;justify-items:start;background:var(--bg)}
+.sumrow{display:flex;gap:8px;flex-wrap:wrap}
+.msgs{font-size:12.5px;display:grid;gap:2px}
+.msgs .e{color:var(--bad)}.msgs .w{color:var(--warn)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:80;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
 
 /* ---------- Celular ---------- */
@@ -265,7 +276,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1234567890:web:abc123"
 };
 */
-const VERSION_APP = '1.0 · Fase 1';
+const VERSION_APP = '1.1 · Fase 1';
 
 /* ============================ UTILIDADES ============================ */
 const $ = (s, el = document) => el.querySelector(s);
@@ -388,43 +399,59 @@ const errMsg = e => ERR_AUTH[e?.code] || e?.message || String(e);
 
 /* ============================ AVISO DE PRIVACIDAD (plantilla) ============================ */
 const AVISO_BASE = `AVISO DE PRIVACIDAD INTEGRAL
-[Plantilla de referencia. Revísala con tu asesor legal antes de usarla.]
 
-{CLINICA}, con domicilio en {DOMICILIO}, a través de su responsable {RESPONSABLE}, es responsable del tratamiento de sus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares y demás normativa aplicable.
+1. RESPONSABLE DE SUS DATOS PERSONALES
+{CLINICA}, operada por {RESPONSABLE}, con domicilio en {DOMICILIO}, es responsable del uso y protección de sus datos personales. Contacto: {CORREO} · {TELEFONO}. Este aviso aplica a nuestras sedes ({SEDES}) y a la atención que nuestros dentistas brinden en sedes externas cuando el expediente se lleve en nuestra plataforma.
 
-DATOS QUE RECABAMOS
-• Identificación y contacto: nombre, fecha de nacimiento, teléfono, correo electrónico y domicilio.
-• Datos personales sensibles: estado de salud bucal y general, antecedentes médicos, alergias, medicamentos, diagnósticos, radiografías, fotografías clínicas y modelos digitales de su boca.
-• Datos fiscales, solo si solicita factura: RFC, razón social, régimen fiscal, código postal y constancia de situación fiscal.
-• Datos de pago: montos, abonos y saldos. No almacenamos números de tarjetas.
+2. DATOS PERSONALES QUE RECABAMOS
+Los obtenemos directamente de usted, de su madre, padre o tutor si es menor de edad, o de profesionales de la salud que lo refieran.
+• Identificación: nombre, fecha de nacimiento, sexo y ocupación.
+• Contacto: celular, correo electrónico, domicilio, código postal y contacto de emergencia.
+• Salud (DATOS SENSIBLES): antecedentes médicos y dentales, alergias, medicamentos, enfermedades, embarazo, diagnósticos, odontograma, radiografías, fotografías clínicas, modelos y escaneos digitales de su boca, plan de tratamiento y notas de evolución.
+• Firma autógrafa o trazada en pantalla para consentimientos.
+• Fiscales, solo si pide factura: RFC, nombre o razón social, régimen fiscal, código postal fiscal, uso de CFDI y constancia de situación fiscal.
+• Patrimoniales: presupuestos, pagos, abonos, saldos y plan de pagos elegido.
+No almacenamos números completos de tarjetas bancarias; los pagos con tarjeta los procesa directamente la terminal o pasarela de pago.
 
-FINALIDADES PRIMARIAS
-1. Integrar y conservar su expediente clínico.
-2. Diagnóstico, plan de tratamiento y atención odontológica.
-3. Agenda, confirmación y recordatorio de citas por teléfono, correo o WhatsApp.
-4. Presupuestos, cobros, planes de pago y emisión de facturas.
+3. PARA QUÉ USAMOS SUS DATOS
+Finalidades necesarias para su atención:
+1) Integrar, actualizar y conservar su expediente clínico.
+2) Valorarlo, diagnosticar y elaborar su plan de tratamiento, incluida su representación visual en 3D.
+3) Brindarle los tratamientos y darles seguimiento, aun cuando lo atienda otro dentista de la clínica.
+4) Agendar, confirmar, recordar y reprogramar sus citas por teléfono, WhatsApp o correo electrónico.
+5) Elaborar presupuestos, registrar pagos y saldos, y administrar el plan de pagos que elija.
+6) Tramitar sus facturas cuando las solicite.
+7) Darle acceso a su portal personal para consultar su plan, citas y pagos.
+8) Cumplir obligaciones sanitarias, fiscales y legales, y atender requerimientos de autoridades.
+Finalidades adicionales (puede negarse sin que esto afecte su atención):
+• Invitarlo a retomar un tratamiento pendiente o a su revisión periódica.
+• Enviarle información sobre promociones o servicios de la clínica.
+• Usar fotografías clínicas de forma anónima, sin mostrar su rostro ni datos que lo identifiquen, con fines académicos o de difusión, solo si lo autoriza expresamente.
 
-FINALIDADES SECUNDARIAS (puede negarse)
-• Invitarle a retomar tratamientos o a revisiones periódicas.
+4. CONSENTIMIENTO PARA DATOS SENSIBLES Y MENORES DE EDAD
+Sus datos de salud son datos personales sensibles. Solo los tratamos con su consentimiento expreso y por escrito, que otorga al firmar este aviso en papel o en la pantalla de la clínica. La plataforma registra la fecha, la versión del aviso firmada y quién registró la firma. Si el paciente es menor de 18 años o no puede otorgar su consentimiento, firma su madre, padre o tutor, indicando su nombre y parentesco. Todos los dentistas de la clínica pueden consultar su expediente para dar continuidad a su atención; cada cambio queda registrado con el nombre de quien lo hizo y la fecha.
 
-CONSENTIMIENTO PARA DATOS SENSIBLES
-Al firmar, usted otorga su consentimiento expreso para el tratamiento de sus datos personales sensibles para las finalidades descritas.
+5. CON QUIÉN COMPARTIMOS SUS DATOS
+• Laboratorios dentales y de imagen, para fabricar coronas, prótesis, guardas o aparatos y procesar estudios de su tratamiento.
+• Otros profesionales de la salud a quienes lo refiramos, para la continuidad de su atención.
+• Contador o proveedor de facturación, para emitir las facturas que solicite.
+• Autoridades sanitarias, fiscales o judiciales, cuando la ley lo exija.
+Además nos apoyamos en proveedores tecnológicos que guardan la información por cuenta nuestra y bajo nuestras instrucciones, sin usarla para fines propios: Google (Firebase, Gmail y Google Calendar) para la plataforma, los correos y la agenda, y WhatsApp para los mensajes que usted reciba. Estos servicios pueden almacenar información en servidores fuera de México con medidas de seguridad equivalentes. En la agenda y en los recordatorios solo aparecen su nombre, el tratamiento y la sede, nunca su diagnóstico. No vendemos ni cedemos sus datos a terceros.
 
-TRANSFERENCIAS
-Sus datos solo se comparten con el personal de la clínica que lo atiende, con laboratorios dentales cuando su tratamiento lo requiera y con el contador o proveedor de facturación para emitir sus comprobantes fiscales.
+6. SUS DERECHOS (ARCO), REVOCACIÓN Y LIMITACIÓN DE USO
+Puede acceder a sus datos, rectificarlos si son inexactos, pedir su cancelación u oponerse a su uso para fines específicos. También puede revocar su consentimiento o limitar el uso de sus datos, por ejemplo para dejar de recibir invitaciones o promociones. Envíe su solicitud a {CORREO} o entréguela por escrito en recepción, con: 1) su nombre completo y un medio para responderle; 2) copia de su identificación oficial, o la de su representante legal y el documento que lo acredite; 3) descripción clara del derecho que desea ejercer y de los datos involucrados. Le responderemos dentro de los plazos que marca la ley. La cancelación o revocación no aplica a los datos que debemos conservar por obligación legal, como el expediente clínico; en ese caso los bloqueamos para que solo se usen cuando la ley lo exija.
 
-DERECHOS ARCO
-Puede solicitar el acceso, rectificación, cancelación u oposición al tratamiento de sus datos, o revocar su consentimiento, escribiendo a {CORREO}. Algunos datos deben conservarse por el tiempo que exige la normativa del expediente clínico.
-
-CAMBIOS AL AVISO
-Cualquier cambio se le informará en la clínica y se le pedirá nuevamente su consentimiento.`;
+7. CONSERVACIÓN, SEGURIDAD Y CAMBIOS
+Conforme a la NOM-004-SSA3-2012, conservamos su expediente clínico por un mínimo de 5 años contados a partir de su última atención. Los datos fiscales y de pagos se conservan por el plazo que exigen las leyes fiscales. Su información se guarda en una plataforma con acceso protegido; cada integrante del equipo tiene permisos según su función y todos los cambios quedan registrados. Los expedientes no se borran: cuando un paciente deja de atenderse se da de baja y su información queda resguardada. Usted recibirá un usuario y contraseña personal para su portal; es su responsabilidad no compartirlos. La plataforma solo usa el almacenamiento técnico necesario para mantener la sesión; no usamos cookies de publicidad ni de rastreo. Cualquier cambio a este aviso se le informará en la clínica y en su portal, y le pediremos que firme la nueva versión.`;
 function avisoTexto() {
   const c = clinica();
   return (c.aviso?.texto || AVISO_BASE)
     .replaceAll('{CLINICA}', c.nombre || '[Nombre de la clínica]')
     .replaceAll('{DOMICILIO}', c.domicilio || '[Domicilio]')
     .replaceAll('{RESPONSABLE}', c.responsable || '[Responsable]')
-    .replaceAll('{CORREO}', c.correo || '[Correo de contacto]');
+    .replaceAll('{CORREO}', c.correo || '[Correo de contacto]')
+    .replaceAll('{TELEFONO}', c.telefono || '[Teléfono]')
+    .replaceAll('{SEDES}', list('sedes').filter(x => x.tipo !== 'externa' && x.activo !== false).map(x => x.nombre).join(', ') || '[Sedes]');
 }
 
 /* ============================ DATOS DE EJEMPLO ============================ */
@@ -730,7 +757,7 @@ function vPacientes() {
   const ps = filtrarPacientes();
   const F = [['activos', 'Activos'], ...(S.me.rol !== 'recepcion' ? [['mios', 'Mis pacientes']] : []), ['consent', 'Sin consentimiento'], ['baja', 'Dados de baja'], ['todos', 'Todos']];
   return `<div class="vhead"><div><h2>Pacientes</h2><p>Directorio de la clínica. Todos los dentistas pueden consultar cualquier expediente; cada cambio queda registrado.</p></div>
-    <div class="acts"><button class="btn primary" data-act="pac-nuevo">Registrar paciente</button></div></div>
+    <div class="acts">${esAdmin() ? '<button class="btn" data-act="excel" data-ent="pacientes">Excel: plantilla e importación</button>' : ''}<button class="btn primary" data-act="pac-nuevo">Registrar paciente</button></div></div>
   <div class="panel"><div class="panel-h">
       <div class="toolbar" style="flex:1"><input type="search" id="pacQ" placeholder="Buscar por nombre, teléfono o correo" value="${esc(S.ui.pacQ)}" data-input="pacQ">
       <div class="seg">${F.map(([k, l]) => `<button data-act="pac-filtro" data-f="${k}" class="${S.ui.pacF === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
@@ -812,9 +839,10 @@ function verPaciente(id) {
       </dl>
     </div>
     ${p.notas ? `<div class="info"><b>Notas:</b> ${esc(p.notas)}</div>` : ''}
+    ${extrasHTML(p.extras)}
     <div class="portal"><div><span>Usuario del portal</span><b>${esc(usuarioPortal(p))}</b></div><div><span>Contraseña</span><b>${esc(clavePortal(p.fechaNac))}</b></div><span class="mute" style="font-size:12.5px">El portal del paciente se activa en la fase 5.</span></div>
     <div class="panel"><div class="panel-h"><h3>Consentimiento y aviso de privacidad</h3></div><div class="panel-b" style="display:grid;gap:10px">
-      ${c?.aceptado ? `<dl class="kv" style="margin:0"><dt>Firmado</dt><dd>${fechaHora(c.fecha)}</dd><dt>Versión del aviso</dt><dd>v${c.version || 1}${(c.version || 1) < (clinica().aviso?.version || 1) ? ' <span class="pill warn">Hay una versión más reciente</span>' : ''}</dd><dt>Medio</dt><dd>${c.medio === 'pantalla' ? 'Firma en pantalla' : 'Firma en papel (archivada en la clínica)'}</dd>${c.tutor ? `<dt>Firmó como tutor</dt><dd>${esc(c.tutor)}</dd>` : ''}<dt>Registró</dt><dd>${esc(nombreUsuario(c.registradoPor))}</dd></dl>${c.firma ? `<img class="firma-img" src="${c.firma}" alt="Firma del paciente">` : ''}` : '<p style="margin:0" class="mute">El paciente aún no firma el aviso de privacidad. Regístralo antes de capturar datos clínicos.</p>'}
+      ${c?.aceptado ? `<dl class="kv" style="margin:0"><dt>Firmado</dt><dd>${fechaHora(c.fecha)}</dd><dt>Versión del aviso</dt><dd>v${c.version || 1}${(c.version || 1) < (clinica().aviso?.version || 1) ? ' <span class="pill warn">Hay una versión más reciente</span>' : ''}</dd><dt>Medio</dt><dd>${c.medio === 'pantalla' ? 'Firma en pantalla' : 'Firma en papel (archivada en la clínica)'}</dd>${c.tutor ? `<dt>Firmó como tutor</dt><dd>${esc(c.tutor)}</dd>` : ''}<dt>Finalidades adicionales</dt><dd>${[c.noInvitaciones ? 'Sin invitaciones' : 'Acepta invitaciones', c.noPromociones ? 'sin promociones' : 'acepta promociones', c.autorizaFotos ? 'autoriza fotos anónimas' : 'no autoriza fotos'].join(' · ')}</dd><dt>Registró</dt><dd>${esc(nombreUsuario(c.registradoPor))}</dd></dl>${c.firma ? `<img class="firma-img" src="${c.firma}" alt="Firma del paciente">` : ''}` : '<p style="margin:0" class="mute">El paciente aún no firma el aviso de privacidad. Regístralo antes de capturar datos clínicos.</p>'}
       <div><button type="button" class="btn sm ${c?.aceptado ? '' : 'primary'}" id="vpCons">${c?.aceptado ? 'Registrar nueva firma' : 'Registrar consentimiento'}</button></div>
     </div></div>
     <div class="infowarn">Expediente clínico, odontograma, visor 3D, plan de tratamiento, citas y pagos se agregan en las siguientes fases.</div>`,
@@ -839,7 +867,12 @@ function formConsentimiento(id) {
     <div class="seg" role="radiogroup" aria-label="Medio de firma"><button type="button" class="on" data-medio="pantalla">Firma en pantalla</button><button type="button" data-medio="papel">Firmó en papel</button></div>
     <div class="firma-wrap" id="fcFirmaWrap"><canvas class="firma" id="fcFirma" aria-label="Área para firmar"></canvas><div style="display:flex;justify-content:space-between;align-items:center"><span class="mute" style="font-size:12.5px">Firma con el dedo o el mouse</span><button type="button" class="btn sm ghost" id="fcLimpiar">Borrar firma</button></div></div>
     <p class="mute" id="fcPapel" hidden style="margin:0">Archiva el formato firmado en papel en la carpeta del paciente.</p>
-    <label class="check"><input type="checkbox" name="acepta" id="fcAcepta" required> ${menor ? 'El tutor leyó' : 'El paciente leyó'} el aviso de privacidad y otorga su consentimiento expreso para el tratamiento de sus datos personales sensibles.</label>`,
+    <label class="check"><input type="checkbox" name="acepta" id="fcAcepta" required> ${menor ? 'El tutor leyó' : 'El paciente leyó'} el aviso de privacidad y otorga su consentimiento expreso para el tratamiento de sus datos personales sensibles.</label>
+    <fieldset><legend>Finalidades adicionales (marca solo lo que el paciente pida)</legend>
+      <label class="check"><input type="checkbox" name="noInvitaciones" id="fcNoInv"> No desea invitaciones para retomar tratamientos ni revisiones periódicas</label>
+      <label class="check"><input type="checkbox" name="noPromociones" id="fcNoProm"> No desea promociones ni información de servicios</label>
+      <label class="check"><input type="checkbox" name="autorizaFotos" id="fcFotos"> Autoriza el uso anónimo de sus fotografías clínicas con fines académicos o de difusión</label>
+    </fieldset>`,
     onOpen: f => {
       let medio = 'pantalla'; f.dataset.medio = medio;
       const pad = firmaPad($('#fcFirma'));
@@ -850,7 +883,8 @@ function formConsentimiento(id) {
     onSubmit: async f => {
       const medio = f.dataset.medio;
       if (medio === 'pantalla' && f._pad.empty()) return formErr(f, 'Falta la firma. Pide que firme en el recuadro o elige "Firmó en papel".');
-      const cons = { aceptado: true, version: v, fecha: nowISO(), medio, registradoPor: S.me.id, tutor: menor ? fv(f, 'tutor') : '', firma: medio === 'pantalla' ? f._pad.data() : '' };
+      const cons = { aceptado: true, version: v, fecha: nowISO(), medio, registradoPor: S.me.id, tutor: menor ? fv(f, 'tutor') : '', firma: medio === 'pantalla' ? f._pad.data() : '',
+        noInvitaciones: f.elements.noInvitaciones.checked, noPromociones: f.elements.noPromociones.checked, autorizaFotos: f.elements.autorizaFotos.checked };
       await guardar('pacientes', id, { consentimiento: cons }, `Registró consentimiento (aviso v${v}) de ${nombreCompleto(p)}`);
       toast('Consentimiento registrado.'); setTimeout(() => verPaciente(id), 0);
     } });
@@ -876,9 +910,9 @@ function vCatalogo() {
   const tab = S.ui.catTab, adm = esAdmin();
   const trs = list('tratamientos'), ins = list('insumos');
   const head = `<div class="vhead"><div><h2>Catálogo</h2><p>Tratamientos con precio, duración y materiales que usa cada uno. ${adm ? 'Solo el administrador puede modificarlo.' : 'Solo lectura: los cambios los hace el administrador.'}</p></div>
-    <div class="acts">${adm ? (tab === 'tratamientos' ? '<button class="btn primary" data-act="tr-nuevo">Nuevo tratamiento</button>' : '<button class="btn primary" data-act="in-nuevo">Nuevo insumo</button>') : ''}</div></div>
+    <div class="acts">${adm ? `<button class="btn" data-act="excel" data-ent="${tab}">Excel: plantilla e importación</button>` + (tab === 'tratamientos' ? '<button class="btn primary" data-act="tr-nuevo">Nuevo tratamiento</button>' : '<button class="btn primary" data-act="in-nuevo">Nuevo insumo</button>') : ''}</div></div>
     <div class="seg"><button data-act="cat-tab" data-tab="tratamientos" class="${tab === 'tratamientos' ? 'on' : ''}">Tratamientos · ${trs.length}</button><button data-act="cat-tab" data-tab="insumos" class="${tab === 'insumos' ? 'on' : ''}">Insumos y materiales · ${ins.length}</button></div>`;
-  if (!trs.length && !ins.length) return head + `<div class="panel"><div class="empty"><b>El catálogo está vacío.</b><span>${adm ? 'Puedes empezar con un catálogo de ejemplo (20 tratamientos y 28 insumos con precios de referencia) y ajustarlo a los precios de la clínica.' : 'El administrador aún no carga el catálogo.'}</span>${adm ? '<button class="btn primary" data-act="cat-ejemplo">Cargar catálogo de ejemplo</button>' : ''}</div></div>`;
+  if (!trs.length && !ins.length) return head + `<div class="panel"><div class="empty"><b>El catálogo está vacío.</b><span>${adm ? 'Puedes empezar con un catálogo de ejemplo (20 tratamientos y 28 insumos con precios de referencia) y ajustarlo a los precios de la clínica.' : 'El administrador aún no carga el catálogo.'}</span>${adm ? '<div class="quick" style="justify-content:center"><button class="btn primary" data-act="cat-ejemplo">Cargar catálogo de ejemplo</button><button class="btn" data-act="excel" data-ent="tratamientos">Subir mis tratamientos desde Excel</button></div>' : ''}</div></div>`;
   const q = norm(S.ui.catQ).trim();
   if (tab === 'tratamientos') {
     const rows = trs.filter(t => (!S.ui.catCat || t.categoria === S.ui.catCat) && (!q || norm(t.nombre + ' ' + t.clave).includes(q))).sort((a, b) => (a.clave || '').localeCompare(b.clave || ''));
@@ -915,6 +949,7 @@ function verTratamiento(id) {
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill mono">${esc(t.clave)}</span><span class="pill">${esc(t.categoria)}</span><span class="pill">${APLICA[t.aplicaA] || ''}</span>${t.animacion ? `<span class="pill acc">Visor 3D: ${ANIMACIONES[t.animacion]}</span>` : ''}${t.activo === false ? '<span class="pill bad">Inactivo</span>' : ''}</div>
     <dl class="kv" style="margin:0"><dt>Precio</dt><dd><b class="num">${money(t.precio)}</b></dd><dt>Duración</dt><dd>${t.duracionMin} min por cita${t.sesiones > 1 ? ` · ${t.sesiones} citas` : ''}</dd>${adm ? `<dt>Costo de materiales</dt><dd class="num">${money(costoMateriales(t))}</dd>` : ''}${cuota ? `<dt>Tu cuota</dt><dd class="num"><b>${money(cuota.monto)}</b> <span class="mute">(${cuota.texto})</span></dd>` : ''}</dl>
     ${t.descripcionPaciente ? `<div class="info"><b>Explicación para el paciente:</b> ${esc(t.descripcionPaciente)}</div>` : ''}
+    ${extrasHTML(t.extras)}
     <div><legend style="margin-bottom:6px">Materiales por tratamiento</legend>${mats.length ? `<div class="tablewrap"><table><tbody>${mats.map(m => `<tr><td>${esc(m.ins.nombre)}</td><td class="r num">${m.cantidad} ${esc(m.ins.unidad)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mute" style="margin:0">Sin materiales registrados.</p>'}</div>`,
     footerLeft: adm ? `<button type="button" class="btn sm" id="vtEdit">Editar</button>` : '',
     onOpen: () => { const b = $('#vtEdit'); if (b) b.onclick = () => formTratamiento(id); } });
@@ -961,7 +996,7 @@ function formInsumo(id) {
   modal({ title: id ? 'Editar insumo' : 'Nuevo insumo', body: `<div class="grid2">
       <label class="f span2">Nombre <span class="req">*</span><input type="text" name="nombre" id="fiNombre" required value="${esc(i.nombre)}"></label>
       <label class="f">Categoría<input type="text" name="categoria" id="fiCat" list="fiCats" value="${esc(i.categoria)}"><datalist id="fiCats">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist></label>
-      <label class="f">Unidad<select name="unidad" id="fiUni">${UNIDADES.map(u => opt(u, u, i.unidad)).join('')}</select></label>
+      <label class="f">Unidad<select name="unidad" id="fiUni">${[...new Set([...UNIDADES, ...(i.unidad ? [i.unidad] : [])])].map(u => opt(u, u, i.unidad)).join('')}</select></label>
       <label class="f">Costo por unidad (MXN)<input type="number" name="costo" id="fiCosto" min="0" step="0.01" value="${esc(i.costo)}"></label>
       <label class="check" style="align-self:end"><input type="checkbox" name="activo" id="fiActivo" ${i.activo !== false ? 'checked' : ''}> Activo</label></div>`,
     onSubmit: async f => {
@@ -1104,12 +1139,14 @@ function vClinica() {
       <p style="margin:0">${firmados} pacientes activos tienen firmada la versión vigente.</p>
       <div class="aviso">${esc(avisoTexto())}</div>
       <div><button class="btn" data-act="aviso-editar">Editar texto del aviso</button></div>
-      <span class="mute" style="font-size:12.5px">Las marcas {CLINICA}, {DOMICILIO}, {RESPONSABLE} y {CORREO} se llenan con los datos de la clínica.</span></div></div>
+      <span class="mute" style="font-size:12.5px">Las marcas {CLINICA}, {DOMICILIO}, {RESPONSABLE}, {CORREO}, {TELEFONO} y {SEDES} se llenan con los datos de la clínica.</span></div></div>
   </div>`;
 }
 function formAviso() {
   const c = clinica(), a = c.aviso || { version: 1, texto: AVISO_BASE };
   modal({ title: 'Editar aviso de privacidad', wide: true, submit: 'Guardar como nueva versión', body: `<div class="infowarn">Al guardar se crea la versión v${a.version + 1}. Los pacientes con la versión anterior aparecerán como pendientes de firma.</div><label class="f">Texto del aviso<textarea name="texto" id="faTexto" style="min-height:340px;font-size:13.5px" required>${esc(a.texto)}</textarea></label>`,
+    footerLeft: `<button type="button" class="btn sm" id="faBase">Cargar texto sugerido</button>`,
+    onOpen: f => { $('#faBase').onclick = () => { f.elements.texto.value = AVISO_BASE; toast('Texto sugerido cargado. Revísalo y guarda.'); }; },
     onSubmit: async f => {
       const texto = f.elements.texto.value.trim();
       if (texto === (a.texto || '').trim()) return formErr(f, 'No hay cambios en el texto.');
@@ -1129,6 +1166,303 @@ function vBitacora() {
   </tbody></table></div></div>`;
 }
 
+/* ============================ EXCEL: PLANTILLAS E IMPORTACIÓN ============================ */
+let XLSXp = null;
+function cargarXLSX() {
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  if (!XLSXp) XLSXp = new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload = () => res(window.XLSX);
+    sc.onerror = () => { XLSXp = null; rej(new Error('No se pudo cargar el lector de Excel. Revisa tu conexión a internet.')); };
+    document.head.appendChild(sc);
+  });
+  return XLSXp;
+}
+const pad2 = n => String(n).padStart(2, '0');
+const nh = s => norm(s).replace(/[^A-Z0-9]/g, '');
+const nn = s => norm(s).replace(/^(DRA|DR|DOCTORA|DOCTOR|LIC)\.?\s+/, '').replace(/[^A-Z ]/g, '').replace(/\s+/g, ' ').trim();
+const esSi = v => ['SI', 'S', 'X', '1', 'TRUE', 'VERDADERO', 'ACTIVO'].includes(norm(v).trim());
+const esNo = v => ['NO', 'N', '0', 'FALSE', 'FALSO', 'INACTIVO'].includes(norm(v).trim());
+const fechaDMY = iso => { if (!iso) return ''; const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; };
+function fechaDesdeExcel(v) {
+  let y, m, d;
+  if (typeof v === 'number' && window.XLSX) { const p = XLSX.SSF.parse_date_code(v); if (!p) return null; y = p.y; m = p.m; d = p.d; }
+  else {
+    const s = String(v).trim(); let r;
+    if ((r = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/))) { y = +r[1]; m = +r[2]; d = +r[3]; }
+    else if ((r = s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/))) { d = +r[1]; m = +r[2]; y = +r[3]; if (y < 100) y += (y > new Date().getFullYear() % 100 ? 1900 : 2000); }
+    else return null;
+  }
+  const dt = new Date(y, m - 1, d);
+  if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d || y < 1900 || dt > new Date()) return null;
+  return `${y}-${pad2(m)}-${pad2(d)}`;
+}
+const numero = v => { if (typeof v === 'number') return v; const n = Number(String(v).replace(/[$,\s]/g, '')); return isNaN(n) ? null : n; };
+const buscarPorNombre = (arr, v) => { const k = nn(v); return arr.find(x => nn(x.nombre) === k) || arr.find(x => k.length > 3 && nn(x.nombre).includes(k)); };
+
+/* Definición de columnas por plantilla.
+   out(rec) -> valor para exportar · in(valor, datos, ctx) -> texto de error o nada · req = obligatoria */
+const PLANTILLAS = {
+  pacientes: {
+    titulo: 'Pacientes', hoja: 'Pacientes', archivo: 'Plantilla pacientes', coleccion: 'pacientes',
+    nombreFila: d => nombreCompleto(d) || '—',
+    cols: [
+      { k: 'nombres', l: 'Nombre(s)', req: true, ej: 'María Fernanda', out: p => p.nombres, in: (v, d) => { d.nombres = v; } },
+      { k: 'apPaterno', l: 'Apellido paterno', req: true, ej: 'López', out: p => p.apPaterno, in: (v, d) => { d.apPaterno = v; } },
+      { k: 'apMaterno', l: 'Apellido materno', ej: 'García', out: p => p.apMaterno, in: (v, d) => { d.apMaterno = v; } },
+      { k: 'fechaNac', l: 'Fecha de nacimiento', req: true, fmt: 'DD/MM/AAAA', ej: '15/03/1988', out: p => fechaDMY(p.fechaNac), in: (v, d) => { const f = fechaDesdeExcel(v); if (!f) return 'Fecha de nacimiento no válida (usa DD/MM/AAAA)'; d.fechaNac = f; } },
+      { k: 'sexo', l: 'Sexo', fmt: 'F, M u O', ej: 'F', out: p => p.sexo, in: (v, d, c) => { const x = norm(v).trim()[0]; if (x === 'F' || x === 'M') d.sexo = x; else if (x === 'H') d.sexo = 'M'; else if (x === 'O') d.sexo = 'O'; else c.aviso('Sexo no reconocido, se dejó vacío'); } },
+      { k: 'telefono', l: 'Celular', req: true, alias: ['Teléfono', 'WhatsApp', 'Celular WhatsApp', 'Tel'], fmt: '10 dígitos', ej: '6691234567', out: p => p.telefono, in: (v, d) => { const t = telDigits(v); if (t.length < 10) return 'El celular debe tener 10 dígitos'; d.telefono = t.slice(-10); } },
+      { k: 'email', l: 'Correo', alias: ['Email', 'Correo electrónico', 'E-mail'], ej: 'paciente@correo.com', out: p => p.email, in: (v, d, c) => { const e = String(v).trim().toLowerCase(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) { c.aviso('Correo no válido, se omitió'); return; } d.email = e; } },
+      { k: 'cp', l: 'Código postal', alias: ['CP', 'C.P.'], fmt: '5 dígitos', ej: '82000', out: p => p.cp, in: (v, d, c) => { const t = telDigits(v).padStart(5, '0'); if (t.length !== 5) { c.aviso('Código postal no válido, se omitió'); return; } d.cp = t; } },
+      { k: 'domicilio', l: 'Domicilio', alias: ['Dirección'], ej: 'Av. Ejemplo 123, Centro', out: p => p.domicilio, in: (v, d) => { d.domicilio = v; } },
+      { k: 'ocupacion', l: 'Ocupación', ej: 'Docente', out: p => p.ocupacion, in: (v, d) => { d.ocupacion = v; } },
+      { k: 'comoNosConocio', l: 'Cómo nos conoció', ej: 'Recomendación', out: p => p.comoNosConocio, in: (v, d) => { d.comoNosConocio = v; } },
+      { k: 'emNombre', l: 'Contacto de emergencia', ej: 'Juan López (esposo)', out: p => p.contactoEmergencia?.nombre, in: (v, d) => { d.contactoEmergencia.nombre = v; } },
+      { k: 'emTel', l: 'Teléfono de emergencia', ej: '6699876543', out: p => p.contactoEmergencia?.telefono, in: (v, d) => { d.contactoEmergencia.telefono = telDigits(v); } },
+      { k: 'sedePref', l: 'Sede habitual', alias: ['Sede'], fmt: 'Nombre tal como está en Sedes', out: p => get('sedes', p.sedePref)?.nombre, in: (v, d, c) => { const x = buscarPorNombre(list('sedes'), v); if (!x) { c.aviso(`Sede "${v}" no existe, se dejó sin asignar`); return; } d.sedePref = x.id; } },
+      { k: 'dentistaResp', l: 'Dentista responsable', alias: ['Dentista', 'Doctor', 'Doctora'], fmt: 'Nombre tal como está en Equipo', out: p => get('usuarios', p.dentistaResp)?.nombre, in: (v, d, c) => { const x = buscarPorNombre(dentistas(), v); if (!x) { c.aviso(`Dentista "${v}" no encontrado, se dejó sin asignar`); return; } d.dentistaResp = x.id; } },
+      { k: 'notas', l: 'Notas', alias: ['Observaciones', 'Comentarios'], ej: 'Prefiere citas por la tarde', out: p => p.notas, in: (v, d) => { d.notas = v; } }
+    ],
+    preparar: (ex) => ({ contactoEmergencia: { nombre: '', telefono: '', ...(ex?.contactoEmergencia || {}) } }),
+    /* Si el archivo trae "Nombre completo" en una sola columna, se separa: las dos últimas palabras son los apellidos */
+    especial: (row, map, d, c) => {
+      const iN = map.__nombreCompleto; if (iN == null || d.nombres) return;
+      const parts = String(row[iN] || '').trim().split(/\s+/).filter(Boolean); if (!parts.length) return;
+      if (parts.length === 1) { d.nombres = parts[0]; }
+      else if (parts.length === 2) { d.nombres = parts[0]; d.apPaterno = parts[1]; }
+      else { d.apMaterno = parts.pop(); d.apPaterno = parts.pop(); d.nombres = parts.join(' '); }
+      c.aviso('Nombre completo separado automáticamente; revísalo');
+    },
+    clave: d => d.nombres && d.apPaterno && d.fechaNac ? usuarioPortal(d) + '|' + d.fechaNac : null,
+    claveExistente: p => usuarioPortal(p) + '|' + p.fechaNac,
+    faltaClave: 'Faltan nombre, apellido paterno o fecha de nacimiento para identificar al paciente',
+    base: () => ({ nombres: '', apPaterno: '', apMaterno: '', fechaNac: '', sexo: '', telefono: '', email: '', cp: '', domicilio: '', ocupacion: '', comoNosConocio: '', sedePref: '', dentistaResp: '', notas: '', estado: 'activo', consentimiento: null }),
+    nuevoId: () => newId('p_'),
+    nota: 'Los pacientes importados quedan sin consentimiento firmado. Aparecerán en "Sin consentimiento" hasta que firmen el aviso.'
+  },
+  tratamientos: {
+    titulo: 'Tratamientos y precios', hoja: 'Tratamientos', archivo: 'Plantilla tratamientos', coleccion: 'tratamientos',
+    nombreFila: d => [d.clave, d.nombre].filter(Boolean).join(' · ') || '—',
+    cols: [
+      { k: 'clave', l: 'Clave', req: true, alias: ['Código', 'Codigo'], fmt: 'Única por tratamiento', ej: 'OP-01', out: t => t.clave, in: (v, d) => { d.clave = String(v).trim().toUpperCase(); } },
+      { k: 'nombre', l: 'Tratamiento', req: true, alias: ['Nombre', 'Servicio', 'Descripción'], ej: 'Resina en una cara', out: t => t.nombre, in: (v, d) => { d.nombre = String(v).trim(); } },
+      { k: 'categoria', l: 'Categoría', fmt: CATEGORIAS.join(', '), ej: 'Operatoria', out: t => t.categoria, in: (v, d, c) => { const x = CATEGORIAS.find(k => nh(k) === nh(v)); if (!x) c.aviso(`Categoría "${v}" no reconocida; se usó "Otro"`); d.categoria = x || 'Otro'; } },
+      { k: 'precio', l: 'Precio', req: true, alias: ['Costo', 'Precio MXN', 'Precio público'], fmt: 'Número sin signo de pesos', ej: '900', out: t => Number(t.precio) || 0, in: (v, d) => { const n = numero(v); if (n == null || n < 0) return 'Precio no válido'; d.precio = n; } },
+      { k: 'duracionMin', l: 'Duración (min)', alias: ['Duración', 'Minutos'], fmt: 'Minutos por cita', ej: '45', out: t => t.duracionMin, in: (v, d, c) => { const n = numero(v); if (!n || n <= 0) { c.aviso('Duración no válida; se usaron 30 min'); return; } d.duracionMin = Math.round(n); } },
+      { k: 'sesiones', l: 'Número de citas', alias: ['Citas', 'Sesiones'], ej: '1', out: t => t.sesiones, in: (v, d, c) => { const n = numero(v); if (!n || n < 1) { c.aviso('Número de citas no válido; se usó 1'); return; } d.sesiones = Math.round(n); } },
+      { k: 'aplicaA', l: 'Se cobra', fmt: Object.values(APLICA).join(', '), ej: 'Por diente', out: t => APLICA[t.aplicaA], in: (v, d, c) => { const e = Object.entries(APLICA).find(([k, l]) => nh(l) === nh(v) || nh(k) === nh(v)); if (!e) { c.aviso('"Se cobra" no reconocido; se usó "Por diente"'); return; } d.aplicaA = e[0]; } },
+      { k: 'animacion', l: 'Animación visor 3D', fmt: Object.values(ANIMACIONES).filter(Boolean).join(', '), ej: 'Caries → resina', out: t => t.animacion ? ANIMACIONES[t.animacion] : '', in: (v, d, c) => { const e = Object.entries(ANIMACIONES).find(([k, l]) => nh(l) === nh(v) || (k && nh(k) === nh(v))); if (!e) { c.aviso('Animación no reconocida; se dejó sin animación'); return; } d.animacion = e[0]; } },
+      { k: 'descripcionPaciente', l: 'Explicación para el paciente', ej: 'Se retira la caries y se rellena con resina del color del diente.', out: t => t.descripcionPaciente, in: (v, d) => { d.descripcionPaciente = v; } },
+      { k: 'materiales', l: 'Materiales', fmt: 'Insumo: cantidad; Insumo: cantidad', ej: 'Anestesia local: 1; Resina compuesta: 0.4', out: t => (t.materiales || []).map(m => { const i = get('insumos', m.insumoId); return i ? `${i.nombre}: ${m.cantidad}` : ''; }).filter(Boolean).join('; '),
+        in: (v, d, c) => { const ins = list('insumos'), out = [];
+          String(v).split(';').map(x => x.trim()).filter(Boolean).forEach(par => { const j = par.lastIndexOf(':'); const nom = j > 0 ? par.slice(0, j) : par, cant = j > 0 ? numero(par.slice(j + 1)) : 1;
+            const i = buscarPorNombre(ins, nom); if (!i) { c.aviso(`Insumo "${nom.trim()}" no existe en el catálogo; no se agregó`); return; } if (!cant || cant <= 0) { c.aviso(`Cantidad no válida para "${nom.trim()}"`); return; } out.push({ insumoId: i.id, cantidad: cant }); });
+          d.materiales = out; } },
+      { k: 'activo', l: 'Activo', fmt: 'Sí o No', ej: 'Sí', out: t => t.activo === false ? 'No' : 'Sí', in: (v, d, c) => { if (esSi(v)) d.activo = true; else if (esNo(v)) d.activo = false; else c.aviso('"Activo" no reconocido; se dejó como Sí'); } }
+    ],
+    preparar: () => ({}),
+    clave: d => d.clave || null,
+    claveExistente: t => (t.clave || '').toUpperCase(),
+    faltaClave: 'Falta la clave del tratamiento',
+    base: () => ({ clave: '', nombre: '', categoria: 'Otro', precio: 0, duracionMin: 30, sesiones: 1, aplicaA: 'diente', animacion: '', descripcionPaciente: '', materiales: [], activo: true }),
+    nuevoId: d => 't_' + d.clave.replace(/[^A-Z0-9-]/g, '') + '_' + newId().slice(-4),
+    nota: 'Si una clave ya existe en el catálogo, se actualizan su precio y los demás datos que traiga el archivo.'
+  },
+  insumos: {
+    titulo: 'Insumos y materiales', hoja: 'Insumos', archivo: 'Plantilla insumos', coleccion: 'insumos',
+    nombreFila: d => d.nombre || '—',
+    cols: [
+      { k: 'nombre', l: 'Insumo', req: true, alias: ['Nombre', 'Material', 'Producto'], ej: 'Resina compuesta', out: i => i.nombre, in: (v, d) => { d.nombre = String(v).trim(); } },
+      { k: 'categoria', l: 'Categoría', ej: 'Operatoria', out: i => i.categoria, in: (v, d) => { d.categoria = String(v).trim(); } },
+      { k: 'unidad', l: 'Unidad', fmt: UNIDADES.join(', '), ej: 'g', out: i => i.unidad, in: (v, d) => { d.unidad = String(v).trim().toLowerCase(); } },
+      { k: 'costo', l: 'Costo por unidad', alias: ['Costo', 'Precio'], fmt: 'Número sin signo de pesos', ej: '140', out: i => Number(i.costo) || 0, in: (v, d) => { const n = numero(v); if (n == null || n < 0) return 'Costo no válido'; d.costo = n; } },
+      { k: 'activo', l: 'Activo', fmt: 'Sí o No', ej: 'Sí', out: i => i.activo === false ? 'No' : 'Sí', in: (v, d, c) => { if (esSi(v)) d.activo = true; else if (esNo(v)) d.activo = false; else c.aviso('"Activo" no reconocido; se dejó como Sí'); } }
+    ],
+    preparar: () => ({}),
+    clave: d => d.nombre ? nn(d.nombre) : null,
+    claveExistente: i => nn(i.nombre),
+    faltaClave: 'Falta el nombre del insumo',
+    base: () => ({ nombre: '', categoria: 'Consumibles', unidad: 'pieza', costo: 0, activo: true }),
+    nuevoId: () => newId('i_'),
+    nota: 'Si un insumo con el mismo nombre ya existe, se actualizan sus datos.'
+  }
+};
+const confPlantilla = ent => { const c = get('config', 'plantillas')?.[ent] || {}; const P = PLANTILLAS[ent]; return { cols: (c.cols || P.cols.map(x => x.k)).filter(k => P.cols.some(x => x.k === k)), extra: c.extra || [] }; };
+function extrasHTML(ex) {
+  const e = Object.entries(ex || {}).filter(([, v]) => String(v ?? '').trim() !== '');
+  if (!e.length) return '';
+  return `<div class="panel"><div class="panel-h"><h3>Datos adicionales</h3><span class="mute" style="font-size:12.5px">Importados desde Excel</span></div><div class="panel-b"><dl class="kv" style="margin:0">${e.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div></div>`;
+}
+
+/* ---------- Paso 1 y 2: descargar plantilla y subir archivo ---------- */
+function modalExcel(ent) {
+  const P = PLANTILLAS[ent]; if (!P || !esAdmin()) return;
+  const conf = confPlantilla(ent), sel = new Set(conf.cols), extra = [...conf.extra];
+  const total = list(P.coleccion).length;
+  modal({ title: 'Excel · ' + P.titulo, wide: true, body: `
+    <div class="form-sec"><legend>1. Descargar plantilla</legend>
+      <p style="margin:0">Elige las columnas que quieres en la plantilla. Las marcadas con <span class="req" style="color:var(--bad)">*</span> son obligatorias. Puedes agregar columnas propias: se guardan como datos adicionales del registro.</p>
+      <div class="colpick">${P.cols.map(c => `<label class="check"><input type="checkbox" data-col="${c.k}" ${c.req || sel.has(c.k) ? 'checked' : ''} ${c.req ? 'disabled' : ''}> ${esc(c.l)}${c.req ? ' <span style="color:var(--bad)">*</span>' : ''}</label>`).join('')}</div>
+      <div style="display:grid;gap:8px"><span class="mute" style="font-size:13px;font-weight:600">Columnas propias</span><div class="chips" id="exChips"></div>
+        <div class="addcol"><input type="text" id="exNueva" placeholder="Ej. Alergias, Número de expediente anterior" aria-label="Nombre de la columna nueva"><button type="button" class="btn sm" id="exAdd">Agregar</button></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <div class="seg" id="exModo"><button type="button" class="on" data-modo="vacia">Plantilla vacía</button><button type="button" data-modo="datos" ${total ? '' : 'disabled'}>Con los ${total} registros actuales</button></div>
+        <button type="button" class="btn primary" id="exBajar">Descargar plantilla</button></div>
+      <span class="mute" style="font-size:12.5px">"Con los registros actuales" sirve para corregir datos o actualizar precios en Excel y volver a subir el archivo. La hoja "Instrucciones" explica cada columna.</span>
+    </div>
+    <div class="form-sec"><legend>2. Subir el archivo lleno</legend>
+      <div class="drop"><input type="file" id="exFile" accept=".xlsx,.xls,.csv"><span class="mute" style="font-size:12.5px">Acepta .xlsx, .xls o .csv. Se lee la hoja "${esc(P.hoja)}" o, si no existe, la primera. No se guarda nada hasta que revises y confirmes.</span></div>
+      <span class="mute" style="font-size:12.5px">También puedes subir tu archivo actual aunque no venga de la plantilla: se reconocen los encabezados con nombres parecidos${ent === 'pacientes' ? ' y una sola columna de "Nombre completo"' : ''}.</span>
+    </div>`,
+    onOpen: f => {
+      let modo = 'vacia';
+      const pint = () => { $('#exChips').innerHTML = extra.length ? extra.map((x, i) => `<span class="chip">${esc(x)}<button type="button" data-delx="${i}" aria-label="Quitar ${esc(x)}">×</button></span>`).join('') : '<span class="mute" style="font-size:13px">Ninguna</span>'; };
+      pint();
+      const add = () => { const v = $('#exNueva').value.trim(); if (!v) return; if (P.cols.some(c => nh(c.l) === nh(v)) || extra.some(x => nh(x) === nh(v))) { toast('Esa columna ya existe.'); return; } extra.push(v); $('#exNueva').value = ''; pint(); };
+      $('#exAdd').onclick = add;
+      $('#exNueva').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); add(); } };
+      $('#exChips').onclick = e => { const b = e.target.closest('[data-delx]'); if (b) { extra.splice(+b.dataset.delx, 1); pint(); } };
+      $$('#exModo button', f).forEach(b => b.onclick = () => { modo = b.dataset.modo; $$('#exModo button', f).forEach(x => x.classList.toggle('on', x === b)); });
+      $('#exBajar').onclick = async () => {
+        const cols = P.cols.filter(c => c.req || $(`[data-col="${c.k}"]`, f).checked).map(c => c.k);
+        try {
+          await descargarPlantilla(ent, cols, extra, modo === 'datos');
+          const prev = confPlantilla(ent);
+          if (JSON.stringify(prev.cols) !== JSON.stringify(cols) || JSON.stringify(prev.extra) !== JSON.stringify(extra))
+            await guardar('config', 'plantillas', { [ent]: { cols, extra } }, `Ajustó las columnas de la plantilla de ${P.titulo.toLowerCase()}`);
+        } catch (err) { toast(errMsg(err)); }
+      };
+      $('#exFile').onchange = async e => {
+        const file = e.target.files[0]; if (!file) return;
+        try { const X = await cargarXLSX(); const wb = X.read(await file.arrayBuffer(), { type: 'array' }); previsualizar(ent, wb, file.name); }
+        catch (err) { toast('No se pudo leer el archivo: ' + errMsg(err)); e.target.value = ''; }
+      };
+    } });
+}
+async function descargarPlantilla(ent, cols, extra, conDatos) {
+  const X = await cargarXLSX(), P = PLANTILLAS[ent];
+  const defs = cols.map(k => P.cols.find(c => c.k === k));
+  const head = [...defs.map(c => c.l + (c.req ? ' *' : '')), ...extra];
+  const rows = conDatos ? list(P.coleccion).filter(r => ent !== 'pacientes' || r.estado !== 'baja').sort((a, b) => P.nombreFila(a).localeCompare(P.nombreFila(b))).map(r => [...defs.map(c => { const v = c.out(r); return v == null ? '' : v; }), ...extra.map(x => r.extras?.[x] ?? '')]) : [];
+  const ws = X.utils.aoa_to_sheet([head, ...rows]);
+  ws['!cols'] = head.map((h, i) => ({ wch: Math.min(50, Math.max(12, h.length + 2, ...rows.slice(0, 200).map(r => String(r[i] ?? '').length + 1))) }));
+  ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+  const inst = [['Columna', 'Obligatoria', 'Formato o valores permitidos', 'Ejemplo'],
+    ...defs.map(c => [c.l, c.req ? 'Sí' : 'No', c.fmt || 'Texto libre', c.ej || '']),
+    ...extra.map(x => [x, 'No', 'Columna propia: se guarda como dato adicional', '']),
+    [], ['Notas'], ['Llena una fila por registro a partir de la fila 2 de la hoja "' + P.hoja + '". No cambies los encabezados.'],
+    ['Las filas con errores no se importan; la plataforma te las muestra antes de guardar.'], [P.nota]];
+  if (ent === 'pacientes') inst.push(['Si tu archivo anterior tiene el nombre en una sola columna, puedes llamarla "Nombre completo": se separará en nombre y apellidos.']);
+  const wi = X.utils.aoa_to_sheet(inst); wi['!cols'] = [{ wch: 30 }, { wch: 12 }, { wch: 60 }, { wch: 40 }];
+  const wb = X.utils.book_new(); X.utils.book_append_sheet(wb, ws, P.hoja); X.utils.book_append_sheet(wb, wi, 'Instrucciones');
+  X.writeFile(wb, `${P.archivo}${conDatos ? ' (con datos)' : ''} ${new Date().toISOString().slice(0, 10)}.xlsx`);
+  toast('Plantilla descargada.');
+}
+
+/* ---------- Paso 3: revisar antes de importar ---------- */
+function analizarArchivo(ent, wb) {
+  const P = PLANTILLAS[ent];
+  const nombreHoja = wb.SheetNames.find(n => nh(n) === nh(P.hoja)) || wb.SheetNames[0];
+  const aoa = XLSX.utils.sheet_to_json(wb.Sheets[nombreHoja], { header: 1, raw: true, defval: '' });
+  const idx = {};
+  P.cols.forEach(c => [c.l, c.k, ...(c.alias || [])].forEach(n => idx[nh(n)] = c.k));
+  /* fila de encabezados: la primera (de las 10 primeras) con más coincidencias */
+  let hr = -1, best = 0;
+  aoa.slice(0, 10).forEach((r, i) => { const m = r.filter(h => idx[nh(String(h).replace(/\*$/, ''))]).length + (ent === 'pacientes' && r.some(h => ['NOMBRECOMPLETO', 'PACIENTE', 'NOMBREDELPACIENTE'].includes(nh(h))) ? 2 : 0); if (m > best) { best = m; hr = i; } });
+  if (hr < 0 || best < 1) throw new Error('No se encontraron encabezados reconocibles. Usa la plantilla descargada o revisa que la primera fila tenga los nombres de las columnas.');
+  const heads = aoa[hr].map(h => String(h).replace(/\*\s*$/, '').trim());
+  const map = {}, extras = [];
+  heads.forEach((h, i) => { if (!h) return; const k = idx[nh(h)];
+    if (k && map[k] == null) map[k] = i;
+    else if (ent === 'pacientes' && ['NOMBRECOMPLETO', 'PACIENTE', 'NOMBREDELPACIENTE'].includes(nh(h))) map.__nombreCompleto = i;
+    else extras.push({ nombre: h, i }); });
+  const faltan = P.cols.filter(c => c.req && map[c.k] == null && !(ent === 'pacientes' && map.__nombreCompleto != null && ['nombres', 'apPaterno'].includes(c.k)));
+  const existentes = new Map(list(P.coleccion).map(r => [P.claveExistente(r), r]));
+  const vistos = new Map(), filas = [];
+  aoa.slice(hr + 1).forEach((row, j) => {
+    if (!row.some(v => String(v).trim() !== '')) return;
+    const fila = hr + j + 2, errores = [], avisos = [], ctx = { aviso: m => avisos.push(m) };
+    /* se arma sobre el registro existente para conservar objetos anidados */
+    const tmp = {}; Object.assign(tmp, P.preparar(null));
+    P.cols.forEach(c => { const i = map[c.k]; if (i == null) return; const v = row[i]; if (typeof v === 'string' ? v.trim() === '' : v === '' || v == null) return; const e = c.in(typeof v === 'string' ? v.trim() : v, tmp, ctx); if (e) errores.push(`${c.l}: ${e}`); });
+    if (P.especial) P.especial(row, map, tmp, ctx);
+    const k = P.clave(tmp);
+    if (!k) errores.push(P.faltaClave);
+    const ex = k ? existentes.get(k) : null;
+    if (k && vistos.has(k)) errores.push(`Repetido: el mismo registro ya viene en la fila ${vistos.get(k)}`);
+    if (k && !vistos.has(k)) vistos.set(k, fila);
+    if (!ex && k) P.cols.filter(c => c.req).forEach(c => { if (tmp[c.k] === undefined || tmp[c.k] === '') { const msg = `${c.l}: es obligatoria para un registro nuevo`; if (!errores.some(x => x.startsWith(c.l))) errores.push(msg); } });
+    const ext = {}; extras.forEach(x => { const v = row[x.i]; if (String(v).trim() !== '') ext[x.nombre] = typeof v === 'number' ? v : String(v).trim(); });
+    filas.push({ fila, data: tmp, existe: ex, errores, avisos, extras: ext, titulo: P.nombreFila(ex ? { ...ex, ...tmp } : tmp) });
+  });
+  return { hoja: nombreHoja, filas, faltan, extras: extras.map(x => x.nombre), reconocidas: P.cols.filter(c => map[c.k] != null).map(c => c.l).concat(map.__nombreCompleto != null ? ['Nombre completo'] : []) };
+}
+function previsualizar(ent, wb, archivo) {
+  const P = PLANTILLAS[ent];
+  let R; try { R = analizarArchivo(ent, wb); } catch (e) { toast(e.message); return; }
+  const opts = { actualizar: true, extras: true };
+  const estado = r => r.errores.length ? 'error' : r.existe ? (opts.actualizar ? 'actualiza' : 'omite') : 'nuevo';
+  const cuenta = () => { const c = { nuevo: 0, actualiza: 0, omite: 0, error: 0 }; R.filas.forEach(r => c[estado(r)]++); return c; };
+  const PILL = { nuevo: '<span class="pill ok">Nuevo</span>', actualiza: '<span class="pill acc">Actualiza</span>', omite: '<span class="pill">Se omite</span>', error: '<span class="pill bad">Error</span>' };
+  const tabla = () => { const orden = { error: 0, nuevo: 1, actualiza: 2, omite: 3 };
+    const rs = [...R.filas].sort((a, b) => orden[estado(a)] - orden[estado(b)] || a.fila - b.fila).slice(0, 400);
+    return `<table><thead><tr><th class="r">Fila</th><th>Estado</th><th>Registro</th><th>Detalle</th></tr></thead><tbody>${rs.map(r => `<tr><td class="r num mute">${r.fila}</td><td>${PILL[estado(r)]}</td><td>${esc(r.titulo)}</td><td><div class="msgs">${r.errores.map(m => `<span class="e">${esc(m)}</span>`).join('')}${r.avisos.map(m => `<span class="w">${esc(m)}</span>`).join('')}${!r.errores.length && !r.avisos.length ? '<span class="mute">Sin observaciones</span>' : ''}</div></td></tr>`).join('') || '<tr><td colspan="4"><div class="empty">El archivo no tiene filas con datos.</div></td></tr>'}</tbody></table>${R.filas.length > 400 ? `<p class="mute" style="font-size:12.5px">Se muestran 400 de ${R.filas.length} filas.</p>` : ''}`; };
+  const resumen = () => { const c = cuenta(); return `${c.nuevo ? `<span class="pill ok">${c.nuevo} nuevos</span>` : ''}${c.actualiza ? `<span class="pill acc">${c.actualiza} se actualizan</span>` : ''}${c.omite ? `<span class="pill">${c.omite} se omiten</span>` : ''}${c.error ? `<span class="pill bad">${c.error} con error, no se importan</span>` : ''}`; };
+  const boton = () => { const c = cuenta(), n = c.nuevo + c.actualiza; return n ? `Importar ${n} ${n === 1 ? 'registro' : 'registros'}` : 'Nada que importar'; };
+  modal({ title: 'Revisar importación · ' + P.titulo, wide: true, submit: boton(), body: `
+    <p style="margin:0">Archivo <b>${esc(archivo)}</b>, hoja <b>${esc(R.hoja)}</b>. ${R.filas.length} filas con datos.</p>
+    ${R.faltan.length ? `<div class="err">Faltan columnas obligatorias: ${R.faltan.map(c => esc(c.l)).join(', ')}. Solo se podrán actualizar registros que ya existen.</div>` : ''}
+    <div class="info"><b>Columnas reconocidas:</b> ${R.reconocidas.map(esc).join(', ') || 'ninguna'}${R.extras.length ? `<br><b>Columnas adicionales:</b> ${R.extras.map(esc).join(', ')}` : ''}</div>
+    <div style="display:grid;gap:6px">
+      <label class="check"><input type="checkbox" id="imAct" checked> Actualizar los registros que ya existen con los datos del archivo (las celdas vacías no borran nada)</label>
+      ${R.extras.length ? `<label class="check"><input type="checkbox" id="imExt" checked> Guardar las columnas adicionales como datos extra de cada registro</label>` : ''}
+    </div>
+    <div class="sumrow" id="imSum">${resumen()}</div>
+    <div class="tablewrap" id="imTabla">${tabla()}</div>
+    <div class="infowarn">${esc(P.nota)}</div>`,
+    onOpen: f => {
+      const upd = () => { opts.actualizar = $('#imAct').checked; opts.extras = $('#imExt') ? $('#imExt').checked : false; $('#imSum').innerHTML = resumen(); $('#imTabla').innerHTML = tabla(); $('#mSubmit').textContent = boton(); };
+      f.addEventListener('change', e => { if (e.target.id === 'imAct' || e.target.id === 'imExt') upd(); });
+    },
+    onSubmit: async f => {
+      const c = cuenta(); if (!c.nuevo && !c.actualiza) return formErr(f, 'No hay registros válidos para importar. Corrige las filas con error en el archivo y vuelve a subirlo.');
+      $('#mSubmit').textContent = 'Importando…';
+      const n = await ejecutarImport(ent, R.filas.filter(r => ['nuevo', 'actualiza'].includes(estado(r))), opts);
+      toast(`Importación terminada: ${n.nuevos} nuevos, ${n.actualizados} actualizados.`);
+    } });
+}
+async function ejecutarImport(ent, filas, opts) {
+  const P = PLANTILLAS[ent], t = nowISO(), ops = [];
+  let nuevos = 0, actualizados = 0;
+  filas.forEach(r => {
+    const data = { ...r.data };
+    if (opts.extras && Object.keys(r.extras).length) data.extras = { ...(r.existe?.extras || {}), ...r.extras };
+    if (r.existe) {
+      if (data.contactoEmergencia) data.contactoEmergencia = { ...(r.existe.contactoEmergencia || {}), ...Object.fromEntries(Object.entries(data.contactoEmergencia).filter(([, v]) => v)) };
+      ops.push({ id: r.existe.id, data: { ...data, actualizado: t, actualizadoPor: S.me.id }, merge: true }); actualizados++;
+    } else {
+      const full = { ...P.base(), ...data, creado: t, creadoPor: S.me.id, actualizado: t, actualizadoPor: S.me.id };
+      ops.push({ id: P.nuevoId(full), data: full, merge: false }); nuevos++;
+    }
+  });
+  const log = { fecha: t, uid: S.me.id, usuario: S.me.nombre, coleccion: P.coleccion, docId: '*', accion: 'Importación', resumen: `Importó ${P.titulo.toLowerCase()} desde Excel: ${nuevos} nuevos, ${actualizados} actualizados` };
+  if (S.mode === 'demo') {
+    ops.forEach(o => S.data[P.coleccion][o.id] = o.merge ? { ...(S.data[P.coleccion][o.id] || {}), ...o.data } : o.data);
+    S.data.bitacora[newId('b')] = log; demoPersist(); render();
+  } else {
+    const F = fb.F;
+    for (let i = 0; i < ops.length; i += 400) {
+      const b = F.writeBatch(fb.db);
+      ops.slice(i, i + 400).forEach(o => b.set(F.doc(fb.db, P.coleccion, o.id), o.data, o.merge ? { merge: true } : {}));
+      if (i + 400 >= ops.length) b.set(F.doc(F.collection(fb.db, 'bitacora')), log);
+      await b.commit();
+    }
+  }
+  return { nuevos, actualizados };
+}
+
 /* ============================ EVENTOS ============================ */
 const ACT = {
   nav: el => go(el.dataset.view), salir, perfil: () => verPerfil(),
@@ -1137,7 +1471,7 @@ const ACT = {
   'cat-tab': el => { S.ui.catTab = el.dataset.tab; S.ui.catQ = ''; render(); }, 'cat-ejemplo': cargarCatalogoEjemplo,
   'tr-nuevo': () => formTratamiento(), 'tr-ver': el => verTratamiento(el.dataset.id), 'in-nuevo': () => formInsumo(), 'in-editar': el => formInsumo(el.dataset.id),
   'us-nuevo': () => formUsuario(), 'us-editar': el => formUsuario(el.dataset.id), cuotas: el => formCuotas(el.dataset.id), 'mis-cuotas': () => formCuotas(S.me.id, true),
-  'se-nuevo': () => formSede(), 'se-editar': el => formSede(el.dataset.id), 'aviso-editar': formAviso
+  'se-nuevo': () => formSede(), 'se-editar': el => formSede(el.dataset.id), 'aviso-editar': formAviso, excel: el => modalExcel(el.dataset.ent)
 };
 function verPerfil() {
   modal({ title: 'Mi cuenta', body: `<div class="ch" style="display:flex;gap:12px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div><b>${esc(S.me.nombre)}</b><div class="mute">${esc(S.me.email)} · ${ROLES[S.me.rol]}</div></div></div>`,
