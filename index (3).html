@@ -1,0 +1,1158 @@
+<title>App Dentista Calendario</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: barra lateral de módulos + área de trabajo; en celular, barra superior + navegación inferior fija */
+:root{
+  --bg:#f2f6f5; --surface:#ffffff; --surface2:#e8efed; --ink:#13232a; --mute:#5b6d73; --line:#d6e0dd;
+  --accent:#0e6b70; --accent-ink:#ffffff; --accent-soft:#dbeeed;
+  --warn:#9a5208; --warn-soft:#fbead4; --bad:#b0303a; --bad-soft:#f8e0e1; --ok:#2c7539; --ok-soft:#e0f0e2;
+  --demo:#5b3fa6; --demo-soft:#ece6fa;
+  --f-ui:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --r:12px; --shadow:0 1px 2px rgba(10,30,35,.06),0 8px 24px rgba(10,30,35,.06);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1618; --surface:#142124; --surface2:#1b2b2f; --ink:#e3eeec; --mute:#94a8aa; --line:#26393d;
+  --accent:#4fc2c4; --accent-ink:#05282a; --accent-soft:#143a3c;
+  --warn:#e6a65e; --warn-soft:#38291a; --bad:#ef8087; --bad-soft:#3a1e21; --ok:#7fd18d; --ok-soft:#1a3321;
+  --demo:#b9a2f5; --demo-soft:#2a2244; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1618; --surface:#142124; --surface2:#1b2b2f; --ink:#e3eeec; --mute:#94a8aa; --line:#26393d;
+  --accent:#4fc2c4; --accent-ink:#05282a; --accent-soft:#143a3c;
+  --warn:#e6a65e; --warn-soft:#38291a; --bad:#ef8087; --bad-soft:#3a1e21; --ok:#7fd18d; --ok-soft:#1a3321;
+  --demo:#b9a2f5; --demo-soft:#2a2244; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:14.5px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.mute{color:var(--mute)}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+
+/* ---------- Botones y campos ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--mute)}
+.btn.ghost:hover{color:var(--ink);background:var(--surface2)}
+.btn.danger{color:var(--bad);border-color:var(--bad-soft)}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.55;cursor:wait}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.icon-btn{border:0;background:var(--surface2);width:34px;height:34px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;color:var(--mute);flex:none}
+label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--mute);min-width:0}
+label.f .req{color:var(--bad)}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],input[type=password],input[type=search],select,textarea{
+  width:100%;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 11px;font-size:14.5px;color:var(--ink);font-weight:500}
+textarea{resize:vertical;min-height:84px;line-height:1.5}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.span2{grid-column:span 2}.span3{grid-column:1/-1}
+@media (max-width:620px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}.span2,.span3{grid-column:auto}}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer}
+.check input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+fieldset{border:0;padding:0;margin:0;display:grid;gap:12px;min-width:0}
+legend{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);padding:0;margin-bottom:2px}
+.form-sec{display:grid;gap:12px;padding-block:14px;border-top:1px solid var(--line)}
+.form-sec:first-child{border-top:0;padding-top:0}
+
+/* ---------- Pills ---------- */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface2);color:var(--mute);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.acc{background:var(--accent-soft);color:var(--accent)}
+.pill.demo{background:var(--demo-soft);color:var(--demo)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+
+/* ---------- Pantalla de acceso ---------- */
+#login{min-height:100%;display:grid;place-items:center;padding-block:32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.login-card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:var(--shadow);display:grid;gap:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:42px;height:42px;border-radius:12px;background:var(--accent);display:grid;place-items:center;flex:none}
+.brand-mark svg{width:24px;height:24px}
+.brand h1{font-size:19px;font-weight:800}
+.brand p{margin:0;font-size:13px;color:var(--mute)}
+.demo-users{display:grid;gap:8px}
+.demo-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface);cursor:pointer;text-align:left;width:100%}
+.demo-user:hover{border-color:var(--accent);background:var(--accent-soft)}
+.demo-user b{display:block;font-size:14px}
+.demo-user span{font-size:12.5px;color:var(--mute)}
+.demo-user .pill{margin-left:auto}
+.err{background:var(--bad-soft);color:var(--bad);padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:600}
+.info{background:var(--accent-soft);color:var(--ink);padding:10px 12px;border-radius:10px;font-size:13.5px}
+.infowarn{background:var(--warn-soft);color:var(--ink);padding:10px 12px;border-radius:10px;font-size:13.5px}
+
+/* ---------- App ---------- */
+#app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100%}
+.side{background:var(--surface);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;height:100dvh}
+.side .brand{padding:0 6px}
+.side .brand h1{font-size:15px}
+.nav{display:grid;gap:2px}
+.nav button{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:9px 10px;border-radius:9px;font-weight:600;font-size:14px;color:var(--mute);cursor:pointer;text-align:left}
+.nav button svg{width:18px;height:18px;flex:none}
+.nav button:hover{background:var(--surface2);color:var(--ink)}
+.nav button.on{background:var(--accent-soft);color:var(--accent)}
+.nav .badge{margin-left:auto;font-size:11px;font-weight:800;background:var(--warn-soft);color:var(--warn);padding:1px 7px;border-radius:999px}
+.me{margin-top:auto;display:grid;gap:8px;padding:10px;border-radius:12px;background:var(--surface2)}
+.me b{font-size:13.5px;display:block}
+.me span{font-size:12px;color:var(--mute)}
+.main{min-width:0;display:flex;flex-direction:column}
+.demo-bar{background:var(--demo-soft);color:var(--demo);font-size:13px;font-weight:600;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.demo-bar button{border:0;background:transparent;color:var(--demo);font-weight:700;text-decoration:underline;cursor:pointer;padding:0;font-size:13px}
+.topbar{display:none}
+#view{padding-block:24px 48px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));max-width:1180px;width:100%;display:grid;gap:18px;align-content:start}
+.vhead{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
+.vhead h2{font-size:24px;font-weight:800}
+.vhead p{margin:3px 0 0;color:var(--mute);font-size:14px;max-width:62ch}
+.vhead .acts{display:flex;gap:8px;flex-wrap:wrap}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0}
+.panel-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel-h h3{font-size:15px;font-weight:700}
+.panel-b{padding:16px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toolbar input[type=search]{max-width:340px;flex:1 1 220px}
+.seg{display:inline-flex;background:var(--surface2);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:6px 11px;border-radius:8px;font-weight:600;font-size:13px;color:var(--mute);cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;gap:2px}
+.stat b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat span{font-size:13px;color:var(--mute);font-weight:600}
+.stat.warn b{color:var(--warn)}
+@media (max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:980px){.two{grid-template-columns:minmax(0,1fr)}}
+
+/* filas */
+.rows{display:grid}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);cursor:pointer;text-align:left;background:transparent;border-left:0;border-right:0;border-bottom:0;width:100%}
+.row:first-child{border-top:0}
+.row:hover{background:var(--surface2)}
+.row .t1{font-weight:700;font-size:14.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row .t2{font-size:13px;color:var(--mute);display:flex;gap:4px 12px;flex-wrap:wrap}
+.row .r{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.empty{padding:28px 16px;text-align:center;color:var(--mute);display:grid;gap:10px;justify-items:center}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);text-align:left;font-weight:700;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover td{background:var(--surface2)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;gap:8px;align-content:start;min-width:0}
+.card .ch{display:flex;gap:10px;align-items:center}
+.card .ch b{font-size:15px}
+.card .meta{font-size:13px;color:var(--mute);display:grid;gap:2px}
+.card .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff;flex:none}
+.kv{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:7px 16px;font-size:14px}
+.kv dt{color:var(--mute);font-weight:600;font-size:13px}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.roadmap{display:grid;gap:0;counter-reset:f}
+.roadmap li{list-style:none;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px dashed var(--line);font-size:13.5px}
+.roadmap li:first-child{border-top:0}
+.roadmap .n{width:24px;height:24px;border-radius:50%;background:var(--surface2);color:var(--mute);display:grid;place-items:center;font-size:12px;font-weight:800}
+.roadmap li.now .n{background:var(--accent);color:var(--accent-ink)}
+.roadmap b{display:block;font-size:14px}
+.roadmap ol{margin:0;padding:0}
+
+/* ---------- Modal ---------- */
+#modalRoot,#confirmRoot{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#confirmRoot{z-index:60}
+.scrim{position:absolute;inset:0;background:rgba(6,18,20,.5)}
+.modal{position:relative;background:var(--surface);border-radius:16px;width:100%;max-width:560px;max-height:100%;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);min-width:0}
+.modal.wide{max-width:860px}
+.modal>header{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal>header h2{font-size:17px;font-weight:800;flex:1;min-width:0}
+.mbody{padding:18px;overflow:auto;display:grid;gap:14px;min-width:0}
+.modal>footer{display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--line);align-items:center;flex-wrap:wrap}
+.modal>footer .sp{flex:1}
+@media (max-width:620px){
+  #modalRoot{place-items:end center;padding:0}
+  #modalRoot .modal{border-radius:16px 16px 0 0;max-height:94%;padding-bottom:env(safe-area-inset-bottom,0px)}
+}
+.aviso{max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;white-space:pre-wrap;background:var(--bg)}
+.firma-wrap{display:grid;gap:6px}
+.firma{width:100%;height:150px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;touch-action:none;display:block}
+.firma-img{max-width:260px;background:#fff;border-radius:8px;border:1px solid var(--line)}
+.mat-row{display:grid;grid-template-columns:minmax(0,1fr) 90px 34px;gap:8px;align-items:center}
+.quick{display:flex;gap:8px;flex-wrap:wrap}
+.portal{display:flex;gap:10px 18px;flex-wrap:wrap;align-items:center;background:var(--surface2);border-radius:10px;padding:10px 12px}
+.portal span{font-size:12px;color:var(--mute);display:block;font-weight:600}
+.portal b{font-family:var(--f-mono);font-size:14px;overflow-wrap:anywhere}
+
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:80;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+
+/* ---------- Celular ---------- */
+@media (max-width:860px){
+  #app{grid-template-columns:minmax(0,1fr)}
+  .side{display:none}
+  .topbar{display:flex;align-items:center;gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line);padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+  .topbar .brand-mark{width:32px;height:32px;border-radius:9px}
+  .topbar .brand-mark svg{width:18px;height:18px}
+  .topbar b{font-size:15px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bnav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);display:flex;overflow-x:auto;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+  .bnav button{flex:1 0 64px;border:0;background:transparent;display:grid;justify-items:center;gap:2px;padding:8px 4px;font-size:11px;font-weight:700;color:var(--mute);cursor:pointer}
+  .bnav button svg{width:20px;height:20px}
+  .bnav button.on{color:var(--accent)}
+  #view{padding-block:18px calc(90px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .vhead h2{font-size:21px}
+  .hide-m{display:none}
+}
+@media (min-width:861px){.bnav{display:none}}
+@media (prefers-reduced-motion:no-preference){.modal{animation:up .18s ease-out}@keyframes up{from{transform:translateY(12px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+<div id="login" hidden></div>
+<div id="app" hidden>
+  <aside class="side">
+    <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><h1 id="sideClinic">Clínica dental</h1><p>Expediente y gestión</p></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="me" id="meBox"></div>
+  </aside>
+  <div class="main">
+    <div class="topbar"><div class="brand-mark" aria-hidden="true"></div><b id="topClinic">Clínica dental</b><button class="btn sm ghost" data-act="perfil">Cuenta</button></div>
+    <div class="demo-bar" id="demoBar" hidden></div>
+    <section id="view" aria-live="polite"></section>
+  </div>
+  <nav class="bnav" id="bnav"></nav>
+</div>
+<div id="modalRoot" hidden></div>
+<div id="confirmRoot" hidden></div>
+<div id="toast" hidden></div>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN
+   Para usar la base real, pega aquí la configuración de tu proyecto de
+   Firebase (Consola de Firebase > Configuración del proyecto > Tus apps).
+   Si se deja en null, la app abre en MODO DEMOSTRACIÓN con datos de ejemplo
+   que solo se guardan en este navegador.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCYbzDWH0Ba3GoM_N9oGsbN0QAA6xZuPPg",
+  authDomain: "interdental-74442.firebaseapp.com",
+  projectId: "interdental-74442",
+  storageBucket: "interdental-74442.firebasestorage.app",
+  messagingSenderId: "263810330944",
+  appId: "1:263810330944:web:308bac80c18de2376f4aa5"
+};
+/* Ejemplo:
+const FIREBASE_CONFIG = {
+  apiKey: "AIza...",
+  authDomain: "mi-clinica.firebaseapp.com",
+  projectId: "mi-clinica",
+  storageBucket: "mi-clinica.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abc123"
+};
+*/
+const VERSION_APP = '1.0 · Fase 1';
+
+/* ============================ UTILIDADES ============================ */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => new Intl.NumberFormat('es-MX', {style:'currency', currency:'MXN', maximumFractionDigits:2}).format(Number(n) || 0);
+const newId = (p = '') => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const nowISO = () => new Date().toISOString();
+const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+const fechaCorta = iso => { if (!iso) return '—'; const d = new Date(iso.length === 10 ? iso + 'T12:00:00' : iso); return d.toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'}); };
+const fechaHora = iso => iso ? new Date(iso).toLocaleString('es-MX', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '—';
+function edad(fn) { if (!fn) return null; const d = new Date(fn + 'T12:00:00'), h = new Date(); let e = h.getFullYear() - d.getFullYear(); const m = h.getMonth() - d.getMonth(); if (m < 0 || (m === 0 && h.getDate() < d.getDate())) e--; return e; }
+const nombreCompleto = p => [p.nombres, p.apPaterno, p.apMaterno].filter(Boolean).join(' ');
+const iniciales = n => String(n || '?').replace(/^(Dra?\.|Lic\.)\s*/i, '').split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase();
+/* Acceso del paciente (portal, fase 5): usuario = nombre completo junto; contraseña = fecha DDMMAA */
+const usuarioPortal = p => norm(nombreCompleto(p)).replace(/[^A-Z]/g, '');
+const clavePortal = fn => { if (!fn) return ''; const [y, m, d] = fn.split('-'); return `${d}/${m}/${y.slice(2)}`; };
+const telDigits = t => String(t || '').replace(/\D/g, '');
+const waLink = t => { let d = telDigits(t); if (d.length === 10) d = '52' + d; return d ? `https://wa.me/${d}` : ''; };
+
+const ROLES = { admin: 'Administrador', dentista: 'Dentista · admin jr', recepcion: 'Recepción y caja' };
+const CATEGORIAS = ['Diagnóstico','Prevención','Operatoria','Endodoncia','Prótesis','Cirugía','Implantología','Ortodoncia','Periodoncia','Estética','Odontopediatría','Radiología','Otro'];
+const ANIMACIONES = { '':'Sin animación', limpieza:'Limpieza', sellador:'Sellador', resina:'Caries → resina', reconstruccion:'Fractura → reconstrucción', endodoncia:'Endodoncia', corona:'Corona', extraccion:'Extracción', extraccion_retenido:'Extracción de muela retenida', implante:'Implante', corona_implante:'Corona sobre implante', ortodoncia:'Ortodoncia (arcada)', blanqueamiento:'Blanqueamiento (boca completa)', perio:'Tratamiento de encías' };
+const APLICA = { diente:'Por diente', arcada:'Por arcada', boca:'Boca completa', consulta:'Por consulta' };
+const UNIDADES = ['pieza','par','cartucho','caja','jeringa','g','ml','sobre','punta','rollo','kit'];
+const COLORES = ['#0e6b70','#b5527a','#4f6bd8','#c27c1a','#6a4fc2','#2d8a52','#c4483c','#3c8dad'];
+
+/* ============================ ESTADO ============================ */
+const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora'];
+const S = { mode: FIREBASE_CONFIG ? 'firebase' : 'demo', data: {}, me: null, view: 'inicio', ui: { pacQ: '', pacF: 'activos', catTab: 'tratamientos', catQ: '', catCat: '', bitU: '' }, unsubs: [] };
+COLS.forEach(c => S.data[c] = {});
+const list = c => Object.entries(S.data[c] || {}).map(([id, v]) => ({ id, ...v }));
+const get = (c, id) => (S.data[c] && S.data[c][id]) ? { id, ...S.data[c][id] } : null;
+const esAdmin = () => S.me?.rol === 'admin';
+const clinica = () => get('config', 'clinica') || { nombre: 'Clínica dental', aviso: { version: 1, texto: AVISO_BASE, fecha: nowISO() } };
+const dentistas = () => list('usuarios').filter(u => u.activo !== false && (u.rol === 'dentista' || u.atiende)).sort((a, b) => a.nombre.localeCompare(b.nombre));
+const nombreUsuario = id => get('usuarios', id)?.nombre || '—';
+
+/* ============================ CAPA DE DATOS ============================ */
+const fb = {};
+const DEMO_KEY = 'appDentista.demo.v1';
+function demoPersist() { try { localStorage.setItem(DEMO_KEY, JSON.stringify(S.data)); } catch (e) {} }
+function demoLoad() { try { const r = localStorage.getItem(DEMO_KEY); if (r) { const d = JSON.parse(r); COLS.forEach(c => d[c] = d[c] || {}); S.data = d; return true; } } catch (e) {} return false; }
+
+/* Guarda un documento y deja registro en la bitácora (quién, cuándo, qué). */
+async function guardar(col, id, data, resumen, { nuevo = false, reemplazar = false } = {}) {
+  id = id || newId();
+  const stamp = { actualizado: nowISO(), actualizadoPor: S.me.id };
+  if (nuevo) { stamp.creado = nowISO(); stamp.creadoPor = S.me.id; }
+  const full = { ...data, ...stamp };
+  const log = { fecha: nowISO(), uid: S.me.id, usuario: S.me.nombre, coleccion: col, docId: id, accion: nuevo ? 'Alta' : 'Cambio', resumen: resumen || '' };
+  if (S.mode === 'demo') {
+    S.data[col][id] = reemplazar ? full : { ...(S.data[col][id] || {}), ...full };
+    S.data.bitacora[newId('b')] = log;
+    demoPersist(); render();
+  } else {
+    const F = fb.F, b = F.writeBatch(fb.db);
+    b.set(F.doc(fb.db, col, id), full, reemplazar ? {} : { merge: true });
+    b.set(F.doc(F.collection(fb.db, 'bitacora')), log);
+    await b.commit();
+  }
+  return id;
+}
+
+/* ---------- Firebase ---------- */
+async function initFirebase() {
+  const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const [A0, A, F] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js')]);
+  fb.A0 = A0; fb.A = A; fb.F = F;
+  fb.app = A0.initializeApp(FIREBASE_CONFIG);
+  fb.auth = A.getAuth(fb.app);
+  fb.db = F.getFirestore(fb.app);
+  A.onAuthStateChanged(fb.auth, onAuth);
+}
+async function onAuth(user) {
+  if (S.bootstrapping) return;
+  S.unsubs.forEach(u => { try { u(); } catch (e) {} }); S.unsubs = [];
+  COLS.forEach(c => S.data[c] = {});
+  if (!user) { S.me = null; showLogin(); return; }
+  try {
+    const snap = await fb.F.getDoc(fb.F.doc(fb.db, 'usuarios', user.uid));
+    if (!snap.exists() || snap.data().activo === false) {
+      await fb.A.signOut(fb.auth);
+      showLogin('Tu cuenta no tiene acceso activo. Pide al administrador que la active.');
+      return;
+    }
+    S.me = { id: user.uid, ...snap.data() };
+    subscribe(); showApp();
+  } catch (e) { showLogin('No se pudo leer tu cuenta: ' + e.message); }
+}
+function subscribe() {
+  const F = fb.F;
+  const watch = (col, ref) => S.unsubs.push(F.onSnapshot(ref || F.collection(fb.db, col), snap => {
+    const o = {}; snap.forEach(d => o[d.id] = d.data()); S.data[col] = o;
+    if (col === 'usuarios' && o[S.me.id]) S.me = { id: S.me.id, ...o[S.me.id] };
+    render();
+  }, err => toast('No se pudo leer ' + col + ': ' + err.message)));
+  ['usuarios','sedes','insumos','tratamientos','pacientes','config'].forEach(c => watch(c));
+  if (esAdmin()) {
+    watch('cuotas');
+    watch('bitacora', F.query(F.collection(fb.db, 'bitacora'), F.orderBy('fecha', 'desc'), F.limit(300)));
+  } else {
+    S.unsubs.push(F.onSnapshot(F.doc(fb.db, 'cuotas', S.me.id), d => { S.data.cuotas = d.exists() ? { [d.id]: d.data() } : {}; render(); }, () => {}));
+  }
+}
+/* Crea la cuenta de acceso de otro usuario sin cerrar la sesión del administrador */
+async function crearCuentaFirebase(email, pass) {
+  if (!fb.app2) fb.app2 = fb.A0.initializeApp(FIREBASE_CONFIG, 'altas');
+  const a2 = fb.A.getAuth(fb.app2);
+  const cred = await fb.A.createUserWithEmailAndPassword(a2, email, pass);
+  await fb.A.signOut(a2);
+  return cred.user.uid;
+}
+const ERR_AUTH = {
+  'auth/invalid-credential': 'Correo o contraseña incorrectos.', 'auth/wrong-password': 'Correo o contraseña incorrectos.', 'auth/user-not-found': 'No existe una cuenta con ese correo.',
+  'auth/email-already-in-use': 'Ya existe una cuenta con ese correo.', 'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.', 'auth/invalid-email': 'El correo no es válido.',
+  'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos e intenta de nuevo.', 'auth/network-request-failed': 'Sin conexión a internet.', 'permission-denied': 'No tienes permiso para hacer este cambio.'
+};
+const errMsg = e => ERR_AUTH[e?.code] || e?.message || String(e);
+
+/* ============================ AVISO DE PRIVACIDAD (plantilla) ============================ */
+const AVISO_BASE = `AVISO DE PRIVACIDAD INTEGRAL
+[Plantilla de referencia. Revísala con tu asesor legal antes de usarla.]
+
+{CLINICA}, con domicilio en {DOMICILIO}, a través de su responsable {RESPONSABLE}, es responsable del tratamiento de sus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares y demás normativa aplicable.
+
+DATOS QUE RECABAMOS
+• Identificación y contacto: nombre, fecha de nacimiento, teléfono, correo electrónico y domicilio.
+• Datos personales sensibles: estado de salud bucal y general, antecedentes médicos, alergias, medicamentos, diagnósticos, radiografías, fotografías clínicas y modelos digitales de su boca.
+• Datos fiscales, solo si solicita factura: RFC, razón social, régimen fiscal, código postal y constancia de situación fiscal.
+• Datos de pago: montos, abonos y saldos. No almacenamos números de tarjetas.
+
+FINALIDADES PRIMARIAS
+1. Integrar y conservar su expediente clínico.
+2. Diagnóstico, plan de tratamiento y atención odontológica.
+3. Agenda, confirmación y recordatorio de citas por teléfono, correo o WhatsApp.
+4. Presupuestos, cobros, planes de pago y emisión de facturas.
+
+FINALIDADES SECUNDARIAS (puede negarse)
+• Invitarle a retomar tratamientos o a revisiones periódicas.
+
+CONSENTIMIENTO PARA DATOS SENSIBLES
+Al firmar, usted otorga su consentimiento expreso para el tratamiento de sus datos personales sensibles para las finalidades descritas.
+
+TRANSFERENCIAS
+Sus datos solo se comparten con el personal de la clínica que lo atiende, con laboratorios dentales cuando su tratamiento lo requiera y con el contador o proveedor de facturación para emitir sus comprobantes fiscales.
+
+DERECHOS ARCO
+Puede solicitar el acceso, rectificación, cancelación u oposición al tratamiento de sus datos, o revocar su consentimiento, escribiendo a {CORREO}. Algunos datos deben conservarse por el tiempo que exige la normativa del expediente clínico.
+
+CAMBIOS AL AVISO
+Cualquier cambio se le informará en la clínica y se le pedirá nuevamente su consentimiento.`;
+function avisoTexto() {
+  const c = clinica();
+  return (c.aviso?.texto || AVISO_BASE)
+    .replaceAll('{CLINICA}', c.nombre || '[Nombre de la clínica]')
+    .replaceAll('{DOMICILIO}', c.domicilio || '[Domicilio]')
+    .replaceAll('{RESPONSABLE}', c.responsable || '[Responsable]')
+    .replaceAll('{CORREO}', c.correo || '[Correo de contacto]');
+}
+
+/* ============================ DATOS DE EJEMPLO ============================ */
+function catalogoEjemplo() {
+  const ins = [
+    ['anest','Anestesia local','cartucho','Consumibles',18],['guantes','Guantes de nitrilo','par','Protección',4],['cubre','Cubrebocas','pieza','Protección',2],
+    ['eyector','Eyector de saliva','pieza','Consumibles',1.5],['algodon','Rollos de algodón','pieza','Consumibles',.5],['grabador','Ácido grabador','ml','Operatoria',12],
+    ['adhesivo','Adhesivo dental','ml','Operatoria',95],['resina','Resina compuesta','g','Operatoria',140],['dique','Dique de hule','pieza','Operatoria',9],
+    ['limas','Limas de endodoncia','pieza','Endodoncia',35],['guta','Puntas de gutapercha','punta','Endodoncia',3],['cemento_end','Cemento sellador endodóntico','g','Endodoncia',45],
+    ['hipoclorito','Hipoclorito de sodio','ml','Endodoncia',.3],['provisional','Material de provisional','g','Prótesis',22],['impresion','Silicón de impresión','ml','Prótesis',6],
+    ['cemento','Cemento para coronas','g','Prótesis',60],['sutura','Sutura','sobre','Cirugía',55],['gasas','Gasas estériles','pieza','Cirugía',1],
+    ['implante','Implante de titanio','pieza','Implantología',3800],['pilar','Pilar protésico','pieza','Implantología',1200],['brackets','Kit de brackets','kit','Ortodoncia',900],
+    ['arco','Arco de ortodoncia','pieza','Ortodoncia',45],['ligas','Ligas elásticas','pieza','Ortodoncia',.8],['pasta','Pasta profiláctica','g','Prevención',3],
+    ['fluor','Barniz de flúor','ml','Prevención',25],['sellador','Sellador de fosetas','ml','Prevención',60],['blanq','Gel blanqueador','jeringa','Estética',350],['pelicula','Sensor / película radiográfica','pieza','Radiología',8]
+  ];
+  const base = [['guantes',2],['cubre',2],['eyector',1]];
+  const tr = [
+    ['DX-01','Consulta de valoración y diagnóstico','Diagnóstico',400,40,1,'consulta','',[]],
+    ['RX-01','Radiografía periapical','Radiología',250,10,1,'diente','',[['pelicula',1]]],
+    ['PR-01','Limpieza dental (profilaxis)','Prevención',700,45,1,'boca','limpieza',[['pasta',5],['fluor',1]]],
+    ['PR-02','Sellador de fosetas','Prevención',350,20,1,'diente','sellador',[['sellador',.1],['grabador',.2]]],
+    ['OP-01','Resina en una cara','Operatoria',900,45,1,'diente','resina',[['anest',1],['grabador',.3],['adhesivo',.1],['resina',.4],['algodon',4]]],
+    ['OP-02','Resina en dos o más caras','Operatoria',1200,60,1,'diente','resina',[['anest',1],['grabador',.4],['adhesivo',.15],['resina',.8],['dique',1]]],
+    ['OP-03','Reconstrucción estética de borde','Estética',1200,60,1,'diente','reconstruccion',[['grabador',.3],['adhesivo',.1],['resina',.6]]],
+    ['EN-01','Endodoncia en diente anterior','Endodoncia',2800,75,1,'diente','endodoncia',[['anest',2],['dique',1],['limas',3],['guta',4],['cemento_end',.3],['hipoclorito',20]]],
+    ['EN-02','Endodoncia en molar','Endodoncia',3800,100,2,'diente','endodoncia',[['anest',2],['dique',1],['limas',6],['guta',10],['cemento_end',.5],['hipoclorito',40]]],
+    ['PT-01','Corona de zirconia','Prótesis',5500,60,2,'diente','corona',[['anest',1],['impresion',20],['provisional',2],['cemento',1]]],
+    ['PT-02','Corona metal-porcelana','Prótesis',4200,60,2,'diente','corona',[['anest',1],['impresion',20],['provisional',2],['cemento',1]]],
+    ['CX-01','Extracción simple','Cirugía',900,30,1,'diente','extraccion',[['anest',2],['gasas',4]]],
+    ['CX-02','Extracción de tercer molar retenido','Cirugía',2500,60,1,'diente','extraccion_retenido',[['anest',3],['sutura',1],['gasas',6]]],
+    ['IM-01','Colocación de implante','Implantología',12000,90,1,'diente','implante',[['anest',3],['implante',1],['sutura',1],['gasas',6]]],
+    ['IM-02','Corona sobre implante','Implantología',6000,60,2,'diente','corona_implante',[['pilar',1],['impresion',20],['cemento',1]]],
+    ['OR-01','Ortodoncia: colocación de brackets','Ortodoncia',8000,90,1,'boca','ortodoncia',[['brackets',1],['arco',2],['ligas',40],['grabador',1],['adhesivo',.3]]],
+    ['OR-02','Ortodoncia: control mensual','Ortodoncia',800,30,1,'boca','ortodoncia',[['arco',1],['ligas',40]]],
+    ['PE-01','Raspado y alisado por cuadrante','Periodoncia',1100,45,1,'arcada','perio',[['anest',2]]],
+    ['ES-01','Blanqueamiento en consultorio','Estética',4500,90,1,'boca','blanqueamiento',[['blanq',2]]],
+    ['OD-01','Consulta odontopediátrica','Odontopediatría',450,30,1,'consulta','',[['fluor',1]]]
+  ];
+  return { ins, base, tr };
+}
+function seedDemo() {
+  const t = nowISO(), sys = { creado: t, creadoPor: 'u_admin', actualizado: t, actualizadoPor: 'u_admin' };
+  const D = {}; COLS.forEach(c => D[c] = {});
+  D.config.clinica = { nombre: 'Clínica Dental Sonrisa (ejemplo)', responsable: 'Administrador de la clínica', domicilio: 'Av. Ejemplo 123, Col. Centro', telefono: '669 000 0000', correo: 'privacidad@ejemplo.mx', aviso: { version: 1, texto: AVISO_BASE, fecha: t }, ...sys };
+  D.sedes.s_centro = { nombre: 'Sede Centro', tipo: 'propia', direccion: 'Av. Ejemplo 123, Centro', telefono: '669 000 0001', consultorios: ['Consultorio 1','Consultorio 2','Consultorio 3'], activo: true, ...sys };
+  D.sedes.s_norte = { nombre: 'Sede Norte', tipo: 'propia', direccion: 'Blvd. Muestra 456, Zona Norte', telefono: '669 000 0002', consultorios: ['Consultorio A','Consultorio B'], activo: true, ...sys };
+  D.sedes.s_ext1 = { nombre: 'Hospital Privado (externa)', tipo: 'externa', direccion: 'Calle Externa 789', telefono: '', consultorios: [], activo: true, ...sys };
+  const U = [
+    ['u_admin','Administrador principal','admin@ejemplo.mx','admin',true,'Odontología general',['s_centro','s_norte'],'#0e6b70'],
+    ['u_ana','Dra. Ana Robles','ana@ejemplo.mx','dentista',true,'Endodoncia',['s_centro'],'#b5527a'],
+    ['u_luis','Dr. Luis Medina','luis@ejemplo.mx','dentista',true,'Implantología',['s_centro','s_ext1'],'#4f6bd8'],
+    ['u_sofia','Dra. Sofía Castro','sofia@ejemplo.mx','dentista',true,'Ortodoncia',['s_norte'],'#c27c1a'],
+    ['u_jorge','Dr. Jorge Ibarra','jorge@ejemplo.mx','dentista',true,'Cirugía maxilofacial',['s_norte','s_ext1'],'#6a4fc2'],
+    ['u_paola','Dra. Paola Núñez','paola@ejemplo.mx','dentista',true,'Odontopediatría',['s_centro','s_norte'],'#2d8a52'],
+    ['u_karla','Karla Díaz','recepcion@ejemplo.mx','recepcion',false,'',['s_centro','s_norte'],'#3c8dad']
+  ];
+  U.forEach(([id,nombre,email,rol,atiende,esp,sedes,color]) => D.usuarios[id] = { nombre, email, rol, atiende, especialidad: esp, cedula: atiende ? 'Cédula de ejemplo' : '', telefono: '', sedes, color, activo: true, ...sys });
+  const { ins, base, tr } = catalogoEjemplo();
+  ins.forEach(([id,nombre,unidad,categoria,costo]) => D.insumos['i_' + id] = { nombre, unidad, categoria, costo, activo: true, ...sys });
+  tr.forEach(([clave,nombre,categoria,precio,dur,ses,aplica,anim,mats], i) => D.tratamientos['t_' + clave] = { clave, nombre, categoria, precio, duracionMin: dur, sesiones: ses, aplicaA: aplica, animacion: anim, descripcionPaciente: '', materiales: [...base, ...mats].map(([iid, cantidad]) => ({ insumoId: 'i_' + iid, cantidad })), activo: true, ...sys });
+  D.cuotas.u_ana = { base: { tipo: 'pct', valor: 40 }, porTratamiento: { 't_EN-02': { tipo: 'fijo', valor: 1800 } }, ...sys };
+  D.cuotas.u_luis = { base: { tipo: 'pct', valor: 35 }, porTratamiento: { 't_IM-01': { tipo: 'fijo', valor: 4000 } }, ...sys };
+  D.cuotas.u_sofia = { base: { tipo: 'pct', valor: 40 }, porTratamiento: {}, ...sys };
+  D.cuotas.u_jorge = { base: { tipo: 'pct', valor: 40 }, porTratamiento: {}, ...sys };
+  D.cuotas.u_paola = { base: { tipo: 'pct', valor: 45 }, porTratamiento: {}, ...sys };
+  const firmado = (dias, quien) => ({ aceptado: true, version: 1, fecha: new Date(Date.now() - dias * 864e5).toISOString(), medio: 'papel', registradoPor: quien, tutor: '' });
+  const P = [
+    ['p1','María Fernanda','López','García','1988-03-15','F','6691234567','mafer@correo.mx','s_centro','u_ana',firmado(40,'u_karla')],
+    ['p2','José Antonio','Ramírez','Soto','1975-11-02','M','6699876543','','s_centro','u_luis',firmado(25,'u_karla')],
+    ['p3','Valeria','Castañeda','Ruiz','2014-06-20','F','6695551212','mama.valeria@correo.mx','s_norte','u_paola',{ ...firmado(10,'u_paola'), tutor: 'Laura Ruiz (madre)' }],
+    ['p4','Ricardo','Peña','Valdez','1992-01-28','M','6694443322','ricardo.pv@correo.mx','s_norte','u_sofia',null],
+    ['p5','Guadalupe','Hernández','Ortiz','1960-09-09','F','6697778899','','s_centro','u_admin',firmado(90,'u_admin')],
+    ['p6','Daniel','Ochoa','Meza','2001-12-05','M','6692223344','dan.ochoa@correo.mx','s_ext1','u_jorge',null]
+  ];
+  P.forEach(([id,nombres,apPaterno,apMaterno,fechaNac,sexo,telefono,email,sedePref,dentistaResp,cons]) => D.pacientes[id] = { nombres, apPaterno, apMaterno, fechaNac, sexo, telefono, email, sedePref, dentistaResp, ocupacion: '', domicilio: '', cp: '', comoNosConocio: '', contactoEmergencia: { nombre: '', telefono: '' }, notas: '', estado: 'activo', consentimiento: cons, ...sys });
+  D.bitacora[newId('b')] = { fecha: t, uid: 'u_admin', usuario: 'Administrador principal', coleccion: 'config', docId: 'clinica', accion: 'Alta', resumen: 'Se cargaron los datos de ejemplo' };
+  S.data = D; demoPersist();
+}
+
+/* ============================ ICONOS ============================ */
+const I = {
+  tooth: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3c-2.5 0-4 2-4 4.6 0 2 1 3.3 1.6 5.4.7 2.5.8 5.6 2.4 7.4.7.8 1.7.4 2-.7l.9-3.6c.3-1 1.9-1 2.2 0l.9 3.6c.3 1.1 1.3 1.5 2 .7 1.6-1.8 1.7-4.9 2.4-7.4C19 10.9 21 9.6 21 7.6 21 5 19.5 3 17 3c-2 0-3 1-5 1S9 3 7 3z"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.3-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.7c2 .7 3.2 2.6 3.5 5.3"/></svg>',
+  list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>',
+  team: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+};
+$$('.brand-mark').forEach(el => el.innerHTML = `<span style="color:var(--accent-ink);display:grid">${I.tooth}</span>`);
+
+/* ============================ UI BASE ============================ */
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+
+function modal({ title, body, submit = 'Guardar', wide = false, onSubmit, footerLeft = '', onOpen }) {
+  const root = $('#modalRoot');
+  root.innerHTML = `<div class="scrim" data-close></div>
+  <form class="modal ${wide ? 'wide' : ''}" id="mform" autocomplete="off">
+    <header><h2>${title}</h2><button type="button" class="icon-btn" data-close aria-label="Cerrar">×</button></header>
+    <div class="mbody">${body}<div class="err" id="mErr" hidden></div></div>
+    <footer>${footerLeft}<span class="sp"></span>${onSubmit ? `<button type="button" class="btn ghost" data-close>Cancelar</button><button class="btn primary" type="submit" id="mSubmit">${submit}</button>` : '<button type="button" class="btn" data-close>Cerrar</button>'}</footer>
+  </form>`;
+  root.hidden = false;
+  $$('[data-close]', root).forEach(b => b.onclick = closeModal);
+  const f = $('#mform');
+  f.onsubmit = async e => {
+    e.preventDefault(); if (!onSubmit) return;
+    const btn = $('#mSubmit'), er = $('#mErr'); er.hidden = true; btn.disabled = true;
+    try { const r = await onSubmit(f); if (r !== false) closeModal(); }
+    catch (err) { er.textContent = errMsg(err); er.hidden = false; er.scrollIntoView({ block: 'nearest' }); }
+    finally { btn.disabled = false; }
+  };
+  if (onOpen) onOpen(f);
+  const first = f.querySelector('input:not([type=hidden]):not([type=checkbox]),select,textarea'); if (first && window.innerWidth > 860) first.focus();
+  return f;
+}
+function closeModal() { const r = $('#modalRoot'); r.hidden = true; r.innerHTML = ''; }
+function formErr(f, msg) { const er = $('#mErr', f); er.textContent = msg; er.hidden = false; er.scrollIntoView({ block: 'nearest' }); return false; }
+function confirmar(titulo, texto, { ok = 'Confirmar', peligro = false } = {}) {
+  return new Promise(res => {
+    const r = $('#confirmRoot');
+    r.innerHTML = `<div class="scrim"></div><div class="modal" role="alertdialog" aria-modal="true"><header><h2>${titulo}</h2></header><div class="mbody"><p style="margin:0">${texto}</p></div><footer><span class="sp"></span><button class="btn ghost" id="cNo">Cancelar</button><button class="btn ${peligro ? 'danger' : 'primary'}" id="cSi">${ok}</button></footer></div>`;
+    r.hidden = false;
+    const done = v => { r.hidden = true; r.innerHTML = ''; res(v); };
+    $('#cNo').onclick = () => done(false); $('#cSi').onclick = () => done(true); $('.scrim', r).onclick = () => done(false);
+    $('#cSi').focus();
+  });
+}
+const fv = (f, n) => (f.elements[n]?.value ?? '').trim();
+const opt = (v, l, sel) => `<option value="${esc(v)}" ${String(v) === String(sel ?? '') ? 'selected' : ''}>${esc(l)}</option>`;
+
+/* ============================ ACCESO ============================ */
+function showLogin(msg = '') {
+  $('#app').hidden = true; closeModal();
+  const L = $('#login'); L.hidden = false;
+  if (S.mode === 'demo') {
+    const us = list('usuarios').filter(u => u.activo !== false).sort((a, b) => (a.rol === 'admin' ? -1 : 0) - (b.rol === 'admin' ? -1 : 0) || a.nombre.localeCompare(b.nombre));
+    L.innerHTML = `<div class="login-card">
+      <div class="brand"><div class="brand-mark">${`<span style="color:var(--accent-ink);display:grid">${I.tooth}</span>`}</div><div><h1>${esc(clinica().nombre)}</h1><p>Expediente y gestión de la clínica</p></div></div>
+      <div class="info"><b>Modo demostración.</b> Elige un usuario para ver la plataforma con su rol. Los datos son de ejemplo y se guardan solo en este navegador.</div>
+      <div class="demo-users">${us.map(u => `<button class="demo-user" data-uid="${u.id}"><span class="avatar" style="background:${esc(u.color || '#0e6b70')}">${esc(iniciales(u.nombre))}</span><div><b>${esc(u.nombre)}</b><span>${esc(u.especialidad || u.email)}</span></div><span class="pill ${u.rol === 'admin' ? 'acc' : ''}">${ROLES[u.rol]}</span></button>`).join('')}</div>
+      <p class="mute" style="margin:0;font-size:12.5px">Versión ${VERSION_APP}</p></div>`;
+    $$('.demo-user', L).forEach(b => b.onclick = () => { S.me = get('usuarios', b.dataset.uid); S.view = 'inicio'; showApp(); });
+    return;
+  }
+  L.innerHTML = `<form class="login-card" id="lform">
+    <div class="brand"><div class="brand-mark"><span style="color:var(--accent-ink);display:grid">${I.tooth}</span></div><div><h1>Acceso a la clínica</h1><p>Personal: dentistas, recepción y administración</p></div></div>
+    ${msg ? `<div class="err">${esc(msg)}</div>` : ''}
+    <label class="f">Correo<input type="email" name="email" id="lEmail" required autocomplete="username"></label>
+    <label class="f">Contraseña<input type="password" name="pass" id="lPass" required autocomplete="current-password"></label>
+    <div class="err" id="lErr" hidden></div>
+    <button class="btn primary" type="submit" id="lBtn">Entrar</button>
+    <button class="btn ghost" type="button" id="lReset">Olvidé mi contraseña</button>
+    <div id="lSetup"></div>
+  </form>`;
+  const f = $('#lform'), er = $('#lErr');
+  f.onsubmit = async e => {
+    e.preventDefault(); er.hidden = true; $('#lBtn').disabled = true;
+    try { await fb.A.signInWithEmailAndPassword(fb.auth, fv(f, 'email'), f.elements.pass.value); }
+    catch (err) { er.textContent = errMsg(err); er.hidden = false; }
+    finally { $('#lBtn').disabled = false; }
+  };
+  $('#lReset').onclick = async () => {
+    const email = fv(f, 'email'); er.hidden = true;
+    if (!email) { er.textContent = 'Escribe tu correo arriba y vuelve a tocar "Olvidé mi contraseña".'; er.hidden = false; return; }
+    try { await fb.A.sendPasswordResetEmail(fb.auth, email); toast('Te enviamos un correo para cambiar tu contraseña.'); }
+    catch (err) { er.textContent = errMsg(err); er.hidden = false; }
+  };
+  fb.F.getDoc(fb.F.doc(fb.db, 'config', 'setup')).then(s => {
+    if (!s.exists()) $('#lSetup').innerHTML = `<div class="infowarn" style="display:grid;gap:8px"><b>La plataforma aún no tiene administrador.</b><span>Crea la cuenta del administrador principal. Esto solo se puede hacer una vez.</span><button class="btn" type="button" id="lBoot">Crear primer administrador</button></div>`;
+    const b = $('#lBoot'); if (b) b.onclick = formBootstrap;
+  }).catch(() => {});
+}
+function formBootstrap() {
+  modal({ title: 'Crear primer administrador', submit: 'Crear y entrar', body: `
+    <div class="grid2">
+      <label class="f span2">Nombre completo <span class="req">*</span><input type="text" name="nombre" required></label>
+      <label class="f">Correo <span class="req">*</span><input type="email" name="email" required></label>
+      <label class="f">Contraseña <span class="req">*</span><input type="password" name="pass" minlength="6" required></label>
+      <label class="check span2"><input type="checkbox" name="atiende" checked> También atiendo pacientes como dentista</label>
+    </div>`, onSubmit: async f => {
+      S.bootstrapping = true;
+      try {
+        const cred = await fb.A.createUserWithEmailAndPassword(fb.auth, fv(f, 'email'), f.elements.pass.value);
+        const uid = cred.user.uid, t = nowISO(), F = fb.F, b = F.writeBatch(fb.db);
+        b.set(F.doc(fb.db, 'usuarios', uid), { nombre: fv(f, 'nombre'), email: fv(f, 'email'), rol: 'admin', atiende: f.elements.atiende.checked, especialidad: '', cedula: '', telefono: '', sedes: [], color: COLORES[0], activo: true, creado: t, creadoPor: uid, actualizado: t, actualizadoPor: uid });
+        b.set(F.doc(fb.db, 'config', 'setup'), { adminUid: uid, fecha: t });
+        await b.commit();
+        S.bootstrapping = false;
+        await onAuth(cred.user);
+        await guardar('config', 'clinica', { nombre: 'Mi clínica dental', responsable: fv(f, 'nombre'), domicilio: '', telefono: '', correo: fv(f, 'email'), aviso: { version: 1, texto: AVISO_BASE, fecha: t } }, 'Configuración inicial de la clínica', { nuevo: true });
+        toast('Administrador creado. Bienvenido.');
+      } finally { S.bootstrapping = false; }
+    } });
+}
+async function salir() {
+  if (S.mode === 'demo') { S.me = null; showLogin(); return; }
+  await fb.A.signOut(fb.auth);
+}
+
+/* ============================ NAVEGACIÓN ============================ */
+const VIEWS = [
+  { id: 'inicio', label: 'Inicio', icon: 'home' },
+  { id: 'pacientes', label: 'Pacientes', icon: 'users' },
+  { id: 'catalogo', label: 'Catálogo', icon: 'list' },
+  { id: 'equipo', label: 'Equipo', icon: 'team' },
+  { id: 'sedes', label: 'Sedes', icon: 'pin' },
+  { id: 'clinica', label: 'Aviso y clínica', icon: 'doc', admin: true },
+  { id: 'bitacora', label: 'Bitácora', icon: 'clock', admin: true }
+];
+function showApp() {
+  $('#login').hidden = true; $('#app').hidden = false;
+  if (S.mode === 'demo') {
+    const db = $('#demoBar'); db.hidden = false;
+    db.innerHTML = `<span>Modo demostración · ${esc(S.me.nombre)} (${ROLES[S.me.rol]})</span><button data-act="salir">Cambiar de usuario</button><button data-act="reset-demo">Restablecer datos de ejemplo</button>`;
+  }
+  render();
+}
+function go(v) { S.view = v; render(); window.scrollTo(0, 0); }
+function sinConsentimiento() { const v = clinica().aviso?.version || 1; return list('pacientes').filter(p => p.estado !== 'baja' && (!p.consentimiento?.aceptado || (p.consentimiento.version || 1) < v)); }
+
+function render() {
+  if (!S.me || $('#app').hidden) return;
+  const vis = VIEWS.filter(v => !v.admin || esAdmin());
+  if (!vis.find(v => v.id === S.view)) S.view = 'inicio';
+  const pend = sinConsentimiento().length;
+  $('#nav').innerHTML = vis.map(v => `<button data-act="nav" data-view="${v.id}" class="${S.view === v.id ? 'on' : ''}">${I[v.icon]}<span>${v.label}</span>${v.id === 'pacientes' && pend ? `<span class="badge" title="Pacientes sin consentimiento vigente">${pend}</span>` : ''}</button>`).join('');
+  $('#bnav').innerHTML = vis.map(v => `<button data-act="nav" data-view="${v.id}" class="${S.view === v.id ? 'on' : ''}">${I[v.icon]}<span>${v.label.split(' ')[0]}</span></button>`).join('');
+  const c = clinica();
+  $('#sideClinic').textContent = c.nombre; $('#topClinic').textContent = c.nombre;
+  $('#meBox').innerHTML = `<div style="display:flex;gap:10px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div style="min-width:0"><b>${esc(S.me.nombre)}</b><span>${ROLES[S.me.rol]}</span></div></div><button class="btn sm" data-act="salir">${S.mode === 'demo' ? 'Cambiar de usuario' : 'Cerrar sesión'}</button>`;
+  const V = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora }[S.view];
+  const view = $('#view');
+  const ae = document.activeElement, keep = ae && view.contains(ae) && ae.id ? { id: ae.id, s: ae.selectionStart } : null;
+  view.innerHTML = V();
+  if (keep) { const el = document.getElementById(keep.id); if (el) { el.focus(); try { el.setSelectionRange(keep.s, keep.s); } catch (e) {} } }
+}
+
+/* ============================ VISTA: INICIO ============================ */
+function vInicio() {
+  const pacs = list('pacientes').filter(p => p.estado !== 'baja');
+  const pend = sinConsentimiento();
+  const ds = dentistas(), trs = list('tratamientos').filter(t => t.activo !== false);
+  const mios = pacs.filter(p => p.dentistaResp === S.me.id);
+  const saludo = new Date().getHours() < 12 ? 'Buenos días' : new Date().getHours() < 19 ? 'Buenas tardes' : 'Buenas noches';
+  const fases = [
+    ['Base de la plataforma', 'Usuarios y roles, sedes, catálogo con precios, materiales y cuotas, directorio de pacientes y consentimiento.'],
+    ['Expediente y plan', 'Odontograma FDI, diagnóstico por diente, plan por citas, presupuesto con versiones y visor 3D.'],
+    ['Agenda', 'Agenda por dentista y sede (incluye sedes externas), bloqueos y materiales por día o semana.'],
+    ['Caja y estado de cuenta', 'Apertura y corte, abonos y adeudos, ingresos y cuotas por dentista.'],
+    ['Comunicación y portal', 'WhatsApp con un clic, correo, portal del paciente y solicitudes de factura con seguimiento.'],
+    ['Inventario', 'Existencias por sede y descuento automático de materiales por tratamiento.']
+  ];
+  return `<div class="vhead"><div><h2>${saludo}, ${esc(S.me.nombre.split(' ').slice(0, 2).join(' '))}</h2><p>${esc(clinica().nombre)} · ${ROLES[S.me.rol]}</p></div>
+    <div class="acts"><button class="btn primary" data-act="pac-nuevo">Registrar paciente</button></div></div>
+  <div class="stats">
+    <div class="stat"><b>${pacs.length}</b><span>Pacientes activos</span></div>
+    <div class="stat ${pend.length ? 'warn' : ''}"><b>${pend.length}</b><span>Sin consentimiento vigente</span></div>
+    <div class="stat"><b>${ds.length}</b><span>Dentistas en el equipo</span></div>
+    <div class="stat"><b>${trs.length}</b><span>Tratamientos en catálogo</span></div>
+  </div>
+  <div class="two">
+    <div class="panel"><div class="panel-h"><h3>Requieren consentimiento</h3><span class="mute" style="font-size:13px">Firma del aviso de privacidad pendiente o desactualizada</span></div>
+      ${pend.length ? `<div class="rows">${pend.slice(0, 8).map(p => filaPaciente(p)).join('')}</div>` : `<div class="empty">Todos los pacientes activos tienen su consentimiento vigente.</div>`}
+    </div>
+    <div style="display:grid;gap:18px">
+      ${S.me.rol !== 'recepcion' ? `<div class="panel"><div class="panel-h"><h3>Mis pacientes</h3><span class="pill acc">${mios.length}</span></div>
+        ${mios.length ? `<div class="rows">${mios.slice(0, 5).map(p => filaPaciente(p, true)).join('')}</div>` : `<div class="empty">Aún no tienes pacientes asignados como dentista responsable.</div>`}</div>` : ''}
+      <div class="panel"><div class="panel-h"><h3>Plan del proyecto</h3></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li class="${i === 0 ? 'now' : ''}"><span class="n">${i + 1}</span><div><b>${f[0]}${i === 0 ? ' <span class="pill acc">Actual</span>' : ''}</b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
+    </div>
+  </div>`;
+}
+
+/* ============================ VISTA: PACIENTES ============================ */
+function estadoConsent(p) {
+  const v = clinica().aviso?.version || 1;
+  if (!p.consentimiento?.aceptado) return '<span class="pill warn">Sin consentimiento</span>';
+  if ((p.consentimiento.version || 1) < v) return '<span class="pill warn">Aviso actualizado: firmar de nuevo</span>';
+  return '<span class="pill ok">Consentimiento firmado</span>';
+}
+function filaPaciente(p, corto = false) {
+  const e = edad(p.fechaNac), d = get('usuarios', p.dentistaResp), s = get('sedes', p.sedePref);
+  return `<button class="row" data-act="pac-ver" data-id="${p.id}">
+    <div style="min-width:0"><div class="t1">${esc(nombreCompleto(p))}${e !== null && e < 18 ? '<span class="pill">Menor de edad</span>' : ''}${p.estado === 'baja' ? '<span class="pill bad">Baja</span>' : ''}</div>
+    <div class="t2"><span>${e !== null ? e + ' años' : ''}</span><span class="mono">${esc(p.telefono || '')}</span>${!corto && d ? `<span>${esc(d.nombre)}</span>` : ''}${!corto && s ? `<span>${esc(s.nombre)}</span>` : ''}</div></div>
+    <div class="r">${corto ? '' : estadoConsent(p)}</div></button>`;
+}
+function filtrarPacientes() {
+  const q = norm(S.ui.pacQ).trim(), qd = telDigits(S.ui.pacQ), f = S.ui.pacF, v = clinica().aviso?.version || 1;
+  return list('pacientes').filter(p => {
+    if (f === 'activos' && p.estado === 'baja') return false;
+    if (f === 'baja' && p.estado !== 'baja') return false;
+    if (f === 'mios' && (p.dentistaResp !== S.me.id || p.estado === 'baja')) return false;
+    if (f === 'consent' && (p.estado === 'baja' || (p.consentimiento?.aceptado && (p.consentimiento.version || 1) >= v))) return false;
+    if (!q) return true;
+    const hay = norm(nombreCompleto(p) + ' ' + (p.email || '') + ' ' + usuarioPortal(p));
+    return q.split(/\s+/).every(w => hay.includes(w)) || (qd.length >= 3 && telDigits(p.telefono).includes(qd));
+  }).sort((a, b) => nombreCompleto(a).localeCompare(nombreCompleto(b)));
+}
+function vPacientes() {
+  const ps = filtrarPacientes();
+  const F = [['activos', 'Activos'], ...(S.me.rol !== 'recepcion' ? [['mios', 'Mis pacientes']] : []), ['consent', 'Sin consentimiento'], ['baja', 'Dados de baja'], ['todos', 'Todos']];
+  return `<div class="vhead"><div><h2>Pacientes</h2><p>Directorio de la clínica. Todos los dentistas pueden consultar cualquier expediente; cada cambio queda registrado.</p></div>
+    <div class="acts"><button class="btn primary" data-act="pac-nuevo">Registrar paciente</button></div></div>
+  <div class="panel"><div class="panel-h">
+      <div class="toolbar" style="flex:1"><input type="search" id="pacQ" placeholder="Buscar por nombre, teléfono o correo" value="${esc(S.ui.pacQ)}" data-input="pacQ">
+      <div class="seg">${F.map(([k, l]) => `<button data-act="pac-filtro" data-f="${k}" class="${S.ui.pacF === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+      <span class="mute num" style="font-size:13px">${ps.length} ${ps.length === 1 ? 'paciente' : 'pacientes'}</span></div>
+    ${ps.length ? `<div class="rows">${ps.map(p => filaPaciente(p)).join('')}</div>` : `<div class="empty">No hay pacientes con ese filtro.${S.ui.pacQ ? ' Revisa la búsqueda o registra al paciente.' : ''}</div>`}
+  </div>`;
+}
+function formPaciente(id) {
+  const p = id ? get('pacientes', id) : { estado: 'activo', sedePref: S.me.sedes?.[0] || '', dentistaResp: (S.me.rol === 'dentista' || S.me.atiende) ? S.me.id : '', contactoEmergencia: {} };
+  const sedes = list('sedes').filter(s => s.activo !== false);
+  modal({ title: id ? 'Editar paciente' : 'Registrar paciente', wide: true, submit: id ? 'Guardar cambios' : 'Registrar paciente', body: `
+    <div class="form-sec"><legend>Identificación</legend><div class="grid3">
+      <label class="f">Nombre(s) <span class="req">*</span><input type="text" name="nombres" id="fpNombres" required value="${esc(p.nombres)}"></label>
+      <label class="f">Apellido paterno <span class="req">*</span><input type="text" name="apPaterno" id="fpApP" required value="${esc(p.apPaterno)}"></label>
+      <label class="f">Apellido materno<input type="text" name="apMaterno" id="fpApM" value="${esc(p.apMaterno)}"></label>
+      <label class="f">Fecha de nacimiento <span class="req">*</span><input type="date" name="fechaNac" id="fpFN" required max="${new Date().toISOString().slice(0, 10)}" value="${esc(p.fechaNac)}"></label>
+      <label class="f">Sexo<select name="sexo" id="fpSexo">${opt('', 'Sin especificar', p.sexo)}${opt('F', 'Femenino', p.sexo)}${opt('M', 'Masculino', p.sexo)}${opt('O', 'Otro', p.sexo)}</select></label>
+      <label class="f">Ocupación<input type="text" name="ocupacion" id="fpOcup" value="${esc(p.ocupacion)}"></label>
+    </div><div class="portal" id="fpPortal"></div></div>
+    <div class="form-sec"><legend>Contacto</legend><div class="grid3">
+      <label class="f">Celular (WhatsApp) <span class="req">*</span><input type="tel" name="telefono" id="fpTel" required inputmode="tel" placeholder="10 dígitos" value="${esc(p.telefono)}"></label>
+      <label class="f">Correo<input type="email" name="email" id="fpEmail" value="${esc(p.email)}"></label>
+      <label class="f">Código postal<input type="text" name="cp" id="fpCP" inputmode="numeric" maxlength="5" value="${esc(p.cp)}"></label>
+      <label class="f span2">Domicilio<input type="text" name="domicilio" id="fpDom" value="${esc(p.domicilio)}"></label>
+      <label class="f">¿Cómo nos conoció?<select name="comoNosConocio" id="fpComo">${['', 'Recomendación', 'Redes sociales', 'Google / internet', 'Pasaba por la clínica', 'Convenio / empresa', 'Otro'].map(o => opt(o, o || 'Sin especificar', p.comoNosConocio)).join('')}</select></label>
+      <label class="f">Contacto de emergencia<input type="text" name="emNombre" id="fpEmN" placeholder="Nombre y parentesco" value="${esc(p.contactoEmergencia?.nombre)}"></label>
+      <label class="f">Teléfono de emergencia<input type="tel" name="emTel" id="fpEmT" value="${esc(p.contactoEmergencia?.telefono)}"></label>
+    </div></div>
+    <div class="form-sec"><legend>Atención</legend><div class="grid2">
+      <label class="f">Sede habitual<select name="sedePref" id="fpSede">${opt('', 'Sin asignar', p.sedePref)}${sedes.map(s => opt(s.id, s.nombre + (s.tipo === 'externa' ? ' (externa)' : ''), p.sedePref)).join('')}</select></label>
+      <label class="f">Dentista responsable<select name="dentistaResp" id="fpDent">${opt('', 'Sin asignar', p.dentistaResp)}${dentistas().map(d => opt(d.id, d.nombre, p.dentistaResp)).join('')}</select></label>
+      <label class="f span2">Notas administrativas<textarea name="notas" id="fpNotas" placeholder="Preferencias de horario, referencias, etc. Los datos clínicos van en el expediente (fase 2).">${esc(p.notas)}</textarea></label>
+    </div></div>`,
+    onOpen: f => {
+      const upd = () => { const tmp = { nombres: fv(f, 'nombres'), apPaterno: fv(f, 'apPaterno'), apMaterno: fv(f, 'apMaterno') }; const fn = fv(f, 'fechaNac'), e = edad(fn);
+        $('#fpPortal').innerHTML = `<div><span>Usuario del portal del paciente</span><b>${esc(usuarioPortal(tmp) || '—')}</b></div><div><span>Contraseña (fecha de nacimiento)</span><b>${esc(clavePortal(fn) || '—')}</b></div>${e !== null && e < 18 ? '<span class="pill warn">Menor de edad: el consentimiento lo firma su tutor</span>' : ''}`; };
+      ['nombres', 'apPaterno', 'apMaterno', 'fechaNac'].forEach(n => f.elements[n].addEventListener('input', upd)); upd();
+    },
+    onSubmit: async f => {
+      const data = { nombres: fv(f, 'nombres'), apPaterno: fv(f, 'apPaterno'), apMaterno: fv(f, 'apMaterno'), fechaNac: fv(f, 'fechaNac'), sexo: fv(f, 'sexo'), ocupacion: fv(f, 'ocupacion'),
+        telefono: fv(f, 'telefono'), email: fv(f, 'email'), cp: fv(f, 'cp'), domicilio: fv(f, 'domicilio'), comoNosConocio: fv(f, 'comoNosConocio'),
+        contactoEmergencia: { nombre: fv(f, 'emNombre'), telefono: fv(f, 'emTel') }, sedePref: fv(f, 'sedePref'), dentistaResp: fv(f, 'dentistaResp'), notas: fv(f, 'notas') };
+      if (telDigits(data.telefono).length < 10) return formErr(f, 'El celular debe tener 10 dígitos para poder enviarle WhatsApp.');
+      if (data.cp && !/^\d{5}$/.test(data.cp)) return formErr(f, 'El código postal debe tener 5 dígitos.');
+      const u = usuarioPortal(data);
+      const dup = list('pacientes').find(x => x.id !== id && usuarioPortal(x) === u && x.fechaNac === data.fechaNac);
+      if (dup) return formErr(f, `Ya existe un paciente con el mismo nombre y fecha de nacimiento: ${nombreCompleto(dup)}. Revisa el directorio antes de registrarlo de nuevo.`);
+      if (!id) data.estado = 'activo';
+      const nid = await guardar('pacientes', id, data, (id ? 'Editó datos de ' : 'Registró a ') + nombreCompleto(data), { nuevo: !id });
+      toast(id ? 'Cambios guardados.' : 'Paciente registrado.');
+      setTimeout(() => verPaciente(nid), 0);
+    } });
+}
+function verPaciente(id) {
+  const p = get('pacientes', id); if (!p) return;
+  const e = edad(p.fechaNac), d = get('usuarios', p.dentistaResp), s = get('sedes', p.sedePref), c = p.consentimiento;
+  const tel = telDigits(p.telefono), wa = waLink(p.telefono);
+  modal({ title: esc(nombreCompleto(p)), wide: true, body: `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${estadoConsent(p)}${e !== null && e < 18 ? '<span class="pill">Menor de edad</span>' : ''}${p.estado === 'baja' ? '<span class="pill bad">Dado de baja</span>' : '<span class="pill ok">Activo</span>'}</div>
+    <div class="quick">
+      ${tel ? `<a class="btn sm" href="tel:${tel}">Llamar · <span class="mono">${esc(p.telefono)}</span></a>` : ''}
+      ${wa ? `<a class="btn sm" href="${wa}" target="_blank" rel="noopener">Abrir WhatsApp</a>` : ''}
+      ${p.email ? `<a class="btn sm" href="mailto:${esc(p.email)}">Correo · ${esc(p.email)}</a>` : ''}
+    </div>
+    <div class="grid2" style="gap:18px">
+      <dl class="kv" style="margin:0">
+        <dt>Nacimiento</dt><dd>${fechaCorta(p.fechaNac)}${e !== null ? ` · ${e} años` : ''}</dd>
+        <dt>Sexo</dt><dd>${{ F: 'Femenino', M: 'Masculino', O: 'Otro' }[p.sexo] || '—'}</dd>
+        <dt>Ocupación</dt><dd>${esc(p.ocupacion) || '—'}</dd>
+        <dt>Domicilio</dt><dd>${esc(p.domicilio) || '—'}${p.cp ? ` · CP <span class="mono">${esc(p.cp)}</span>` : ''}</dd>
+        <dt>Emergencia</dt><dd>${esc(p.contactoEmergencia?.nombre) || '—'}${p.contactoEmergencia?.telefono ? ` · <span class="mono">${esc(p.contactoEmergencia.telefono)}</span>` : ''}</dd>
+      </dl>
+      <dl class="kv" style="margin:0">
+        <dt>Dentista resp.</dt><dd>${d ? esc(d.nombre) : '—'}</dd>
+        <dt>Sede habitual</dt><dd>${s ? esc(s.nombre) : '—'}</dd>
+        <dt>Nos conoció</dt><dd>${esc(p.comoNosConocio) || '—'}</dd>
+        <dt>Registro</dt><dd>${fechaCorta(p.creado)} por ${esc(nombreUsuario(p.creadoPor))}</dd>
+        <dt>Último cambio</dt><dd>${fechaHora(p.actualizado)} por ${esc(nombreUsuario(p.actualizadoPor))}</dd>
+      </dl>
+    </div>
+    ${p.notas ? `<div class="info"><b>Notas:</b> ${esc(p.notas)}</div>` : ''}
+    <div class="portal"><div><span>Usuario del portal</span><b>${esc(usuarioPortal(p))}</b></div><div><span>Contraseña</span><b>${esc(clavePortal(p.fechaNac))}</b></div><span class="mute" style="font-size:12.5px">El portal del paciente se activa en la fase 5.</span></div>
+    <div class="panel"><div class="panel-h"><h3>Consentimiento y aviso de privacidad</h3></div><div class="panel-b" style="display:grid;gap:10px">
+      ${c?.aceptado ? `<dl class="kv" style="margin:0"><dt>Firmado</dt><dd>${fechaHora(c.fecha)}</dd><dt>Versión del aviso</dt><dd>v${c.version || 1}${(c.version || 1) < (clinica().aviso?.version || 1) ? ' <span class="pill warn">Hay una versión más reciente</span>' : ''}</dd><dt>Medio</dt><dd>${c.medio === 'pantalla' ? 'Firma en pantalla' : 'Firma en papel (archivada en la clínica)'}</dd>${c.tutor ? `<dt>Firmó como tutor</dt><dd>${esc(c.tutor)}</dd>` : ''}<dt>Registró</dt><dd>${esc(nombreUsuario(c.registradoPor))}</dd></dl>${c.firma ? `<img class="firma-img" src="${c.firma}" alt="Firma del paciente">` : ''}` : '<p style="margin:0" class="mute">El paciente aún no firma el aviso de privacidad. Regístralo antes de capturar datos clínicos.</p>'}
+      <div><button type="button" class="btn sm ${c?.aceptado ? '' : 'primary'}" id="vpCons">${c?.aceptado ? 'Registrar nueva firma' : 'Registrar consentimiento'}</button></div>
+    </div></div>
+    <div class="infowarn">Expediente clínico, odontograma, visor 3D, plan de tratamiento, citas y pagos se agregan en las siguientes fases.</div>`,
+    footerLeft: `<button type="button" class="btn sm" id="vpEdit">Editar datos</button><button type="button" class="btn sm ${p.estado === 'baja' ? '' : 'danger'}" id="vpBaja">${p.estado === 'baja' ? 'Reactivar' : 'Dar de baja'}</button>`,
+    onOpen: () => {
+      $('#vpEdit').onclick = () => formPaciente(id);
+      $('#vpCons').onclick = () => formConsentimiento(id);
+      $('#vpBaja').onclick = async () => {
+        const baja = p.estado !== 'baja';
+        if (!await confirmar(baja ? 'Dar de baja al paciente' : 'Reactivar paciente', baja ? 'El paciente deja de aparecer en el directorio activo. Su información se conserva y se puede reactivar.' : 'El paciente vuelve al directorio activo.', { ok: baja ? 'Dar de baja' : 'Reactivar', peligro: baja })) return;
+        await guardar('pacientes', id, { estado: baja ? 'baja' : 'activo' }, (baja ? 'Dio de baja a ' : 'Reactivó a ') + nombreCompleto(p));
+        toast(baja ? 'Paciente dado de baja.' : 'Paciente reactivado.'); verPaciente(id);
+      };
+    } });
+}
+function formConsentimiento(id) {
+  const p = get('pacientes', id), e = edad(p.fechaNac), menor = e !== null && e < 18, v = clinica().aviso?.version || 1;
+  modal({ title: 'Consentimiento · ' + esc(nombreCompleto(p)), wide: true, submit: 'Registrar consentimiento', body: `
+    <p style="margin:0">Muestra el aviso al paciente${menor ? ' y a su madre, padre o tutor' : ''}. Versión vigente: <b>v${v}</b>.</p>
+    <div class="aviso">${esc(avisoTexto())}</div>
+    ${menor ? `<label class="f">Nombre y parentesco de quien firma <span class="req">*</span><input type="text" name="tutor" id="fcTutor" required placeholder="Ej. Laura Ruiz (madre)"></label>` : ''}
+    <div class="seg" role="radiogroup" aria-label="Medio de firma"><button type="button" class="on" data-medio="pantalla">Firma en pantalla</button><button type="button" data-medio="papel">Firmó en papel</button></div>
+    <div class="firma-wrap" id="fcFirmaWrap"><canvas class="firma" id="fcFirma" aria-label="Área para firmar"></canvas><div style="display:flex;justify-content:space-between;align-items:center"><span class="mute" style="font-size:12.5px">Firma con el dedo o el mouse</span><button type="button" class="btn sm ghost" id="fcLimpiar">Borrar firma</button></div></div>
+    <p class="mute" id="fcPapel" hidden style="margin:0">Archiva el formato firmado en papel en la carpeta del paciente.</p>
+    <label class="check"><input type="checkbox" name="acepta" id="fcAcepta" required> ${menor ? 'El tutor leyó' : 'El paciente leyó'} el aviso de privacidad y otorga su consentimiento expreso para el tratamiento de sus datos personales sensibles.</label>`,
+    onOpen: f => {
+      let medio = 'pantalla'; f.dataset.medio = medio;
+      const pad = firmaPad($('#fcFirma'));
+      $('#fcLimpiar').onclick = () => pad.clear();
+      $$('[data-medio]', f).forEach(b => b.onclick = () => { medio = b.dataset.medio; f.dataset.medio = medio; $$('[data-medio]', f).forEach(x => x.classList.toggle('on', x === b)); $('#fcFirmaWrap').hidden = medio !== 'pantalla'; $('#fcPapel').hidden = medio === 'pantalla'; });
+      f._pad = pad;
+    },
+    onSubmit: async f => {
+      const medio = f.dataset.medio;
+      if (medio === 'pantalla' && f._pad.empty()) return formErr(f, 'Falta la firma. Pide que firme en el recuadro o elige "Firmó en papel".');
+      const cons = { aceptado: true, version: v, fecha: nowISO(), medio, registradoPor: S.me.id, tutor: menor ? fv(f, 'tutor') : '', firma: medio === 'pantalla' ? f._pad.data() : '' };
+      await guardar('pacientes', id, { consentimiento: cons }, `Registró consentimiento (aviso v${v}) de ${nombreCompleto(p)}`);
+      toast('Consentimiento registrado.'); setTimeout(() => verPaciente(id), 0);
+    } });
+}
+function firmaPad(cv) {
+  const ctx = cv.getContext('2d'); let drawing = false, last = null, dirty = false;
+  const fit = () => { const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2); cv.width = r.width * dpr; cv.height = r.height * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#13232a'; };
+  requestAnimationFrame(fit);
+  const pt = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  cv.addEventListener('pointerdown', e => { drawing = true; last = pt(e); cv.setPointerCapture(e.pointerId); ctx.beginPath(); ctx.arc(last.x, last.y, 1, 0, 7); ctx.fillStyle = '#13232a'; ctx.fill(); dirty = true; });
+  cv.addEventListener('pointermove', e => { if (!drawing) return; const p = pt(e); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => cv.addEventListener(t, () => drawing = false));
+  return {
+    clear: () => { ctx.clearRect(0, 0, cv.width, cv.height); dirty = false; },
+    empty: () => !dirty,
+    data: () => { const o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height; const c2 = o.getContext('2d'); c2.fillStyle = '#fff'; c2.fillRect(0, 0, o.width, o.height); c2.drawImage(cv, 0, 0); return o.toDataURL('image/jpeg', .7); }
+  };
+}
+
+/* ============================ VISTA: CATÁLOGO ============================ */
+const costoMateriales = t => (t.materiales || []).reduce((a, m) => a + (Number(get('insumos', m.insumoId)?.costo) || 0) * (Number(m.cantidad) || 0), 0);
+function vCatalogo() {
+  const tab = S.ui.catTab, adm = esAdmin();
+  const trs = list('tratamientos'), ins = list('insumos');
+  const head = `<div class="vhead"><div><h2>Catálogo</h2><p>Tratamientos con precio, duración y materiales que usa cada uno. ${adm ? 'Solo el administrador puede modificarlo.' : 'Solo lectura: los cambios los hace el administrador.'}</p></div>
+    <div class="acts">${adm ? (tab === 'tratamientos' ? '<button class="btn primary" data-act="tr-nuevo">Nuevo tratamiento</button>' : '<button class="btn primary" data-act="in-nuevo">Nuevo insumo</button>') : ''}</div></div>
+    <div class="seg"><button data-act="cat-tab" data-tab="tratamientos" class="${tab === 'tratamientos' ? 'on' : ''}">Tratamientos · ${trs.length}</button><button data-act="cat-tab" data-tab="insumos" class="${tab === 'insumos' ? 'on' : ''}">Insumos y materiales · ${ins.length}</button></div>`;
+  if (!trs.length && !ins.length) return head + `<div class="panel"><div class="empty"><b>El catálogo está vacío.</b><span>${adm ? 'Puedes empezar con un catálogo de ejemplo (20 tratamientos y 28 insumos con precios de referencia) y ajustarlo a los precios de la clínica.' : 'El administrador aún no carga el catálogo.'}</span>${adm ? '<button class="btn primary" data-act="cat-ejemplo">Cargar catálogo de ejemplo</button>' : ''}</div></div>`;
+  const q = norm(S.ui.catQ).trim();
+  if (tab === 'tratamientos') {
+    const rows = trs.filter(t => (!S.ui.catCat || t.categoria === S.ui.catCat) && (!q || norm(t.nombre + ' ' + t.clave).includes(q))).sort((a, b) => (a.clave || '').localeCompare(b.clave || ''));
+    const cats = [...new Set(trs.map(t => t.categoria))].sort();
+    return head + `<div class="panel"><div class="panel-h"><div class="toolbar" style="flex:1"><input type="search" id="catQ" data-input="catQ" placeholder="Buscar tratamiento o clave" value="${esc(S.ui.catQ)}">
+      <select id="catCat" data-change="catCat" style="max-width:220px">${opt('', 'Todas las categorías', S.ui.catCat)}${cats.map(c => opt(c, c, S.ui.catCat)).join('')}</select></div></div>
+      <div class="tablewrap"><table><thead><tr><th>Clave</th><th>Tratamiento</th><th class="hide-m">Categoría</th><th class="r">Duración</th><th class="r">Precio</th>${adm ? '<th class="r hide-m">Materiales</th>' : ''}</tr></thead><tbody>
+      ${rows.map(t => `<tr class="click" data-act="tr-ver" data-id="${t.id}"><td class="mono">${esc(t.clave)}</td><td><b>${esc(t.nombre)}</b>${t.activo === false ? ' <span class="pill">Inactivo</span>' : ''}<div class="mute" style="font-size:12.5px">${APLICA[t.aplicaA] || ''}${t.sesiones > 1 ? ` · ${t.sesiones} citas` : ''}</div></td><td class="hide-m">${esc(t.categoria)}</td><td class="r num">${t.duracionMin} min</td><td class="r num"><b>${money(t.precio)}</b></td>${adm ? `<td class="r num hide-m mute">${money(costoMateriales(t))}</td>` : ''}</tr>`).join('') || `<tr><td colspan="6"><div class="empty">Sin resultados.</div></td></tr>`}
+      </tbody></table></div></div>`;
+  }
+  const rows = ins.filter(i => !q || norm(i.nombre + ' ' + i.categoria).includes(q)).sort((a, b) => (a.categoria || '').localeCompare(b.categoria || '') || a.nombre.localeCompare(b.nombre));
+  const usos = id => trs.filter(t => (t.materiales || []).some(m => m.insumoId === id)).length;
+  return head + `<div class="panel"><div class="panel-h"><div class="toolbar" style="flex:1"><input type="search" id="catQ" data-input="catQ" placeholder="Buscar insumo" value="${esc(S.ui.catQ)}"></div><span class="mute" style="font-size:13px">Las existencias por sede se controlan en la fase 6</span></div>
+    <div class="tablewrap"><table><thead><tr><th>Insumo</th><th>Categoría</th><th>Unidad</th>${adm ? '<th class="r">Costo unitario</th>' : ''}<th class="r">Se usa en</th></tr></thead><tbody>
+    ${rows.map(i => `<tr class="${adm ? 'click' : ''}" ${adm ? `data-act="in-editar" data-id="${i.id}"` : ''}><td><b>${esc(i.nombre)}</b>${i.activo === false ? ' <span class="pill">Inactivo</span>' : ''}</td><td>${esc(i.categoria)}</td><td>${esc(i.unidad)}</td>${adm ? `<td class="r num">${money(i.costo)}</td>` : ''}<td class="r num">${usos(i.id)} trat.</td></tr>`).join('') || `<tr><td colspan="5"><div class="empty">Sin resultados.</div></td></tr>`}
+    </tbody></table></div></div>`;
+}
+async function cargarCatalogoEjemplo() {
+  if (!await confirmar('Cargar catálogo de ejemplo', 'Se agregan 20 tratamientos y 28 insumos con precios de referencia. Después puedes editar o desactivar lo que no uses.', { ok: 'Cargar' })) return;
+  const { ins, base, tr } = catalogoEjemplo();
+  const F = S.mode === 'firebase' ? fb.F : null, b = F ? F.writeBatch(fb.db) : null, t = nowISO(), st = { creado: t, creadoPor: S.me.id, actualizado: t, actualizadoPor: S.me.id };
+  const put = (col, id, d) => { if (b) b.set(F.doc(fb.db, col, id), { ...d, ...st }); else S.data[col][id] = { ...d, ...st }; };
+  ins.forEach(([id, nombre, unidad, categoria, costo]) => put('insumos', 'i_' + id, { nombre, unidad, categoria, costo, activo: true }));
+  tr.forEach(([clave, nombre, categoria, precio, dur, ses, aplica, anim, mats]) => put('tratamientos', 't_' + clave, { clave, nombre, categoria, precio, duracionMin: dur, sesiones: ses, aplicaA: aplica, animacion: anim, descripcionPaciente: '', materiales: [...base, ...mats].map(([iid, cantidad]) => ({ insumoId: 'i_' + iid, cantidad })), activo: true }));
+  const log = { fecha: t, uid: S.me.id, usuario: S.me.nombre, coleccion: 'tratamientos', docId: '*', accion: 'Alta', resumen: 'Cargó el catálogo de ejemplo' };
+  if (b) { b.set(F.doc(F.collection(fb.db, 'bitacora')), log); await b.commit(); } else { S.data.bitacora[newId('b')] = log; demoPersist(); render(); }
+  toast('Catálogo de ejemplo cargado.');
+}
+function verTratamiento(id) {
+  const t = get('tratamientos', id), adm = esAdmin();
+  const mats = (t.materiales || []).map(m => ({ ...m, ins: get('insumos', m.insumoId) })).filter(m => m.ins);
+  const cuota = !adm && (S.me.rol === 'dentista' || S.me.atiende) ? cuotaPara(S.me.id, t) : null;
+  modal({ title: esc(t.nombre), body: `
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill mono">${esc(t.clave)}</span><span class="pill">${esc(t.categoria)}</span><span class="pill">${APLICA[t.aplicaA] || ''}</span>${t.animacion ? `<span class="pill acc">Visor 3D: ${ANIMACIONES[t.animacion]}</span>` : ''}${t.activo === false ? '<span class="pill bad">Inactivo</span>' : ''}</div>
+    <dl class="kv" style="margin:0"><dt>Precio</dt><dd><b class="num">${money(t.precio)}</b></dd><dt>Duración</dt><dd>${t.duracionMin} min por cita${t.sesiones > 1 ? ` · ${t.sesiones} citas` : ''}</dd>${adm ? `<dt>Costo de materiales</dt><dd class="num">${money(costoMateriales(t))}</dd>` : ''}${cuota ? `<dt>Tu cuota</dt><dd class="num"><b>${money(cuota.monto)}</b> <span class="mute">(${cuota.texto})</span></dd>` : ''}</dl>
+    ${t.descripcionPaciente ? `<div class="info"><b>Explicación para el paciente:</b> ${esc(t.descripcionPaciente)}</div>` : ''}
+    <div><legend style="margin-bottom:6px">Materiales por tratamiento</legend>${mats.length ? `<div class="tablewrap"><table><tbody>${mats.map(m => `<tr><td>${esc(m.ins.nombre)}</td><td class="r num">${m.cantidad} ${esc(m.ins.unidad)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="mute" style="margin:0">Sin materiales registrados.</p>'}</div>`,
+    footerLeft: adm ? `<button type="button" class="btn sm" id="vtEdit">Editar</button>` : '',
+    onOpen: () => { const b = $('#vtEdit'); if (b) b.onclick = () => formTratamiento(id); } });
+}
+function formTratamiento(id) {
+  const t = id ? get('tratamientos', id) : { activo: true, sesiones: 1, duracionMin: 30, aplicaA: 'diente', materiales: [], categoria: 'Operatoria' };
+  const ins = list('insumos').filter(i => i.activo !== false).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  const matRow = (m = {}, i) => `<div class="mat-row"><select name="matIns" id="mi${i}" aria-label="Insumo">${opt('', 'Elige insumo', m.insumoId)}${ins.map(x => opt(x.id, `${x.nombre} (${x.unidad})`, m.insumoId)).join('')}</select><input type="number" name="matCant" id="mc${i}" step="any" min="0" placeholder="Cant." value="${esc(m.cantidad ?? '')}" aria-label="Cantidad"><button type="button" class="icon-btn" data-delmat aria-label="Quitar">×</button></div>`;
+  let n = 0;
+  modal({ title: id ? 'Editar tratamiento' : 'Nuevo tratamiento', wide: true, body: `
+    <div class="grid3">
+      <label class="f">Clave <span class="req">*</span><input type="text" name="clave" id="ftClave" required value="${esc(t.clave)}" placeholder="OP-01" class="mono"></label>
+      <label class="f span2">Nombre <span class="req">*</span><input type="text" name="nombre" id="ftNombre" required value="${esc(t.nombre)}"></label>
+      <label class="f">Categoría<select name="categoria" id="ftCat">${CATEGORIAS.map(c => opt(c, c, t.categoria)).join('')}</select></label>
+      <label class="f">Precio (MXN) <span class="req">*</span><input type="number" name="precio" id="ftPrecio" min="0" step="0.01" required value="${esc(t.precio)}"></label>
+      <label class="f">Se cobra<select name="aplicaA" id="ftAplica">${Object.entries(APLICA).map(([k, l]) => opt(k, l, t.aplicaA)).join('')}</select></label>
+      <label class="f">Duración por cita (min)<input type="number" name="duracionMin" id="ftDur" min="5" step="5" value="${esc(t.duracionMin)}"></label>
+      <label class="f">Número de citas<input type="number" name="sesiones" id="ftSes" min="1" step="1" value="${esc(t.sesiones)}"></label>
+      <label class="f">Animación en el visor 3D<select name="animacion" id="ftAnim">${Object.entries(ANIMACIONES).map(([k, l]) => opt(k, l, t.animacion)).join('')}</select></label>
+      <label class="f span3">Explicación para el paciente<textarea name="descripcionPaciente" id="ftDesc" placeholder="Cómo se lo explicarías al paciente en una o dos frases.">${esc(t.descripcionPaciente)}</textarea></label>
+    </div>
+    <div class="form-sec"><legend>Materiales que usa (por tratamiento)</legend><div id="ftMats" style="display:grid;gap:8px">${(t.materiales || []).map(m => matRow(m, n++)).join('')}</div>
+      <div><button type="button" class="btn sm" id="ftAddMat">Agregar material</button></div>
+      <span class="mute" style="font-size:12.5px">Con esta lista se calcularán los materiales por cita, día o semana (fase 3) y el descuento del inventario (fase 6).</span></div>
+    <label class="check"><input type="checkbox" name="activo" id="ftActivo" ${t.activo !== false ? 'checked' : ''}> Activo (aparece al armar planes de tratamiento)</label>`,
+    onOpen: f => {
+      $('#ftAddMat').onclick = () => { $('#ftMats').insertAdjacentHTML('beforeend', matRow({}, n++)); };
+      $('#ftMats').onclick = e => { const b = e.target.closest('[data-delmat]'); if (b) b.parentElement.remove(); };
+    },
+    onSubmit: async f => {
+      const clave = fv(f, 'clave').toUpperCase();
+      if (list('tratamientos').some(x => x.id !== id && (x.clave || '').toUpperCase() === clave)) return formErr(f, `La clave ${clave} ya la usa otro tratamiento.`);
+      const materiales = $$('.mat-row', f).map(r => ({ insumoId: $('select', r).value, cantidad: Number($('input', r).value) })).filter(m => m.insumoId && m.cantidad > 0);
+      const data = { clave, nombre: fv(f, 'nombre'), categoria: fv(f, 'categoria'), precio: Number(fv(f, 'precio')), aplicaA: fv(f, 'aplicaA'), duracionMin: Number(fv(f, 'duracionMin')) || 30, sesiones: Number(fv(f, 'sesiones')) || 1, animacion: fv(f, 'animacion'), descripcionPaciente: fv(f, 'descripcionPaciente'), materiales, activo: f.elements.activo.checked };
+      const prev = id ? get('tratamientos', id) : null;
+      const res = id ? `Editó ${data.nombre}${prev && prev.precio !== data.precio ? ` (precio ${money(prev.precio)} → ${money(data.precio)})` : ''}` : `Agregó tratamiento ${data.nombre}`;
+      await guardar('tratamientos', id || 't_' + clave.replace(/[^A-Z0-9-]/g, '') + '_' + newId().slice(-4), data, res, { nuevo: !id });
+      toast('Tratamiento guardado.');
+    } });
+}
+function formInsumo(id) {
+  const i = id ? get('insumos', id) : { activo: true, unidad: 'pieza', categoria: 'Consumibles' };
+  const cats = [...new Set(list('insumos').map(x => x.categoria).filter(Boolean).concat(['Consumibles', 'Protección', 'Operatoria', 'Endodoncia', 'Prótesis', 'Cirugía', 'Implantología', 'Ortodoncia', 'Prevención', 'Estética', 'Radiología']))].sort();
+  modal({ title: id ? 'Editar insumo' : 'Nuevo insumo', body: `<div class="grid2">
+      <label class="f span2">Nombre <span class="req">*</span><input type="text" name="nombre" id="fiNombre" required value="${esc(i.nombre)}"></label>
+      <label class="f">Categoría<input type="text" name="categoria" id="fiCat" list="fiCats" value="${esc(i.categoria)}"><datalist id="fiCats">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist></label>
+      <label class="f">Unidad<select name="unidad" id="fiUni">${UNIDADES.map(u => opt(u, u, i.unidad)).join('')}</select></label>
+      <label class="f">Costo por unidad (MXN)<input type="number" name="costo" id="fiCosto" min="0" step="0.01" value="${esc(i.costo)}"></label>
+      <label class="check" style="align-self:end"><input type="checkbox" name="activo" id="fiActivo" ${i.activo !== false ? 'checked' : ''}> Activo</label></div>`,
+    onSubmit: async f => {
+      const data = { nombre: fv(f, 'nombre'), categoria: fv(f, 'categoria'), unidad: fv(f, 'unidad'), costo: Number(fv(f, 'costo')) || 0, activo: f.elements.activo.checked };
+      await guardar('insumos', id, data, (id ? 'Editó insumo ' : 'Agregó insumo ') + data.nombre, { nuevo: !id }); toast('Insumo guardado.');
+    } });
+}
+
+/* ============================ VISTA: EQUIPO Y CUOTAS ============================ */
+function cuotaPara(uid, t) {
+  const c = get('cuotas', uid); if (!c) return null;
+  const r = c.porTratamiento?.[t.id] || c.base; if (!r || r.valor === '' || r.valor == null) return null;
+  const monto = r.tipo === 'pct' ? (Number(t.precio) || 0) * Number(r.valor) / 100 : Number(r.valor);
+  return { monto, texto: r.tipo === 'pct' ? `${r.valor}% del precio` : 'monto fijo', especial: !!c.porTratamiento?.[t.id] };
+}
+function vEquipo() {
+  const adm = esAdmin();
+  const us = list('usuarios').sort((a, b) => (a.activo === false) - (b.activo === false) || ['admin', 'dentista', 'recepcion'].indexOf(a.rol) - ['admin', 'dentista', 'recepcion'].indexOf(b.rol) || a.nombre.localeCompare(b.nombre));
+  const sedeN = ids => (ids || []).map(id => get('sedes', id)?.nombre).filter(Boolean).join(', ');
+  const yoAtiendo = S.me.rol === 'dentista' || S.me.atiende;
+  return `<div class="vhead"><div><h2>Equipo</h2><p>Administradores, dentistas (con acceso de administrador jr) y recepción. ${adm ? 'Aquí defines las cuotas que recibe cada dentista por tratamiento.' : ''}</p></div>
+    <div class="acts">${!adm && yoAtiendo ? '<button class="btn" data-act="mis-cuotas">Ver mis cuotas</button>' : ''}${adm ? '<button class="btn primary" data-act="us-nuevo">Agregar usuario</button>' : ''}</div></div>
+  <div class="panel"><div class="panel-h"><h3>Permisos por rol</h3></div><div class="panel-b tablewrap"><table><thead><tr><th></th><th>Administrador</th><th>Dentista · admin jr</th><th>Recepción y caja</th></tr></thead><tbody>
+    <tr><td>Expedientes de todos los pacientes</td><td>Ver y editar</td><td>Ver y editar</td><td>Datos de contacto</td></tr>
+    <tr><td>Agenda (fase 3)</td><td>Toda la clínica</td><td>Ver la de todos; edita la suya</td><td>Toda la clínica</td></tr>
+    <tr><td>Ingresos (fase 4)</td><td>Todos, con filtro por dentista</td><td>Solo los suyos</td><td>Su caja y cortes</td></tr>
+    <tr><td>Catálogo, precios y cuotas</td><td>Editar</td><td>Ver precios y su cuota</td><td>Ver precios</td></tr>
+    <tr><td>Usuarios, sedes y aviso</td><td>Editar</td><td>Ver</td><td>Ver</td></tr></tbody></table></div></div>
+  <div class="cards">${us.map(u => {
+    const c = get('cuotas', u.id), at = u.rol === 'dentista' || u.atiende;
+    return `<div class="card"><div class="ch"><span class="avatar" style="background:${esc(u.color || '#0e6b70')}">${esc(iniciales(u.nombre))}</span><div style="min-width:0"><b>${esc(u.nombre)}</b><div class="mute" style="font-size:12.5px;overflow-wrap:anywhere">${esc(u.email)}</div></div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill ${u.rol === 'admin' ? 'acc' : ''}">${ROLES[u.rol]}</span>${u.rol === 'admin' && u.atiende ? '<span class="pill">Atiende pacientes</span>' : ''}${u.activo === false ? '<span class="pill bad">Sin acceso</span>' : ''}</div>
+      <div class="meta">${u.especialidad ? `<span>${esc(u.especialidad)}</span>` : ''}${sedeN(u.sedes) ? `<span>Sedes: ${esc(sedeN(u.sedes))}</span>` : ''}${adm && at ? `<span>Cuota base: <b>${c?.base ? (c.base.tipo === 'pct' ? c.base.valor + '%' : money(c.base.valor)) : 'sin definir'}</b>${c && Object.keys(c.porTratamiento || {}).length ? ` · ${Object.keys(c.porTratamiento).length} especiales` : ''}</span>` : ''}</div>
+      ${adm ? `<div class="acts"><button class="btn sm" data-act="us-editar" data-id="${u.id}">Editar</button>${at ? `<button class="btn sm" data-act="cuotas" data-id="${u.id}">Cuotas</button>` : ''}</div>` : ''}</div>`;
+  }).join('')}</div>`;
+}
+function formUsuario(id) {
+  const u = id ? get('usuarios', id) : { rol: 'dentista', atiende: true, activo: true, sedes: [], color: COLORES[list('usuarios').length % COLORES.length] };
+  const sedes = list('sedes').filter(s => s.activo !== false);
+  const esYo = id === S.me.id;
+  modal({ title: id ? 'Editar usuario' : 'Agregar usuario', wide: true, body: `<div class="grid2">
+      <label class="f">Nombre completo <span class="req">*</span><input type="text" name="nombre" id="fuNombre" required value="${esc(u.nombre)}" placeholder="Dra. Nombre Apellido"></label>
+      <label class="f">Correo de acceso <span class="req">*</span><input type="email" name="email" id="fuEmail" required value="${esc(u.email)}" ${id && S.mode === 'firebase' ? 'readonly' : ''}></label>
+      ${!id && S.mode === 'firebase' ? `<label class="f">Contraseña temporal <span class="req">*</span><input type="text" name="pass" id="fuPass" minlength="6" required placeholder="Mínimo 6 caracteres"></label><p class="mute" style="margin:0;font-size:12.5px;align-self:end">Compártela con la persona. Puede cambiarla con "Olvidé mi contraseña".</p>` : ''}
+      <label class="f">Rol<select name="rol" id="fuRol" ${esYo ? 'disabled' : ''}>${Object.entries(ROLES).map(([k, l]) => opt(k, l, u.rol)).join('')}</select></label>
+      <label class="check" style="align-self:end"><input type="checkbox" name="atiende" id="fuAtiende" ${u.atiende || u.rol === 'dentista' ? 'checked' : ''}> Atiende pacientes (aparece en agenda y recibe cuotas)</label>
+      <label class="f">Especialidad<input type="text" name="especialidad" id="fuEsp" value="${esc(u.especialidad)}"></label>
+      <label class="f">Cédula profesional<input type="text" name="cedula" id="fuCed" value="${esc(u.cedula)}"></label>
+      <label class="f">Teléfono<input type="tel" name="telefono" id="fuTel" value="${esc(u.telefono)}"></label>
+      <label class="f">Color en agenda<select name="color" id="fuColor">${COLORES.map((c, i) => opt(c, ['Verde azulado', 'Rosa', 'Azul', 'Ámbar', 'Morado', 'Verde', 'Rojo', 'Celeste'][i], u.color)).join('')}</select></label>
+      <fieldset class="span2"><legend>Sedes donde atiende o trabaja</legend><div style="display:flex;flex-wrap:wrap;gap:8px 18px">${sedes.map(s => `<label class="check"><input type="checkbox" name="sedes" value="${s.id}" ${(u.sedes || []).includes(s.id) ? 'checked' : ''}> ${esc(s.nombre)}${s.tipo === 'externa' ? ' <span class="pill">Externa</span>' : ''}</label>`).join('') || '<span class="mute">Primero registra las sedes.</span>'}</div></fieldset>
+      ${id && !esYo ? `<label class="check span2"><input type="checkbox" name="activo" id="fuActivo" ${u.activo !== false ? 'checked' : ''}> Tiene acceso a la plataforma (desmarca para quitarle el acceso sin borrar su historial)</label>` : ''}
+    </div>${esYo ? '<p class="mute" style="margin:0;font-size:12.5px">No puedes cambiar tu propio rol ni quitarte el acceso.</p>' : ''}`,
+    onOpen: f => { const r = f.elements.rol, a = f.elements.atiende; r.onchange = () => { if (r.value === 'dentista') a.checked = true; if (r.value === 'recepcion') a.checked = false; }; },
+    onSubmit: async f => {
+      const rol = esYo ? u.rol : fv(f, 'rol');
+      const data = { nombre: fv(f, 'nombre'), email: fv(f, 'email').toLowerCase(), rol, atiende: rol === 'dentista' ? true : f.elements.atiende.checked, especialidad: fv(f, 'especialidad'), cedula: fv(f, 'cedula'), telefono: fv(f, 'telefono'), color: fv(f, 'color'), sedes: $$('input[name=sedes]:checked', f).map(x => x.value) };
+      if (id && !esYo) data.activo = f.elements.activo.checked;
+      if (!id) data.activo = true;
+      if (list('usuarios').some(x => x.id !== id && (x.email || '').toLowerCase() === data.email)) return formErr(f, 'Ya hay un usuario con ese correo.');
+      let uid = id;
+      if (!id && S.mode === 'firebase') uid = await crearCuentaFirebase(data.email, f.elements.pass.value);
+      if (!id && S.mode === 'demo') uid = newId('u_');
+      await guardar('usuarios', uid, data, (id ? 'Editó usuario ' : 'Agregó usuario ') + data.nombre + ` (${ROLES[rol]})`, { nuevo: !id });
+      toast(id ? 'Usuario actualizado.' : 'Usuario agregado.');
+    } });
+}
+function formCuotas(uid, soloLectura = false) {
+  const u = get('usuarios', uid), c = get('cuotas', uid) || { base: { tipo: 'pct', valor: '' }, porTratamiento: {} };
+  const trs = list('tratamientos').filter(t => t.activo !== false).sort((a, b) => (a.clave || '').localeCompare(b.clave || ''));
+  const calc = (t, r) => r && r.valor !== '' && r.valor != null ? (r.tipo === 'pct' ? (Number(t.precio) || 0) * Number(r.valor) / 100 : Number(r.valor)) : null;
+  if (soloLectura) {
+    modal({ title: 'Mis cuotas por tratamiento', wide: true, body: `${c.base?.valor !== '' && c.base?.valor != null ? `<p style="margin:0">Cuota base: <b>${c.base.tipo === 'pct' ? c.base.valor + '% del precio' : money(c.base.valor) + ' fijo'}</b>. Los tratamientos marcados como especiales tienen una cuota distinta.</p>` : '<div class="infowarn">El administrador aún no define tus cuotas.</div>'}
+      <div class="tablewrap"><table><thead><tr><th>Tratamiento</th><th class="r">Precio</th><th class="r">Recibes</th></tr></thead><tbody>${trs.map(t => { const r = c.porTratamiento?.[t.id] || c.base, m = calc(t, r); return `<tr><td>${esc(t.nombre)}${c.porTratamiento?.[t.id] ? ' <span class="pill acc">Especial</span>' : ''}</td><td class="r num">${money(t.precio)}</td><td class="r num"><b>${m == null ? '—' : money(m)}</b></td></tr>`; }).join('')}</tbody></table></div>` });
+    return;
+  }
+  const rowT = t => { const o = c.porTratamiento?.[t.id]; return `<tr data-tid="${t.id}" data-precio="${Number(t.precio) || 0}"><td>${esc(t.nombre)}<div class="mute mono" style="font-size:12px">${esc(t.clave)} · ${money(t.precio)}</div></td>
+    <td><select data-k="tipo" id="ct_${t.id}" aria-label="Tipo de cuota">${opt('', 'Usar base', o?.tipo || '')}${opt('pct', '% del precio', o?.tipo)}${opt('fijo', 'Monto fijo', o?.tipo)}</select></td>
+    <td style="width:120px"><input type="number" data-k="valor" id="cv_${t.id}" min="0" step="any" value="${esc(o?.valor ?? '')}" aria-label="Valor" ${o ? '' : 'disabled'}></td><td class="r num" data-out style="white-space:nowrap"></td></tr>`; };
+  modal({ title: 'Cuotas · ' + esc(u.nombre), wide: true, submit: 'Guardar cuotas', body: `
+    <p style="margin:0" class="mute">Lo que recibe el dentista por cada tratamiento que realiza. Se usará para calcular sus ingresos en la fase 4.</p>
+    <div class="grid3" style="align-items:end"><label class="f">Cuota base<select name="bTipo" id="cbTipo">${opt('pct', '% del precio', c.base?.tipo)}${opt('fijo', 'Monto fijo por tratamiento', c.base?.tipo)}</select></label>
+      <label class="f">Valor<input type="number" name="bValor" id="cbValor" min="0" step="any" value="${esc(c.base?.valor ?? '')}" placeholder="Ej. 40"></label><span class="mute" style="font-size:12.5px;padding-bottom:10px">Se aplica a todo tratamiento sin cuota especial.</span></div>
+    <div class="tablewrap"><table><thead><tr><th>Tratamiento</th><th>Cuota</th><th>Valor</th><th class="r">Recibe</th></tr></thead><tbody id="ctBody">${trs.map(rowT).join('')}</tbody></table></div>`,
+    onOpen: f => {
+      const upd = () => { const base = { tipo: f.elements.bTipo.value, valor: f.elements.bValor.value };
+        $$('#ctBody tr', f).forEach(tr => { const tipo = $('[data-k=tipo]', tr).value, val = $('[data-k=valor]', tr); val.disabled = !tipo; const r = tipo ? { tipo, valor: val.value } : base; const m = calc({ precio: Number(tr.dataset.precio) }, r); $('[data-out]', tr).innerHTML = m == null ? '<span class="mute">—</span>' : `<b>${money(m)}</b>${tipo ? '' : ' <span class="mute">base</span>'}`; }); };
+      f.addEventListener('input', upd); f.addEventListener('change', upd); upd();
+    },
+    onSubmit: async f => {
+      const bv = fv(f, 'bValor');
+      if (f.elements.bTipo.value === 'pct' && Number(bv) > 100) return formErr(f, 'La cuota base no puede ser mayor a 100%.');
+      const porTratamiento = {};
+      for (const tr of $$('#ctBody tr', f)) { const tipo = $('[data-k=tipo]', tr).value, v = $('[data-k=valor]', tr).value; if (!tipo) continue; if (v === '') return formErr(f, 'Falta el valor en una cuota especial.'); if (tipo === 'pct' && Number(v) > 100) return formErr(f, 'Un porcentaje no puede ser mayor a 100%.'); porTratamiento[tr.dataset.tid] = { tipo, valor: Number(v) }; }
+      await guardar('cuotas', uid, { base: { tipo: f.elements.bTipo.value, valor: bv === '' ? '' : Number(bv) }, porTratamiento }, `Actualizó cuotas de ${u.nombre}`, { reemplazar: true });
+      toast('Cuotas guardadas.');
+    } });
+}
+
+/* ============================ VISTA: SEDES ============================ */
+function vSedes() {
+  const adm = esAdmin(), ss = list('sedes').sort((a, b) => (a.tipo === 'externa') - (b.tipo === 'externa') || a.nombre.localeCompare(b.nombre));
+  const quienes = id => list('usuarios').filter(u => u.activo !== false && (u.sedes || []).includes(id) && (u.rol === 'dentista' || u.atiende));
+  return `<div class="vhead"><div><h2>Sedes</h2><p>Sedes propias de la clínica y sedes externas donde algunos dentistas también atienden. Las atenciones en sedes externas se registran en agenda, materiales e ingresos.</p></div>
+    <div class="acts">${adm ? '<button class="btn primary" data-act="se-nuevo">Agregar sede</button>' : ''}</div></div>
+  ${ss.length ? `<div class="cards">${ss.map(s => { const q = quienes(s.id); return `<div class="card"><div class="ch"><b style="flex:1">${esc(s.nombre)}</b><span class="pill ${s.tipo === 'externa' ? '' : 'acc'}">${s.tipo === 'externa' ? 'Externa' : 'Propia'}</span>${s.activo === false ? '<span class="pill bad">Inactiva</span>' : ''}</div>
+    <div class="meta">${s.direccion ? `<span>${esc(s.direccion)}</span>` : ''}${s.telefono ? `<span class="mono">${esc(s.telefono)}</span>` : ''}<span>${(s.consultorios || []).length ? esc(s.consultorios.join(' · ')) : 'Sin consultorios registrados'}</span></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">${q.map(u => `<span class="avatar" title="${esc(u.nombre)}" style="width:28px;height:28px;font-size:11px;background:${esc(u.color || '#0e6b70')}">${esc(iniciales(u.nombre))}</span>`).join('') || '<span class="mute" style="font-size:13px">Sin dentistas asignados</span>'}</div>
+    ${adm ? `<div class="acts"><button class="btn sm" data-act="se-editar" data-id="${s.id}">Editar</button></div>` : ''}</div>`; }).join('')}</div>` : `<div class="panel"><div class="empty">Aún no hay sedes registradas.${adm ? ' Agrega las dos sedes de la clínica y las externas donde atienden.' : ''}</div></div>`}`;
+}
+function formSede(id) {
+  const s = id ? get('sedes', id) : { tipo: 'propia', activo: true, consultorios: [] };
+  modal({ title: id ? 'Editar sede' : 'Agregar sede', body: `<div class="grid2">
+      <label class="f span2">Nombre <span class="req">*</span><input type="text" name="nombre" id="fsNombre" required value="${esc(s.nombre)}"></label>
+      <label class="f">Tipo<select name="tipo" id="fsTipo">${opt('propia', 'Sede propia de la clínica', s.tipo)}${opt('externa', 'Sede externa', s.tipo)}</select></label>
+      <label class="f">Teléfono<input type="tel" name="telefono" id="fsTel" value="${esc(s.telefono)}"></label>
+      <label class="f span2">Dirección<input type="text" name="direccion" id="fsDir" value="${esc(s.direccion)}"></label>
+      <label class="f span2">Consultorios o sillones<input type="text" name="consultorios" id="fsCons" value="${esc((s.consultorios || []).join(', '))}" placeholder="Consultorio 1, Consultorio 2"><span class="mute" style="font-weight:500;font-size:12.5px">Sepáralos con comas. Se usan para la agenda.</span></label>
+      <label class="check span2"><input type="checkbox" name="activo" id="fsActivo" ${s.activo !== false ? 'checked' : ''}> Activa</label></div>`,
+    onSubmit: async f => {
+      const data = { nombre: fv(f, 'nombre'), tipo: fv(f, 'tipo'), telefono: fv(f, 'telefono'), direccion: fv(f, 'direccion'), consultorios: fv(f, 'consultorios').split(',').map(x => x.trim()).filter(Boolean), activo: f.elements.activo.checked };
+      await guardar('sedes', id, data, (id ? 'Editó sede ' : 'Agregó sede ') + data.nombre, { nuevo: !id }); toast('Sede guardada.');
+    } });
+}
+
+/* ============================ VISTA: CLÍNICA Y AVISO ============================ */
+function vClinica() {
+  const c = clinica(), a = c.aviso || { version: 1, texto: AVISO_BASE };
+  const firmados = list('pacientes').filter(p => p.estado !== 'baja' && p.consentimiento?.aceptado && (p.consentimiento.version || 1) >= a.version).length;
+  return `<div class="vhead"><div><h2>Aviso y clínica</h2><p>Datos generales y aviso de privacidad. Al cambiar el texto del aviso se crea una nueva versión y los pacientes deben firmarla de nuevo.</p></div></div>
+  <div class="two">
+    <form class="panel" id="clinForm"><div class="panel-h"><h3>Datos de la clínica</h3></div><div class="panel-b grid2">
+      <label class="f span2">Nombre comercial<input type="text" name="nombre" id="ccNombre" value="${esc(c.nombre)}" required></label>
+      <label class="f span2">Responsable de los datos personales<input type="text" name="responsable" id="ccResp" value="${esc(c.responsable)}"></label>
+      <label class="f span2">Domicilio<input type="text" name="domicilio" id="ccDom" value="${esc(c.domicilio)}"></label>
+      <label class="f">Teléfono<input type="tel" name="telefono" id="ccTel" value="${esc(c.telefono)}"></label>
+      <label class="f">Correo para derechos ARCO<input type="email" name="correo" id="ccCorreo" value="${esc(c.correo)}"></label>
+      <div class="span2"><button class="btn primary" type="submit">Guardar datos</button></div></div></form>
+    <div class="panel"><div class="panel-h"><h3>Aviso de privacidad</h3><span class="pill acc">v${a.version}</span><span class="mute" style="font-size:13px">desde ${fechaCorta(a.fecha)}</span></div><div class="panel-b" style="display:grid;gap:10px">
+      <p style="margin:0">${firmados} pacientes activos tienen firmada la versión vigente.</p>
+      <div class="aviso">${esc(avisoTexto())}</div>
+      <div><button class="btn" data-act="aviso-editar">Editar texto del aviso</button></div>
+      <span class="mute" style="font-size:12.5px">Las marcas {CLINICA}, {DOMICILIO}, {RESPONSABLE} y {CORREO} se llenan con los datos de la clínica.</span></div></div>
+  </div>`;
+}
+function formAviso() {
+  const c = clinica(), a = c.aviso || { version: 1, texto: AVISO_BASE };
+  modal({ title: 'Editar aviso de privacidad', wide: true, submit: 'Guardar como nueva versión', body: `<div class="infowarn">Al guardar se crea la versión v${a.version + 1}. Los pacientes con la versión anterior aparecerán como pendientes de firma.</div><label class="f">Texto del aviso<textarea name="texto" id="faTexto" style="min-height:340px;font-size:13.5px" required>${esc(a.texto)}</textarea></label>`,
+    onSubmit: async f => {
+      const texto = f.elements.texto.value.trim();
+      if (texto === (a.texto || '').trim()) return formErr(f, 'No hay cambios en el texto.');
+      await guardar('config', 'clinica', { aviso: { version: a.version + 1, texto, fecha: nowISO() } }, `Publicó la versión ${a.version + 1} del aviso de privacidad`); toast(`Aviso v${a.version + 1} publicado.`);
+    } });
+}
+
+/* ============================ VISTA: BITÁCORA ============================ */
+function vBitacora() {
+  const us = list('usuarios').sort((a, b) => a.nombre.localeCompare(b.nombre));
+  const rows = list('bitacora').filter(b => !S.ui.bitU || b.uid === S.ui.bitU).sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '')).slice(0, 300);
+  const COL = { pacientes: 'Pacientes', usuarios: 'Equipo', tratamientos: 'Catálogo', insumos: 'Insumos', sedes: 'Sedes', config: 'Clínica', cuotas: 'Cuotas' };
+  return `<div class="vhead"><div><h2>Bitácora</h2><p>Registro de quién hizo cada cambio y cuándo. No se puede editar ni borrar.</p></div></div>
+  <div class="panel"><div class="panel-h"><select id="bitU" data-change="bitU" style="max-width:280px">${opt('', 'Todos los usuarios', S.ui.bitU)}${us.map(u => opt(u.id, u.nombre, S.ui.bitU)).join('')}</select><span class="mute" style="font-size:13px">Últimos ${rows.length} movimientos</span></div>
+  <div class="tablewrap"><table><thead><tr><th>Fecha</th><th>Usuario</th><th>Módulo</th><th>Detalle</th></tr></thead><tbody>
+  ${rows.map(b => `<tr><td class="num" style="white-space:nowrap">${fechaHora(b.fecha)}</td><td>${esc(b.usuario)}</td><td><span class="pill">${COL[b.coleccion] || esc(b.coleccion)}</span></td><td>${esc(b.resumen)}</td></tr>`).join('') || '<tr><td colspan="4"><div class="empty">Sin movimientos.</div></td></tr>'}
+  </tbody></table></div></div>`;
+}
+
+/* ============================ EVENTOS ============================ */
+const ACT = {
+  nav: el => go(el.dataset.view), salir, perfil: () => verPerfil(),
+  'reset-demo': async () => { if (!await confirmar('Restablecer datos de ejemplo', 'Se borran los cambios que hiciste en esta demostración y se cargan de nuevo los datos de ejemplo.', { ok: 'Restablecer', peligro: true })) return; const uid = S.me.id; seedDemo(); S.me = get('usuarios', uid) || get('usuarios', 'u_admin'); render(); toast('Datos de ejemplo restablecidos.'); },
+  'pac-nuevo': () => formPaciente(), 'pac-ver': el => verPaciente(el.dataset.id), 'pac-filtro': el => { S.ui.pacF = el.dataset.f; render(); },
+  'cat-tab': el => { S.ui.catTab = el.dataset.tab; S.ui.catQ = ''; render(); }, 'cat-ejemplo': cargarCatalogoEjemplo,
+  'tr-nuevo': () => formTratamiento(), 'tr-ver': el => verTratamiento(el.dataset.id), 'in-nuevo': () => formInsumo(), 'in-editar': el => formInsumo(el.dataset.id),
+  'us-nuevo': () => formUsuario(), 'us-editar': el => formUsuario(el.dataset.id), cuotas: el => formCuotas(el.dataset.id), 'mis-cuotas': () => formCuotas(S.me.id, true),
+  'se-nuevo': () => formSede(), 'se-editar': el => formSede(el.dataset.id), 'aviso-editar': formAviso
+};
+function verPerfil() {
+  modal({ title: 'Mi cuenta', body: `<div class="ch" style="display:flex;gap:12px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div><b>${esc(S.me.nombre)}</b><div class="mute">${esc(S.me.email)} · ${ROLES[S.me.rol]}</div></div></div>`,
+    footerLeft: `<button type="button" class="btn sm" id="ppSalir">${S.mode === 'demo' ? 'Cambiar de usuario' : 'Cerrar sesión'}</button>`, onOpen: () => $('#ppSalir').onclick = () => { closeModal(); salir(); } });
+}
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el || el.closest('#modalRoot form') && !el.closest('.mbody')) return;
+  const fn = ACT[el.dataset.act]; if (fn) { e.preventDefault(); Promise.resolve(fn(el)).catch(err => toast(errMsg(err))); }
+});
+document.addEventListener('input', e => { const k = e.target.dataset?.input; if (k) { S.ui[k] = e.target.value; render(); } });
+document.addEventListener('change', e => { const k = e.target.dataset?.change; if (k) { S.ui[k] = e.target.value; render(); } });
+document.addEventListener('submit', async e => {
+  if (e.target.id !== 'clinForm') return; e.preventDefault(); const f = e.target;
+  try { await guardar('config', 'clinica', { nombre: fv(f, 'nombre'), responsable: fv(f, 'responsable'), domicilio: fv(f, 'domicilio'), telefono: fv(f, 'telefono'), correo: fv(f, 'correo') }, 'Actualizó los datos de la clínica'); toast('Datos de la clínica guardados.'); }
+  catch (err) { toast(errMsg(err)); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (!$('#confirmRoot').hidden) return; if (!$('#modalRoot').hidden) closeModal(); } });
+
+/* ============================ ARRANQUE ============================ */
+(async function start() {
+  if (S.mode === 'demo') { if (!demoLoad() || !Object.keys(S.data.usuarios).length) seedDemo(); showLogin(); return; }
+  $('#login').hidden = false; $('#login').innerHTML = '<div class="login-card"><p class="mute" style="margin:0">Conectando…</p></div>';
+  try { await initFirebase(); }
+  catch (e) { $('#login').innerHTML = `<div class="login-card"><div class="err">No se pudo conectar con Firebase. Revisa la configuración y tu conexión.<br><small>${esc(e.message)}</small></div></div>`; }
+})();
+</script>
