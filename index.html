@@ -399,6 +399,22 @@ tr.rowpago td{background:var(--ok-soft)}
 .pcard{display:grid;gap:4px;text-align:left;cursor:pointer;font:inherit;color:inherit}
 .pcard b{font-size:15px}.pcard span{font-size:13px}
 .pitem{padding:8px 0;border-top:1px solid var(--line)}.pitem:first-of-type{border-top:0}
+.mats{display:grid;gap:10px}
+.mrows{display:grid;gap:8px}
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.mrow .mn{display:grid;min-width:0}.mrow .mn span{font-size:12.5px}
+.stp{display:flex;align-items:center;gap:6px}.stp input{width:84px;text-align:center}.stp .mu{font-size:12.5px;color:var(--mute);min-width:28px}
+.stp .btn.sm{min-width:34px;justify-content:center;font-size:16px;padding:4px 8px}
+.mfalt{grid-column:1/-1;display:grid;gap:8px;background:var(--warn-soft,#fbead4);border-radius:8px;padding:8px 10px;font-size:13px}
+.mcompra{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.mcompra{grid-template-columns:1fr}.mrow{grid-template-columns:1fr}}
+.neg{color:var(--bad)!important}
+.lrows{display:grid;gap:8px}.lrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(70px,1fr) minmax(70px,1fr) auto auto;gap:8px;align-items:center}
+.lrow:not(:has([data-l=costo])){grid-template-columns:minmax(0,2fr) minmax(70px,1fr) auto auto}
+.lrow .lex{font-size:12px;white-space:nowrap}
+@media (max-width:640px){.lrow,.lrow:not(:has([data-l=costo])){grid-template-columns:1fr 1fr}.lrow select{grid-column:1/-1}}
+table.cnt input{width:90px;text-align:right}
+.madd select{width:100%}
 </style>
 
 </head>
@@ -448,7 +464,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1234567890:web:abc123"
 };
 */
-const VERSION_APP = '5.0 · Fase 5';
+const VERSION_APP = '6.0 · Fase 6';
 
 /* ============================ UTILIDADES ============================ */
 const $ = (s, el = document) => el.querySelector(s);
@@ -477,7 +493,7 @@ const UNIDADES = ['pieza','par','cartucho','caja','jeringa','g','ml','sobre','pu
 const COLORES = ['#0e6b70','#b5527a','#4f6bd8','#c27c1a','#6a4fc2','#2d8a52','#c4483c','#3c8dad'];
 
 /* ============================ ESTADO ============================ */
-const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora','expedientes','planes','notas','citas','bloqueos','gcal','cargos','movimientos','cajas','planesPago','portal','portalUsuarios','facturas','archivos','contactos'];
+const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora','expedientes','planes','notas','citas','bloqueos','gcal','cargos','movimientos','cajas','planesPago','portal','portalUsuarios','facturas','archivos','contactos','existencias','movInventario'];
 const S = { mode: FIREBASE_CONFIG ? 'firebase' : 'demo', data: {}, me: null, view: 'inicio', ui: { pacQ: '', pacF: 'activos', catTab: 'tratamientos', catQ: '', catCat: '', bitU: '' }, unsubs: [] };
 COLS.forEach(c => S.data[c] = {});
 const list = c => Object.entries(S.data[c] || {}).map(([id, v]) => ({ id, ...v }));
@@ -489,7 +505,7 @@ const nombreUsuario = id => get('usuarios', id)?.nombre || '—';
 
 /* ============================ CAPA DE DATOS ============================ */
 const fb = {};
-const DEMO_KEY = 'appDentista.demo.v6';
+const DEMO_KEY = 'appDentista.demo.v7';
 function demoPersist() { try { localStorage.setItem(DEMO_KEY, JSON.stringify(S.data)); } catch (e) {} }
 function demoLoad() { try { const r = localStorage.getItem(DEMO_KEY); if (r) { const d = JSON.parse(r); COLS.forEach(c => d[c] = d[c] || {}); S.data = d; return true; } } catch (e) {} return false; }
 
@@ -553,7 +569,8 @@ function subscribe() {
   watch('citas', F.query(F.collection(fb.db, 'citas'), F.where('fecha', '>=', desde)));
   watch('bloqueos', F.query(F.collection(fb.db, 'bloqueos'), F.where('fechaFin', '>=', sumarDias(hoyISO(), -60))));
   watch('gcal');
-  ['cargos', 'movimientos', 'cajas', 'planesPago', 'facturas', 'contactos', 'portal'].forEach(c => watch(c));
+  ['cargos', 'movimientos', 'cajas', 'planesPago', 'facturas', 'contactos', 'portal', 'existencias'].forEach(c => watch(c));
+  watch('movInventario', F.query(F.collection(fb.db, 'movInventario'), F.where('fecha', '>=', sumarDias(hoyISO(), -400))));
   if (esAdmin()) {
     watch('cuotas');
     watch('bitacora', F.query(F.collection(fb.db, 'bitacora'), F.orderBy('fecha', 'desc'), F.limit(300)));
@@ -754,6 +771,7 @@ function seedDemo() {
   D.cuotas.u_karla = { esquema: 'colaborador', salario: { monto: 6000, periodo: 'quincenal' }, base: { tipo: 'pct', valor: '' }, porTratamiento: {}, ...sys };
   D.bitacora[newId('b')] = { fecha: t, uid: 'u_admin', usuario: 'Administrador principal', coleccion: 'config', docId: 'clinica', accion: 'Alta', resumen: 'Se cargaron los datos de ejemplo' };
   seedFase5(D, sys, hace);
+  seedFase6(D, sys, hace);
   S.data = D; demoPersist();
 }
 
@@ -772,6 +790,7 @@ const I = {
   gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg>',
+  box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/></svg>',
   receipt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>'
 };
 $$('.brand-mark').forEach(el => el.innerHTML = `<span style="color:var(--accent-ink);display:grid">${I.tooth}</span>`);
@@ -903,6 +922,7 @@ const VIEWS = [
   { id: 'facturas', label: 'Facturas', icon: 'receipt', roles: ['admin', 'recepcion'] },
   { id: 'ingresos', label: 'Ingresos', icon: 'chart', roles: ['admin', 'dentista'] },
   { id: 'pacientes', label: 'Pacientes', icon: 'users' },
+  { id: 'inventario', label: 'Inventario', icon: 'box' },
   { id: 'catalogo', label: 'Catálogo', icon: 'list' },
   { id: 'equipo', label: 'Equipo', icon: 'team' },
   { id: 'sedes', label: 'Sedes', icon: 'pin' },
@@ -934,7 +954,7 @@ function render() {
   const mk = marca(), sig = JSON.stringify(mk); if (S.marcaSig !== sig) { S.marcaSig = sig; aplicarMarca(mk); }
   $('#sideClinic').textContent = c.nombre; $('#topClinic').textContent = mk.nombre;
   $('#meBox').innerHTML = `<div style="display:flex;gap:10px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div style="min-width:0"><b>${esc(S.me.nombre)}</b><span>${ROLES[S.me.rol]}</span></div></div><button class="btn sm" data-act="salir">${S.mode === 'demo' ? 'Cambiar de usuario' : 'Cerrar sesión'}</button>`;
-  const VW = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora, expediente: vExpediente, agenda: vAgenda, ajustes: vAjustes, caja: vCaja, ingresos: vIngresos, seguimiento: vSeguimiento, facturas: vFacturas, 'p-inicio': vPInicio, 'p-boca': vPBoca, 'p-plan': vPPlan, 'p-citas': vPCitas, 'p-pagos': vPPagos, 'p-factura': vPFactura, 'p-cuenta': vPCuenta }[S.view];
+  const VW = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora, expediente: vExpediente, agenda: vAgenda, ajustes: vAjustes, caja: vCaja, ingresos: vIngresos, seguimiento: vSeguimiento, facturas: vFacturas, inventario: vInventario, 'p-inicio': vPInicio, 'p-boca': vPBoca, 'p-plan': vPPlan, 'p-citas': vPCitas, 'p-pagos': vPPagos, 'p-factura': vPFactura, 'p-cuenta': vPCuenta }[S.view];
   const view = $('#view');
   const ae = document.activeElement, keep = ae && view.contains(ae) && ae.id ? { id: ae.id, s: ae.selectionStart } : null;
   view.innerHTML = VW();
@@ -967,6 +987,7 @@ function vInicio() {
     <div class="stat"><b>${trs.length}</b><span>Tratamientos en catálogo</span></div>
   </div>
   ${panelCajaInicio()}
+  ${panelInventarioInicio()}
   ${panelCitasHoy()}
   <div class="two">
     <div class="panel"><div class="panel-h"><h3>Requieren consentimiento</h3><span class="mute" style="font-size:13px">Firma del aviso de privacidad pendiente o desactualizada</span></div>
@@ -975,7 +996,7 @@ function vInicio() {
     <div style="display:grid;gap:18px">
       ${S.me.rol !== 'recepcion' ? `<div class="panel"><div class="panel-h"><h3>Mis pacientes</h3><span class="pill acc">${mios.length}</span></div>
         ${mios.length ? `<div class="rows">${mios.slice(0, 5).map(p => filaPaciente(p, true)).join('')}</div>` : `<div class="empty">Aún no tienes pacientes asignados como dentista responsable.</div>`}</div>` : ''}
-      <div class="panel"><div class="panel-h"><h3>Plan del proyecto</h3></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li class="${i === 4 ? 'now' : ''}"><span class="n">${i + 1}</span><div><b>${f[0]}${i < 4 ? ' <span class="pill ok">Lista</span>' : i === 4 ? ' <span class="pill acc">Actual</span>' : ''}</b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
+      <div class="panel"><div class="panel-h"><h3>Plan del proyecto</h3></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li class="${i === 5 ? 'now' : ''}"><span class="n">${i + 1}</span><div><b>${f[0]}${i < 5 ? ' <span class="pill ok">Lista</span>' : ' <span class="pill acc">Actual</span>'}</b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
     </div>
   </div>`;
 }
@@ -1769,14 +1790,15 @@ const sumarDias = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setDate
 async function guardarLote(ops, resumen) {
   const t = nowISO();
   const items = ops.map(o => ({ col: o.col, id: o.id || newId(), data: { ...o.data, actualizado: t, actualizadoPor: S.me.id, ...(o.nuevo ? { creado: t, creadoPor: S.me.id } : {}) }, merge: !o.reemplazar }));
+  const esInc = v => v && typeof v === 'object' && v.__inc != null;
   const log = { fecha: t, uid: S.me.id, usuario: S.me.nombre, coleccion: ops[0].col, docId: items[0].id, accion: ops.some(o => o.nuevo) ? 'Alta' : 'Cambio', resumen };
   if (S.mode === 'demo') {
-    items.forEach(o => S.data[o.col][o.id] = o.merge ? { ...(S.data[o.col][o.id] || {}), ...o.data } : o.data);
+    items.forEach(o => { const prev = S.data[o.col][o.id] || {}, d = { ...o.data }; Object.keys(d).forEach(k => { if (esInc(d[k])) d[k] = Math.round(((Number(prev[k]) || 0) + d[k].__inc) * 100) / 100; }); S.data[o.col][o.id] = o.merge ? { ...prev, ...d } : d; });
     S.data.bitacora[newId('b')] = log; demoPersist(); render();
   } else {
     const F = fb.F, b = F.writeBatch(fb.db);
     /* mergeFields: cada campo de primer nivel se reemplaza completo (así se pueden quitar dientes, caras o citas) */
-    items.forEach(o => b.set(F.doc(fb.db, o.col, o.id), o.data, o.merge ? { mergeFields: Object.keys(o.data) } : {}));
+    items.forEach(o => { const d = { ...o.data }; Object.keys(d).forEach(k => { if (esInc(d[k])) d[k] = F.increment(d[k].__inc); }); b.set(F.doc(fb.db, o.col, o.id), d, o.merge ? { mergeFields: Object.keys(d) } : {}); });
     if (!esPaciente()) b.set(F.doc(F.collection(fb.db, 'bitacora')), log);
     await b.commit();
   }
@@ -2371,8 +2393,12 @@ function formHecho(itemId, k) {
     <div class="grid2"><label class="f">Fecha<input type="date" name="fecha" id="hhF" value="${hoyISO()}" max="${hoyISO()}" required></label>
     <label class="f">Lo realizó<select name="dent" id="hhD">${dentistas().map(d => opt(d.id, d.nombre, (S.me.rol === 'dentista' || S.me.atiende) ? S.me.id : it.dentistaId)).join('')}</select></label></div>
     <label class="f">Nota de evolución<textarea name="nota" id="hhN" placeholder="Anestesia, materiales, indicaciones al paciente, observaciones"></textarea></label>
-    ${ultima && EFECTO[it.animacion] && (it.dientes || []).length ? '<div class="info">Al ser la última sesión, el odontograma se actualiza con el resultado del tratamiento.</div>' : ''}`,
+    ${ultima && EFECTO[it.animacion] && (it.dientes || []).length ? '<div class="info">Al ser la última sesión, el odontograma se actualiza con el resultado del tratamiento.</div>' : ''}
+    ${bloqueMateriales(sedeOrigen(p.sedePref || S.me.sedes?.[0]), { elegir: true })}`,
+    onOpen: f => activarMateriales(f, () => estimarMateriales([{ tratamientoId: it.tratamientoId, factor: 1 / (it.sesiones || 1) }]).mats),
+    wide: true,
     onSubmit: async f => {
+      const M = leerMateriales(f); if (M.error) return formErr(f, M.error);
       const fecha = f.elements.fecha.value, dent = f.elements.dent.value, texto = fv(f, 'nota');
       const n = deep(pl); n.id = pl.id; const ni = n.items.find(x => x.id === itemId);
       ni.hechas = ni.hechas || []; ni.hechas[k] = { fecha, dentistaId: dent, registradoPor: S.me.id };
@@ -2389,6 +2415,7 @@ function formHecho(itemId, k) {
         if (S.ui.odo?.pacId === p.id && !S.ui.odo.dirty) S.ui.odo = null;
       }
       ops.push({ col: 'notas', data: { pacienteId: p.id, fecha: fecha + 'T' + new Date().toTimeString().slice(0, 8), autorId: S.me.id, autor: S.me.nombre, dentistaId: dent, tipo: 'tratamiento', planId: pl.id, itemId, texto: `${ni.nombre}${(ni.dientes || []).length ? ' · diente ' + ni.dientes.join(', ') : ''}${(ni.sesiones || 1) > 1 ? ` · sesión ${k + 1} de ${ni.sesiones}` : ''}${texto ? '\n' + texto : ''}` }, nuevo: true });
+      ops.push(...opsMateriales(M, { pacienteId: p.id, pacienteNombre: nombreCompleto(p), dentistaId: dent, tratamientos: [{ tratamientoId: it.tratamientoId, n: q2(1 / (it.sesiones || 1)) }] }));
       await guardarLote(ops, `Registró ${ni.nombre} realizado a ${nombreCompleto(p)}`);
       toast(n.estado === 'terminado' ? '¡Plan terminado!' : 'Tratamiento registrado.');
     } });
@@ -3109,10 +3136,10 @@ function vMateriales(dents) {
   const A = agUI(), rango = A.rango || 'dia';
   const ini = rango === 'semana' ? lunesDe(A.fecha) : A.fecha, fin = rango === 'semana' ? sumarDias(ini, 6) : A.fecha;
   const citas = list('citas').filter(c => citaActiva(c) && c.estado !== 'no_asistio' && c.fecha >= ini && c.fecha <= fin && (!A.sede || c.sedeId === A.sede) && dents.some(d => d.id === c.dentistaId)).sort((a, b) => (a.fecha + a.inicio).localeCompare(b.fecha + b.inicio));
-  const mats = materialesDe(citas);
+  const mats = materialesDe(citas), sInv = A.sede ? sedeOrigen(A.sede) : sedePrincipal(), hayInv = list('existencias').length > 0;
   return `<div class="two"><div class="panel"><div class="panel-h"><h3>Materiales necesarios</h3><div class="seg">${[['dia', 'Del día'], ['semana', 'De la semana']].map(([k, l]) => `<button data-act="ag-rango" data-r="${k}" class="${rango === k ? 'on' : ''}">${l}</button>`).join('')}</div><span class="mute" style="font-size:13px">${citas.length} citas · ${rango === 'semana' ? fechaCortaD(ini) + ' a ' + fechaCortaD(fin) : fechaCortaD(ini)}</span></div>
-    ${mats.length ? `<div class="tablewrap"><table><thead><tr><th>Insumo</th><th>Categoría</th><th class="r">Cantidad</th><th class="r">Citas</th></tr></thead><tbody>${mats.map(m => `<tr><td><b>${esc(m.ins.nombre)}</b></td><td class="mute">${esc(m.ins.categoria || '')}</td><td class="r num"><b>${m.cant}</b> ${esc(m.ins.unidad)}</td><td class="r num">${m.n}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No hay materiales para este periodo. Se calculan con los tratamientos de las citas y los materiales registrados en el catálogo.</div>'}
-    <div class="panel-b"><p class="mute" style="margin:0;font-size:12.5px">Cálculo: el material de cada tratamiento se reparte entre sus sesiones. Las existencias por sede se controlan en la fase 6.</p></div></div>
+    ${mats.length ? `<div class="tablewrap"><table><thead><tr><th>Insumo</th><th>Categoría</th><th class="r">Cantidad</th>${hayInv ? `<th class="r">Hay en ${esc(nomSede(sInv))}</th>` : ''}<th class="r">Citas</th></tr></thead><tbody>${mats.map(m => { const ex = existencia(sInv, m.ins.id); return `<tr><td><b>${esc(m.ins.nombre)}</b></td><td class="mute">${esc(m.ins.categoria || '')}</td><td class="r num"><b>${m.cant}</b> ${esc(m.ins.unidad)}</td>${hayInv ? `<td class="r num">${ex < m.cant ? `<span class="pill bad">${fmtQ(ex)} · faltan ${fmtQ(m.cant - ex)}</span>` : fmtQ(ex)}</td>` : ''}<td class="r num">${m.n}</td></tr>`; }).join('')}</tbody></table></div>` : '<div class="empty">No hay materiales para este periodo. Se calculan con los tratamientos de las citas y los materiales registrados en el catálogo.</div>'}
+    <div class="panel-b"><p class="mute" style="margin:0;font-size:12.5px">Cálculo: el material de cada tratamiento se reparte entre sus sesiones. Las citas en sedes externas usan el inventario principal.</p></div></div>
     <div class="panel"><div class="panel-h"><h3>Citas incluidas</h3></div>${citas.length ? `<div class="rows">${citas.map(c => `<button class="row" data-act="cita-ver" data-id="${c.id}"><div><div class="t1"><span class="dot" style="background:${esc(get('usuarios', c.dentistaId)?.color || '#0e6b70')}"></span>${esc(c.pacienteNombre)}</div><div class="t2"><span style="text-transform:capitalize">${fechaCortaD(c.fecha)} ${c.inicio}</span><span>${esc(nombreUsuario(c.dentistaId))}</span><span>${esc(descCita(c))}</span></div></div></button>`).join('')}</div>` : '<div class="empty">Sin citas.</div>'}</div></div>`;
 }
 
@@ -3280,18 +3307,22 @@ function opsHechos(pid, pl, sel, fecha, dent, texto, sedeId) {
 function formAtendida(id) {
   const c = get('citas', id), pl = planActivo(c.pacienteId);
   const pend = (c.items || []).filter(x => { const it = pl?.items?.find(i => i.id === x.itemId); return it && pl.id === x.planId && !(it.hechas || [])[x.k]; });
-  modal({ title: 'Cita atendida · ' + esc(c.pacienteNombre), submit: 'Registrar', body: `
+  modal({ title: 'Cita atendida · ' + esc(c.pacienteNombre), wide: true, submit: 'Registrar', body: `
     ${pend.length ? `<fieldset><legend>Tratamientos realizados en esta cita</legend>${pend.map(x => `<label class="check"><input type="checkbox" name="hx" value="${x.itemId}:${x.k}" checked> ${esc(x.nombre)}${x.dientes?.length ? ' (' + x.dientes.join(', ') + ')' : ''}${x.sesiones > 1 ? ` · sesión ${x.sesion} de ${x.sesiones}` : ''}</label>`).join('')}</fieldset>` : '<p class="mute" style="margin:0">La cita no tiene tratamientos pendientes del plan. Se registrará como atendida con la nota.</p>'}
     <label class="f">Nota de evolución<textarea name="nota" id="atNota" placeholder="Procedimiento, anestesia, indicaciones al paciente"></textarea></label>
-    <p class="mute" style="margin:0;font-size:12.5px">El odontograma se actualiza cuando se completa la última sesión de cada tratamiento.</p>`,
+    <p class="mute" style="margin:0;font-size:12.5px">El odontograma se actualiza cuando se completa la última sesión de cada tratamiento.</p>
+    ${bloqueMateriales(sedeOrigen(c.sedeId), { elegir: get('sedes', c.sedeId)?.tipo === 'externa' })}`,
+    onOpen: f => { const selF = () => $$('input[name=hx]:checked', f).map(x => { const [itemId, k] = x.value.split(':'); return { itemId, k: +k }; }); activarMateriales(f, () => estimarMateriales(partesCita(c, selF())).mats); $$('input[name=hx]', f).forEach(x => x.addEventListener('change', () => f._mats?.recalc())); },
     onSubmit: async f => {
       const sel = $$('input[name=hx]:checked', f).map(x => { const [itemId, k] = x.value.split(':'); return { itemId, k: +k }; });
+      const M = leerMateriales(f); if (M.error) return formErr(f, M.error);
       const texto = fv(f, 'nota');
       const ops = [{ col: 'citas', id, data: { estado: 'atendida', atendida: { fecha: nowISO(), por: S.me.id }, gcal: { ...(c.gcal || {}), sync: 'pendiente' } } }];
       let fin = false;
       if (pl && (sel.length || texto)) { const r = opsHechos(c.pacienteId, pl, sel, c.fecha, c.dentistaId, texto, c.sedeId); ops.push(...r.ops); fin = r.terminado; }
       else if (texto) ops.push({ col: 'notas', data: { pacienteId: c.pacienteId, fecha: nowISO(), autorId: S.me.id, autor: S.me.nombre, tipo: 'nota', texto }, nuevo: true });
-      await guardarLote(ops, `Registró la cita de ${c.pacienteNombre} (${c.fecha}) como atendida${sel.length ? ` con ${sel.length} tratamiento(s)` : ''}`);
+      ops.push(...opsMateriales(M, { citaId: id, pacienteId: c.pacienteId, pacienteNombre: c.pacienteNombre, dentistaId: c.dentistaId, tratamientos: estimarMateriales(partesCita(c, sel)).trs }));
+      await guardarLote(ops, `Registró la cita de ${c.pacienteNombre} (${c.fecha}) como atendida${sel.length ? ` con ${sel.length} tratamiento(s)` : ''}${M.lineas?.length ? ` y ${M.lineas.length} material(es)` : ''}`);
       avisarSync(); toast(fin ? 'Cita atendida. ¡El plan quedó terminado!' : 'Cita atendida y registrada en el expediente.');
     } });
 }
@@ -4239,6 +4270,340 @@ function seedFase5(D, sys, hace) {
   D.contactos.co_1 = { pacienteId: 'p1', tipo: 'portal', canal: 'whatsapp', citaId: '', fecha: hace(15) + 'T12:05:00', usuarioId: 'u_karla', ...sys };
 }
 
+/* =====================================================================
+   FASE 6 · INVENTARIO POR SEDE, CONSUMO REAL POR CONSULTA Y COMPRAS
+   ===================================================================== */
+const INV_TIPOS = { consumo: { l: 'Consumo en consulta', c: '' }, entrada: { l: 'Entrada', c: 'ok' }, compra: { l: 'Compra por faltante', c: 'warn' }, traspaso: { l: 'Traspaso', c: 'acc' }, ajuste: { l: 'Conteo físico', c: '' } };
+const q2 = n => Math.round((Number(n) || 0) * 100) / 100;
+const fmtQ = (n, u) => `${q2(n).toLocaleString('es-MX', { maximumFractionDigits: 2 })}${u ? ' ' + u : ''}`;
+const confInv = () => get('config', 'inventario') || {};
+const sedesInv = () => { const pr = confInv().principal; return list('sedes').filter(s => s.tipo !== 'externa' && s.activo !== false).sort((a, b) => (b.id === pr) - (a.id === pr) || a.nombre.localeCompare(b.nombre)); };
+const sedePrincipal = () => { const pr = confInv().principal, s = get('sedes', pr); return s && s.tipo !== 'externa' ? pr : (sedesInv()[0]?.id || ''); };
+const sedeOrigen = id => { const s = get('sedes', id); return s && s.tipo !== 'externa' && s.activo !== false ? id : sedePrincipal(); };
+const nomSede = id => get('sedes', id)?.nombre || '—';
+const exId = (s, i) => s + '__' + i;
+const existencia = (s, i) => q2(get('existencias', exId(s, i))?.cantidad);
+const minimoDe = (s, i) => { const e = get('existencias', exId(s, i)); return Number(e?.minimo ?? get('insumos', i)?.minimo ?? 0) || 0; };
+const INC = n => ({ __inc: q2(n) });
+const insumosActivos = () => list('insumos').filter(i => i.activo !== false).sort((a, b) => (a.categoria || '').localeCompare(b.categoria || '') || a.nombre.localeCompare(b.nombre));
+const pasoDe = u => /pieza|par|cartucho|sobre|punta|kit|jeringa|unidad|caja/i.test(u || '') ? 1 : 0.5;
+const puedeInv = () => S.me.rol === 'admin' || S.me.rol === 'recepcion';
+/* Junta los cambios de existencia de un lote: un solo incremento por documento */
+function opsExist(deltas) { return Object.entries(deltas).filter(([, d]) => q2(d) !== 0).map(([k, d]) => { const [s, i] = k.split('__'); return { col: 'existencias', id: k, data: { sedeId: s, insumoId: i, cantidad: INC(d) } }; }); }
+
+/* ---------------- Estimación de materiales ---------------- */
+function estimarMateriales(partes) {
+  const m = {}, trs = {};
+  partes.forEach(({ tratamientoId, factor }) => {
+    const t = get('tratamientos', tratamientoId); if (!t) return;
+    trs[tratamientoId] = (trs[tratamientoId] || 0) + factor;
+    (t.materiales || []).forEach(x => { if (get('insumos', x.insumoId)) m[x.insumoId] = (m[x.insumoId] || 0) + (Number(x.cantidad) || 0) * factor; });
+  });
+  Object.keys(m).forEach(k => m[k] = q2(m[k]));
+  return { mats: m, trs: Object.entries(trs).map(([tratamientoId, n]) => ({ tratamientoId, n: q2(n) })) };
+}
+function partesCita(c, sel) {
+  const pl = planActivo(c.pacienteId), out = [];
+  (c.items || []).forEach(x => { if (sel && !sel.some(s => s.itemId === x.itemId && s.k === x.k)) return; const it = pl?.items?.find(i => i.id === x.itemId); if (it) out.push({ tratamientoId: it.tratamientoId, factor: 1 / (it.sesiones || 1) }); });
+  (c.servicios || []).forEach(x => out.push({ tratamientoId: x.tratamientoId, factor: 1 }));
+  return out;
+}
+
+/* ---------------- Bloque "¿Esto fue lo que usaste?" ---------------- */
+function bloqueMateriales(sede, { elegir = false } = {}) {
+  const ss = sedesInv();
+  if (!ss.length || !list('insumos').length) return '';
+  return `<fieldset class="mats" id="matsBox"><legend>¿Esto fue lo que usaste?</legend>
+    <p class="mute" style="margin:0;font-size:12.5px">Cantidades estimadas según los tratamientos. Ajústalas a lo que realmente usaste y agrega lo que no estaba contemplado. Se descuenta del inventario de la sede.</p>
+    <label class="f" ${elegir || ss.length > 1 ? '' : 'hidden'}>Inventario del que salió<select name="msede" id="mSede">${ss.map(s => opt(s.id, s.nombre + (s.id === sedePrincipal() ? ' (principal)' : ''), sede)).join('')}</select></label>
+    <div id="matsRows" class="mrows"></div>
+    <div class="madd"><select id="matAdd"><option value="">Agregar material no contemplado…</option>${insumosActivos().map(i => `<option value="${i.id}">${esc(i.nombre)} · ${esc(i.unidad || '')}</option>`).join('')}</select></div>
+  </fieldset>`;
+}
+function activarMateriales(f, estimar) {
+  const box = f.querySelector('#matsBox'); if (!box) return;
+  const st = f._mats = { rows: [] };
+  const sede = () => f.elements.msede?.value || sedePrincipal();
+  const rowHTML = r => {
+    const ins = get('insumos', r.id), u = ins.unidad || '', ex = existencia(sede(), r.id);
+    return `<div class="mrow" data-ins="${r.id}">
+      <div class="mn"><b>${esc(ins.nombre)}</b><span class="mute">${r.extra ? 'Agregado' : 'Estimado ' + fmtQ(r.est, u)} · Hay <span class="${ex <= 0 ? 'neg' : ''}">${fmtQ(ex, u)}</span></span></div>
+      <div class="stp"><button type="button" class="btn sm" data-md="-1" aria-label="Menos">−</button><input type="number" inputmode="decimal" min="0" step="any" class="num" data-mv value="${q2(r.val)}" aria-label="Cantidad usada de ${esc(ins.nombre)}"><span class="mu">${esc(u)}</span><button type="button" class="btn sm" data-md="1" aria-label="Más">+</button>${r.extra ? '<button type="button" class="icon-btn" data-mx aria-label="Quitar">×</button>' : ''}</div>
+      <div class="mfalt" hidden><div class="mft"></div>
+        <div class="seg">${[['neg', 'Dejar en negativo'], ['personal', 'Fue insumo personal'], ['compra', 'Se compró']].map(([k, l]) => `<button type="button" data-mf="${k}" class="${r.falt === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+        <div class="mcompra" ${r.falt === 'compra' ? '' : 'hidden'}>
+          <label class="f">Cantidad comprada (${esc(u)})<input type="number" min="0" step="any" data-mc="cant" value="${r.compraCant ?? ''}"></label>
+          <label class="f">Costo total<input type="number" min="0" step="0.01" data-mc="costo" value="${r.compraCosto ?? ''}"></label>
+          <label class="f">Lo pagó<select data-mc="pago">${opt('dentista', 'Yo (reembolso pendiente)', r.pago)}${opt('clinica', 'La clínica', r.pago)}</select></label>
+          <span class="mute" style="font-size:12px;grid-column:1/-1">Lo que sobre de la compra queda en el inventario de la sede y el costo se registra como gasto.</span>
+        </div></div></div>`;
+  };
+  const falt = el => {
+    const r = st.rows.find(x => x.id === el.dataset.ins); if (!r) return;
+    const ex = existencia(sede(), r.id), u = get('insumos', r.id).unidad || '', falta = q2(r.val - Math.max(ex, 0)), fb2 = el.querySelector('.mfalt');
+    fb2.hidden = !(falta > 0);
+    if (falta > 0) el.querySelector('.mft').innerHTML = `Solo hay <b>${fmtQ(Math.max(ex, 0), u)}</b>; faltan <b>${fmtQ(falta, u)}</b>. ¿De dónde salió lo que faltó?`;
+  };
+  const pintar = () => { $('#matsRows', box).innerHTML = st.rows.length ? st.rows.map(rowHTML).join('') : '<p class="mute" style="margin:0">Estos tratamientos no tienen materiales en el catálogo. Agrega lo que usaste.</p>'; $$('.mrow', box).forEach(falt); };
+  st.recalc = () => {
+    const est = estimar() || {};
+    st.rows = st.rows.filter(r => r.extra || r.touched || est[r.id] != null);
+    st.rows.forEach(r => { if (!r.extra) { r.est = est[r.id] || 0; if (!r.touched) r.val = r.est; } });
+    Object.entries(est).forEach(([id, c]) => { if (!st.rows.some(r => r.id === id)) st.rows.push({ id, est: c, val: c, falt: 'neg', pago: 'dentista' }); });
+    pintar();
+  };
+  box.addEventListener('click', e => {
+    const el = e.target.closest('.mrow'); if (!el) return; const r = st.rows.find(x => x.id === el.dataset.ins);
+    const b = e.target.closest('[data-md]');
+    if (b) { r.val = Math.max(0, q2(r.val + Number(b.dataset.md) * pasoDe(get('insumos', r.id).unidad))); r.touched = true; el.querySelector('[data-mv]').value = r.val; falt(el); return; }
+    if (e.target.closest('[data-mx]')) { st.rows = st.rows.filter(x => x !== r); pintar(); return; }
+    const m = e.target.closest('[data-mf]');
+    if (m) { r.falt = m.dataset.mf; $$('[data-mf]', el).forEach(x => x.classList.toggle('on', x === m)); el.querySelector('.mcompra').hidden = r.falt !== 'compra';
+      if (r.falt === 'compra' && r.compraCant == null) { const ex = existencia(sede(), r.id); r.compraCant = Math.ceil(q2(r.val - Math.max(ex, 0))); el.querySelector('[data-mc=cant]').value = r.compraCant; } }
+  });
+  box.addEventListener('input', e => {
+    const el = e.target.closest('.mrow'); if (!el) return; const r = st.rows.find(x => x.id === el.dataset.ins);
+    if (e.target.matches('[data-mv]')) { r.val = Math.max(0, Number(e.target.value) || 0); r.touched = true; falt(el); }
+    const k = e.target.dataset.mc; if (k) r[k === 'cant' ? 'compraCant' : k === 'costo' ? 'compraCosto' : 'pago'] = k === 'pago' ? e.target.value : e.target.value;
+  });
+  box.addEventListener('change', e => {
+    if (e.target.id === 'matAdd' && e.target.value) { const id = e.target.value; e.target.value = ''; const r = st.rows.find(x => x.id === id); if (r) { r.val = q2(r.val + pasoDe(get('insumos', id).unidad)); r.touched = true; } else st.rows.push({ id, est: 0, val: pasoDe(get('insumos', id).unidad), extra: true, touched: true, falt: 'neg', pago: 'dentista' }); pintar(); }
+    if (e.target.id === 'mSede') pintar();
+    if (e.target.dataset.mc === 'pago') { const el = e.target.closest('.mrow'), r = st.rows.find(x => x.id === el.dataset.ins); r.pago = e.target.value; }
+  });
+  st.recalc();
+}
+function leerMateriales(f) {
+  const st = f._mats; if (!st) return { lineas: [] };
+  const sede = f.elements.msede?.value || sedePrincipal();
+  for (const r of st.rows) {
+    const ex = existencia(sede, r.id), falta = q2(r.val - Math.max(ex, 0));
+    if (falta > 0 && r.falt === 'compra') {
+      if (!(Number(r.compraCant) > 0)) return { error: `Escribe cuánto se compró de ${get('insumos', r.id).nombre}.` };
+      if (r.compraCosto === '' || r.compraCosto == null || Number(r.compraCosto) < 0) return { error: `Escribe el costo de la compra de ${get('insumos', r.id).nombre}.` };
+    }
+  }
+  return { sede, lineas: st.rows.filter(r => r.val > 0 || r.est > 0).map(r => ({ insumoId: r.id, cant: q2(r.val), estimado: q2(r.est), extra: !!r.extra, falt: r.falt, compraCant: q2(r.compraCant), compraCosto: r2(r.compraCosto), pago: r.pago || 'dentista' })) };
+}
+function opsMateriales(M, ctx) {
+  if (!M?.lineas?.length) return [];
+  const ops = [], lin = [], deltas = {}, t = ctx.fecha || nowISO(), sede = M.sede;
+  const add = (i, d) => { const k = exId(sede, i); deltas[k] = (deltas[k] || 0) + d; };
+  M.lineas.forEach(l => {
+    const ins = get('insumos', l.insumoId), ex = existencia(sede, l.insumoId), falta = q2(l.cant - Math.max(ex, 0));
+    let desdeInv = l.cant, personal = 0, negativo = false;
+    if (falta > 0 && l.falt === 'personal') { personal = falta; desdeInv = q2(l.cant - falta); }
+    else if (falta > 0 && l.falt === 'compra') {
+      const qc = l.compraCant, cost = l.compraCosto, mid = newId('mi');
+      add(l.insumoId, qc);
+      ops.push({ col: 'movInventario', id: mid, nuevo: true, data: { tipo: 'compra', sedeId: sede, lineas: [{ insumoId: l.insumoId, nombre: ins.nombre, unidad: ins.unidad || '', cant: qc, costo: cost }], total: cost, pagadoPor: l.pago, reembolso: l.pago === 'dentista' ? { pendiente: true, usuarioId: S.me.id } : null, pacienteId: ctx.pacienteId || '', pacienteNombre: ctx.pacienteNombre || '', citaId: ctx.citaId || '', nota: 'Compra por faltante durante la consulta', fecha: t, usuarioId: S.me.id } });
+      if (cost > 0) ops.push({ col: 'movimientos', nuevo: true, data: { tipo: 'gasto', monto: cost, categoria: 'Material dental', concepto: `Compra de ${ins.nombre} (${fmtQ(qc, ins.unidad)}) por faltante en consulta`, cajaId: '', sedeId: sede, usuarioId: S.me.id, fecha: t, origen: 'inventario', movInvId: mid, pagadoPor: l.pago } });
+      negativo = q2(ex + qc - l.cant) < 0;
+    } else if (falta > 0) negativo = true;
+    if (desdeInv > 0) add(l.insumoId, -desdeInv);
+    lin.push({ insumoId: l.insumoId, nombre: ins.nombre, unidad: ins.unidad || '', cant: l.cant, estimado: l.estimado, extra: l.extra, desdeInventario: desdeInv, personal, costo: r2(desdeInv * (Number(ins.costo) || 0)), negativo });
+  });
+  ops.unshift(...opsExist(deltas));
+  ops.push({ col: 'movInventario', nuevo: true, data: { tipo: 'consumo', sedeId: sede, lineas: lin, total: r2(lin.reduce((a, x) => a + x.costo, 0)), estimadoTotal: r2(lin.reduce((a, x) => a + x.estimado * (Number(get('insumos', x.insumoId)?.costo) || 0), 0)), negativo: lin.some(x => x.negativo), citaId: ctx.citaId || '', pacienteId: ctx.pacienteId || '', pacienteNombre: ctx.pacienteNombre || '', dentistaId: ctx.dentistaId || S.me.id, tratamientos: ctx.tratamientos || [], fecha: t, usuarioId: S.me.id } });
+  return ops;
+}
+
+/* ---------------- Renglones para entradas y traspasos ---------------- */
+function lineasHTML({ costo = false, sede = '' } = {}) {
+  return `<div class="lrows" id="lRows" data-costo="${costo ? 1 : ''}"></div><button type="button" class="btn sm" id="lAdd">+ Agregar insumo</button>`;
+}
+function activarLineas(f, { costo = false, sedeFn = () => '' } = {}) {
+  const box = $('#lRows', f), ins = insumosActivos();
+  const fila = () => `<div class="lrow"><select data-l="ins"><option value="">Elige insumo</option>${ins.map(i => `<option value="${i.id}">${esc(i.nombre)} · ${esc(i.unidad || '')}</option>`).join('')}</select><input type="number" min="0" step="any" data-l="cant" placeholder="Cantidad" class="num">${costo ? '<input type="number" min="0" step="0.01" data-l="costo" placeholder="Costo total" class="num">' : ''}<span class="mute lex"></span><button type="button" class="icon-btn" data-l="x" aria-label="Quitar">×</button></div>`;
+  const ex = row => { const id = row.querySelector('[data-l=ins]').value, s = sedeFn(); row.querySelector('.lex').textContent = id && s ? 'Hay ' + fmtQ(existencia(s, id), get('insumos', id).unidad) : ''; if (costo && id) { const c = row.querySelector('[data-l=costo]'), q = Number(row.querySelector('[data-l=cant]').value) || 0; if (!c.dataset.t && q) c.value = r2(q * (Number(get('insumos', id).costo) || 0)); } };
+  const agregar = () => { box.insertAdjacentHTML('beforeend', fila()); };
+  $('#lAdd', f).onclick = agregar; agregar(); agregar();
+  box.addEventListener('click', e => { if (e.target.closest('[data-l=x]')) { e.target.closest('.lrow').remove(); if (!box.children.length) agregar(); } });
+  box.addEventListener('input', e => { const r = e.target.closest('.lrow'); if (e.target.dataset.l === 'costo') e.target.dataset.t = 1; if (r) ex(r); });
+  box.addEventListener('change', e => { const r = e.target.closest('.lrow'); if (r) ex(r); });
+  f._lineasEx = () => $$('.lrow', box).forEach(ex);
+}
+function leerLineas(f) {
+  return $$('.lrow', f).map(r => ({ insumoId: r.querySelector('[data-l=ins]').value, cant: q2(r.querySelector('[data-l=cant]').value), costo: r2(r.querySelector('[data-l=costo]')?.value) })).filter(x => x.insumoId && x.cant > 0);
+}
+
+/* ---------------- Formularios de inventario ---------------- */
+function formEntrada(sedeId) {
+  const caja = S.me.rol !== 'dentista' ? cajaAbierta() : null;
+  modal({ title: 'Entrada de insumos', wide: true, submit: 'Registrar entrada', body: `
+    <div class="grid2"><label class="f">Sede que recibe<select name="sede" id="enSede">${sedesInv().map(s => opt(s.id, s.nombre, sedeId || sedePrincipal())).join('')}</select></label>
+    <label class="f">Proveedor<input type="text" name="prov" id="enProv" placeholder="Ej. Depósito dental"></label>
+    <label class="f">Factura o nota<input type="text" name="folio" id="enFolio"></label>
+    <label class="f">Se pagó<select name="pago" id="enPago">${caja ? opt('caja', 'Con efectivo de mi caja', '') : ''}${opt('clinica', 'Por la clínica (fuera de caja)', '')}${opt('credito', 'A crédito con el proveedor', '')}${opt('dentista', 'Lo pagó un dentista (reembolso)', '')}</select></label></div>
+    ${lineasHTML({ costo: true })}
+    <div class="info" id="enTot">Total: $0.00</div>`,
+    onOpen: f => { activarLineas(f, { costo: true, sedeFn: () => f.elements.sede.value }); f.elements.sede.onchange = () => f._lineasEx(); f.addEventListener('input', () => { $('#enTot').textContent = 'Total: ' + money(leerLineas(f).reduce((a, x) => a + x.costo, 0)); }); },
+    onSubmit: async f => {
+      const L = leerLineas(f), sede = f.elements.sede.value, pago = f.elements.pago.value; if (!L.length) return formErr(f, 'Agrega al menos un insumo con su cantidad.');
+      const total = r2(L.reduce((a, x) => a + x.costo, 0)), t = nowISO(), mid = newId('mi'), deltas = {};
+      L.forEach(x => deltas[exId(sede, x.insumoId)] = (deltas[exId(sede, x.insumoId)] || 0) + x.cant);
+      const ops = [...opsExist(deltas), { col: 'movInventario', id: mid, nuevo: true, data: { tipo: 'entrada', sedeId: sede, lineas: L.map(x => ({ ...x, nombre: get('insumos', x.insumoId).nombre, unidad: get('insumos', x.insumoId).unidad || '' })), total, proveedor: fv(f, 'prov'), folio: fv(f, 'folio'), pagadoPor: pago, reembolso: pago === 'dentista' ? { pendiente: true } : null, fecha: t, usuarioId: S.me.id } }];
+      if (total > 0 && pago !== 'credito') ops.push({ col: 'movimientos', nuevo: true, data: { tipo: 'gasto', monto: total, categoria: 'Material dental', concepto: `Compra de insumos${fv(f, 'prov') ? ' · ' + fv(f, 'prov') : ''}${fv(f, 'folio') ? ' · ' + fv(f, 'folio') : ''}`, cajaId: pago === 'caja' && caja ? caja.id : '', sedeId: sede, usuarioId: S.me.id, fecha: t, origen: 'inventario', movInvId: mid, pagadoPor: pago } });
+      await guardarLote(ops, `Registró entrada de ${L.length} insumo(s) en ${nomSede(sede)} por ${money(total)}`); toast('Entrada registrada.');
+    } });
+}
+function formTraspaso() {
+  const ss = sedesInv(); if (ss.length < 2) { toast('Se necesitan al menos dos sedes propias para hacer traspasos.'); return; }
+  const pr = sedePrincipal();
+  modal({ title: 'Traspaso entre sedes', wide: true, submit: 'Registrar traspaso', body: `
+    <div class="grid2"><label class="f">Sale de<select name="ori" id="trOri">${ss.map(s => opt(s.id, s.nombre, pr)).join('')}</select></label>
+    <label class="f">Llega a<select name="des" id="trDes">${ss.map(s => opt(s.id, s.nombre, ss.find(x => x.id !== pr)?.id)).join('')}</select></label></div>
+    ${lineasHTML()}<label class="f">Nota<input type="text" name="nota" id="trNota" placeholder="Ej. surtido semanal"></label>
+    <div class="quick"><button type="button" class="btn sm" id="trMin">Llenar con lo que le falta al destino para su mínimo</button></div>`,
+    onOpen: f => { activarLineas(f, { sedeFn: () => f.elements.ori.value }); f.elements.ori.onchange = () => f._lineasEx();
+      $('#trMin').onclick = () => { const d = f.elements.des.value, need = insumosActivos().map(i => ({ i, q: q2(minimoDe(d, i.id) - existencia(d, i.id)) })).filter(x => x.q > 0); if (!need.length) { toast('El destino no tiene insumos por debajo de su mínimo.'); return; } $('#lRows', f).innerHTML = ''; need.forEach(() => $('#lAdd', f).click()); $$('.lrow', f).forEach((r, k) => { if (!need[k]) { r.remove(); return; } r.querySelector('[data-l=ins]').value = need[k].i.id; r.querySelector('[data-l=cant]').value = Math.ceil(need[k].q); }); f._lineasEx(); }; },
+    onSubmit: async f => {
+      const L = leerLineas(f), o = f.elements.ori.value, d = f.elements.des.value;
+      if (o === d) return formErr(f, 'El origen y el destino deben ser distintos.'); if (!L.length) return formErr(f, 'Agrega al menos un insumo con su cantidad.');
+      const deltas = {}; L.forEach(x => { deltas[exId(o, x.insumoId)] = (deltas[exId(o, x.insumoId)] || 0) - x.cant; deltas[exId(d, x.insumoId)] = (deltas[exId(d, x.insumoId)] || 0) + x.cant; });
+      await guardarLote([...opsExist(deltas), { col: 'movInventario', nuevo: true, data: { tipo: 'traspaso', sedeId: o, sedeDestino: d, lineas: L.map(x => ({ insumoId: x.insumoId, nombre: get('insumos', x.insumoId).nombre, unidad: get('insumos', x.insumoId).unidad || '', cant: x.cant })), nota: fv(f, 'nota'), fecha: nowISO(), usuarioId: S.me.id } }], `Traspasó ${L.length} insumo(s) de ${nomSede(o)} a ${nomSede(d)}`);
+      toast('Traspaso registrado.');
+    } });
+}
+function formConteo(sede) {
+  const ins = insumosActivos();
+  modal({ title: 'Conteo físico y mínimos · ' + esc(nomSede(sede)), wide: true, submit: 'Guardar', body: `
+    <p class="mute" style="margin:0">Escribe lo que contaste en el anaquel. Solo se guardan los renglones que cambien. El mínimo sirve para avisar cuando hay que surtir.</p>
+    <input type="search" id="cnQ" placeholder="Buscar insumo">
+    <div class="tablewrap"><table class="cnt"><thead><tr><th>Insumo</th><th class="r">En sistema</th><th class="r">Contado</th><th class="r">Mínimo</th></tr></thead><tbody>${ins.map(i => `<tr data-n="${esc(norm(i.nombre))}"><td><b>${esc(i.nombre)}</b><div class="mute" style="font-size:12px">${esc(i.categoria || '')} · ${esc(i.unidad || '')}</div></td><td class="r num">${fmtQ(existencia(sede, i.id))}</td><td class="r"><input type="number" step="any" class="num" name="c_${i.id}" value="${existencia(sede, i.id)}"></td><td class="r"><input type="number" min="0" step="any" class="num" name="m_${i.id}" value="${minimoDe(sede, i.id)}"></td></tr>`).join('')}</tbody></table></div>
+    <label class="f">Motivo o nota<input type="text" name="nota" id="cnNota" placeholder="Ej. conteo mensual"></label>`,
+    onOpen: f => { $('#cnQ').oninput = e => { const q = norm(e.target.value); $$('tbody tr', f).forEach(r => r.hidden = q && !r.dataset.n.includes(q)); }; },
+    onSubmit: async f => {
+      const ops = [], lin = [];
+      ins.forEach(i => {
+        const c = q2(f.elements['c_' + i.id].value), m = Number(f.elements['m_' + i.id].value) || 0, act = existencia(sede, i.id), d = q2(c - act), data = { sedeId: sede, insumoId: i.id };
+        if (d !== 0) { data.cantidad = INC(d); lin.push({ insumoId: i.id, nombre: i.nombre, unidad: i.unidad || '', antes: act, contado: c, cant: d, costo: r2(d * (Number(i.costo) || 0)) }); }
+        if (m !== minimoDe(sede, i.id)) data.minimo = m;
+        if (Object.keys(data).length > 2) ops.push({ col: 'existencias', id: exId(sede, i.id), data });
+      });
+      if (!ops.length) { toast('No hubo cambios.'); return; }
+      if (lin.length) ops.push({ col: 'movInventario', nuevo: true, data: { tipo: 'ajuste', sedeId: sede, lineas: lin, total: r2(lin.reduce((a, x) => a + x.costo, 0)), nota: fv(f, 'nota'), fecha: nowISO(), usuarioId: S.me.id } });
+      await guardarLote(ops, `Conteo físico en ${nomSede(sede)}: ${lin.length} diferencia(s)`); toast(lin.length ? `Conteo guardado con ${lin.length} diferencia(s).` : 'Mínimos guardados.');
+    } });
+}
+function verMovInv(id) {
+  const m = get('movInventario', id), T = INV_TIPOS[m.tipo] || { l: m.tipo };
+  const lin = m.lineas || [];
+  modal({ title: T.l + ' · ' + fechaHora(m.fecha), wide: true, body: `
+    <dl class="kv" style="margin:0"><dt>Sede</dt><dd>${esc(nomSede(m.sedeId))}${m.sedeDestino ? ' → ' + esc(nomSede(m.sedeDestino)) : ''}</dd><dt>Registró</dt><dd>${esc(nombreUsuario(m.usuarioId))}</dd>${m.pacienteNombre ? `<dt>Paciente</dt><dd>${esc(m.pacienteNombre)}</dd>` : ''}${m.dentistaId && m.tipo === 'consumo' ? `<dt>Dentista</dt><dd>${esc(nombreUsuario(m.dentistaId))}</dd>` : ''}${m.proveedor ? `<dt>Proveedor</dt><dd>${esc(m.proveedor)}${m.folio ? ' · ' + esc(m.folio) : ''}</dd>` : ''}${m.pagadoPor ? `<dt>Pagó</dt><dd>${esc(PAGO_INV[m.pagadoPor] || m.pagadoPor)}${m.reembolso?.pendiente ? ' <span class="pill warn">Reembolso pendiente</span>' : m.reembolso?.fecha ? ' <span class="pill ok">Reembolsado</span>' : ''}</dd>` : ''}${m.nota ? `<dt>Nota</dt><dd>${esc(m.nota)}</dd>` : ''}</dl>
+    <div class="tablewrap"><table><thead><tr><th>Insumo</th>${m.tipo === 'consumo' ? '<th class="r">Estimado</th><th class="r">Usado</th><th class="r">Diferencia</th>' : m.tipo === 'ajuste' ? '<th class="r">Sistema</th><th class="r">Contado</th><th class="r">Diferencia</th>' : '<th class="r">Cantidad</th>'}<th class="r">Costo</th></tr></thead><tbody>${lin.map(x => `<tr><td><b>${esc(x.nombre)}</b>${x.extra ? ' <span class="pill">No contemplado</span>' : ''}${x.personal ? ` <span class="pill">${fmtQ(x.personal, x.unidad)} personal</span>` : ''}${x.negativo ? ' <span class="pill bad">Quedó en negativo</span>' : ''}</td>${m.tipo === 'consumo' ? `<td class="r num">${fmtQ(x.estimado, x.unidad)}</td><td class="r num"><b>${fmtQ(x.cant, x.unidad)}</b></td><td class="r num ${x.cant > x.estimado ? 'neg' : ''}">${x.cant === x.estimado ? '—' : (x.cant > x.estimado ? '+' : '') + fmtQ(x.cant - x.estimado)}</td>` : m.tipo === 'ajuste' ? `<td class="r num">${fmtQ(x.antes)}</td><td class="r num">${fmtQ(x.contado)}</td><td class="r num">${(x.cant > 0 ? '+' : '') + fmtQ(x.cant, x.unidad)}</td>` : `<td class="r num">${fmtQ(x.cant, x.unidad)}</td>`}<td class="r num">${x.costo != null ? money(x.costo) : ''}</td></tr>`).join('')}</tbody></table></div>
+    ${m.total != null ? `<div class="tot"><span>Total</span><b class="num">${money(m.total)}</b></div>` : ''}`,
+    footerLeft: esAdmin() && m.reembolso?.pendiente ? '<button type="button" class="btn sm primary" id="miReem">Marcar como reembolsado</button>' : '',
+    onOpen: () => { const b = $('#miReem'); if (b) b.onclick = async () => { await guardarLote([{ col: 'movInventario', id, data: { reembolso: { pendiente: false, fecha: nowISO(), por: S.me.id } } }], `Marcó como reembolsada la compra de material de ${nombreUsuario(m.usuarioId)}`); closeModal(); toast('Reembolso registrado.'); }; } });
+}
+const PAGO_INV = { caja: 'Efectivo de caja', clinica: 'La clínica', credito: 'A crédito', dentista: 'Un dentista (reembolso)' };
+
+/* ---------------- Estadísticas: consumo real contra estimado ---------------- */
+function statsConsumo(dias, uid) {
+  const desde = sumarDias(hoyISO(), -dias);
+  const cs = list('movInventario').filter(m => m.tipo === 'consumo' && fechaDe(m.fecha) >= desde && (!uid || m.dentistaId === uid));
+  const porIns = {}, porDent = {}, mt = {};
+  cs.forEach(m => {
+    const d = porDent[m.dentistaId] = porDent[m.dentistaId] || { n: 0, est: 0, real: 0, personal: 0 }; d.n++;
+    (m.lineas || []).forEach(x => {
+      const c = Number(get('insumos', x.insumoId)?.costo) || 0, r = porIns[x.insumoId] = porIns[x.insumoId] || { est: 0, real: 0, personal: 0, n: 0 };
+      r.est += x.estimado; r.real += x.cant; r.personal += x.personal || 0; r.n++;
+      d.est += x.estimado * c; d.real += x.cant * c; d.personal += (x.personal || 0) * c;
+    });
+    if ((m.tratamientos || []).length === 1) {
+      const { tratamientoId: tid, n } = m.tratamientos[0], g = mt[tid] = mt[tid] || { n: 0, docs: 0, ins: {} }; g.n += n; g.docs++;
+      (m.lineas || []).forEach(x => g.ins[x.insumoId] = (g.ins[x.insumoId] || 0) + x.cant);
+    }
+  });
+  const sug = [];
+  Object.entries(mt).forEach(([tid, g]) => {
+    const t = get('tratamientos', tid); if (!t || g.docs < 3 || !g.n) return;
+    const ids = new Set([...Object.keys(g.ins), ...(t.materiales || []).map(x => x.insumoId)]);
+    ids.forEach(iid => {
+      const ins = get('insumos', iid); if (!ins) return;
+      const cat = Number((t.materiales || []).find(x => x.insumoId === iid)?.cantidad) || 0, prom = q2((g.ins[iid] || 0) / g.n);
+      if ((cat === 0 && prom > 0) || (cat > 0 && Math.abs(prom - cat) / cat >= 0.15)) sug.push({ t, ins, cat, prom, docs: g.docs });
+    });
+  });
+  return { cs, porIns, porDent, sug };
+}
+
+/* ---------------- Vista Inventario ---------------- */
+function vInventario() {
+  S.ui.inv = S.ui.inv || { tab: 'existencias', sede: sedePrincipal(), filtro: 'todos', q: '', dias: 30, tipo: '' };
+  const U = S.ui.inv, ss = sedesInv();
+  if (!ss.length) return `<div class="vhead"><div><h2>Inventario</h2></div></div><div class="panel"><div class="empty">Primero da de alta las sedes propias de la clínica en Sedes.</div></div>`;
+  if (!get('sedes', U.sede) || get('sedes', U.sede).tipo === 'externa') U.sede = sedePrincipal();
+  const tabs = [['existencias', 'Existencias'], ['movimientos', 'Movimientos'], ['consumo', 'Consumo real'], ['compras', 'Compras y reembolsos']];
+  const alertas = alertasInventario();
+  const head = `<div class="vhead"><div><h2>Inventario</h2><p>Existencias por sede. Se descuentan solas con lo que cada dentista confirma al terminar su consulta.${ss.length > 1 ? ` Inventario principal: <b>${esc(nomSede(sedePrincipal()))}</b>.` : ''}</p></div>
+    <div class="acts">${puedeInv() ? `<button class="btn" data-act="inv-traspaso">Traspaso</button><button class="btn primary" data-act="inv-entrada">Entrada de insumos</button>` : ''}</div></div>
+    <nav class="tabs">${tabs.map(([k, l]) => `<button data-act="inv-tab" data-tab="${k}" class="${U.tab === k ? 'on' : ''}">${l}${k === 'existencias' && alertas.total ? ` <span class="badge-n">${alertas.total}</span>` : ''}${k === 'compras' && alertas.reembolsos ? ` <span class="badge-n">${alertas.reembolsos}</span>` : ''}</button>`).join('')}</nav>`;
+  const segSede = `<div class="seg">${ss.map(s => `<button data-act="inv-sede" data-id="${s.id}" class="${U.sede === s.id ? 'on' : ''}">${esc(s.nombre)}${s.id === sedePrincipal() && ss.length > 1 ? ' · principal' : ''}</button>`).join('')}</div>`;
+  if (U.tab === 'existencias') {
+    const q = norm(U.q || '').trim();
+    const rows = insumosActivos().map(i => ({ i, ex: existencia(U.sede, i.id), min: minimoDe(U.sede, i.id) })).filter(r => (U.filtro === 'todos' || (U.filtro === 'bajo' ? r.ex <= r.min && r.min > 0 && r.ex >= 0 : r.ex < 0)) && (!q || norm(r.i.nombre + ' ' + (r.i.categoria || '')).includes(q))).sort((a, b) => ((a.ex < 0 ? 0 : a.min > 0 && a.ex <= a.min ? 1 : 2) - (b.ex < 0 ? 0 : b.min > 0 && b.ex <= b.min ? 1 : 2)));
+    const valor = insumosActivos().reduce((a, i) => a + Math.max(0, existencia(U.sede, i.id)) * (Number(i.costo) || 0), 0);
+    const nBajo = insumosActivos().filter(i => { const e = existencia(U.sede, i.id), m = minimoDe(U.sede, i.id); return m > 0 && e <= m && e >= 0; }).length, nNeg = insumosActivos().filter(i => existencia(U.sede, i.id) < 0).length;
+    return head + `<div class="stats"><div class="stat"><b class="num">${money(valor)}</b><span>Valor en ${esc(nomSede(U.sede))}</span></div><div class="stat ${nBajo ? 'warn' : ''}"><b class="num">${nBajo}</b><span>En o bajo su mínimo</span></div><div class="stat ${nNeg ? 'warn' : ''}"><b class="num">${nNeg}</b><span>En negativo (revisar)</span></div><div class="stat"><b class="num">${list('movInventario').filter(m => m.tipo === 'consumo' && m.sedeId === U.sede && fechaDe(m.fecha) === hoyISO()).length}</b><span>Consumos registrados hoy</span></div></div>
+    <div class="panel"><div class="panel-h">${segSede}<div class="toolbar" style="flex:1"><input type="search" id="invQ" placeholder="Buscar insumo" value="${esc(U.q || '')}" data-inv="q"><div class="seg">${[['todos', 'Todos'], ['bajo', 'Por surtir'], ['neg', 'Negativos']].map(([k, l]) => `<button data-act="inv-filtro" data-f="${k}" class="${U.filtro === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>${puedeInv() ? `<button class="btn sm" data-act="inv-conteo">Conteo físico y mínimos</button>` : ''}${esAdmin() && ss.length > 1 && U.sede !== sedePrincipal() ? `<button class="btn sm ghost" data-act="inv-principal">Hacer principal</button>` : ''}</div>
+    ${rows.length ? `<div class="tablewrap"><table><thead><tr><th>Insumo</th><th>Categoría</th><th class="r">Existencia</th><th class="r">Mínimo</th><th>Estado</th><th class="r">Valor</th></tr></thead><tbody>${rows.map(({ i, ex, min }) => `<tr><td><b>${esc(i.nombre)}</b></td><td class="mute">${esc(i.categoria || '')}</td><td class="r num"><b class="${ex < 0 ? 'neg' : ''}">${fmtQ(ex, i.unidad)}</b></td><td class="r num">${min ? fmtQ(min) : '—'}</td><td>${ex < 0 ? '<span class="pill bad">Negativo</span>' : min > 0 && ex <= min ? '<span class="pill warn">Surtir</span>' : '<span class="pill ok">Bien</span>'}</td><td class="r num">${money(Math.max(0, ex) * (Number(i.costo) || 0))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No hay insumos con este filtro.</div>'}
+    ${!list('existencias').length ? `<div class="panel-b"><div class="info">Para empezar, haz un <b>Conteo físico y mínimos</b> en cada sede con lo que tienes hoy en el anaquel.</div></div>` : ''}</div>`;
+  }
+  if (U.tab === 'movimientos') {
+    const ms = list('movInventario').filter(m => (m.sedeId === U.sede || m.sedeDestino === U.sede) && (!U.tipo || m.tipo === U.tipo)).sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '')).slice(0, 200);
+    return head + `<div class="panel"><div class="panel-h">${segSede}<div class="seg">${[['', 'Todos'], ...Object.entries(INV_TIPOS).map(([k, v]) => [k, v.l])].map(([k, l]) => `<button data-act="inv-tipo" data-t="${k}" class="${(U.tipo || '') === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+    ${ms.length ? `<div class="rows">${ms.map(m => { const T = INV_TIPOS[m.tipo] || { l: m.tipo, c: '' }, lin = m.lineas || []; return `<button class="row" data-act="inv-ver" data-id="${m.id}"><div style="min-width:0"><div class="t1"><span class="pill ${T.c}">${T.l}</span>${m.sedeDestino ? `<span>${esc(nomSede(m.sedeId))} → ${esc(nomSede(m.sedeDestino))}</span>` : ''}${m.pacienteNombre ? esc(m.pacienteNombre) : ''}${m.negativo ? ' <span class="pill bad">Dejó negativo</span>' : ''}${m.reembolso?.pendiente ? ' <span class="pill warn">Reembolso pendiente</span>' : ''}</div><div class="t2"><span class="num">${fechaHora(m.fecha)}</span><span>${esc(nombreUsuario(m.usuarioId))}</span><span>${esc(lin.slice(0, 3).map(x => `${x.nombre} ${fmtQ(x.cant, x.unidad)}`).join(' · '))}${lin.length > 3 ? ` y ${lin.length - 3} más` : ''}</span></div></div><div class="r">${m.total != null ? `<b class="num">${money(m.total)}</b>` : ''}</div></button>`; }).join('')}</div>` : '<div class="empty">Sin movimientos en esta sede.</div>'}</div>`;
+  }
+  if (U.tab === 'consumo') {
+    const mio = S.me.rol === 'dentista' ? S.me.id : '', St = statsConsumo(U.dias, mio);
+    const filas = Object.entries(St.porIns).map(([id, r]) => ({ ins: get('insumos', id), ...r })).filter(x => x.ins).sort((a, b) => (b.real - b.est) * (Number(b.ins.costo) || 0) - (a.real - a.est) * (Number(a.ins.costo) || 0));
+    const tEst = r2(Object.values(St.porDent).reduce((a, d) => a + d.est, 0)), tReal = r2(Object.values(St.porDent).reduce((a, d) => a + d.real, 0));
+    return head + `<div class="panel"><div class="panel-h"><div class="seg">${[[7, '7 días'], [30, '30 días'], [90, '90 días'], [365, 'Año']].map(([d, l]) => `<button data-act="inv-dias" data-d="${d}" class="${U.dias === d ? 'on' : ''}">${l}</button>`).join('')}</div><span class="mute" style="font-size:13px">${St.cs.length} consulta(s) con materiales confirmados${mio ? ' · solo tus consultas' : ''}</span></div>
+      <div class="panel-b"><div class="stats" style="margin:0"><div class="stat"><b class="num">${money(tEst)}</b><span>Costo estimado</span></div><div class="stat ${tReal > tEst * 1.1 ? 'warn' : ''}"><b class="num">${money(tReal)}</b><span>Costo real usado</span></div><div class="stat"><b class="num">${tEst ? ((tReal - tEst) / tEst * 100 > 0 ? '+' : '') + Math.round((tReal - tEst) / tEst * 100) + '%' : '—'}</b><span>Diferencia</span></div></div></div></div>
+    ${St.sug.length && esAdmin() ? `<div class="panel"><div class="panel-h"><h3>Sugerencias para el catálogo</h3><span class="mute" style="font-size:13px">Según el uso real en consultas con un solo tipo de tratamiento (mínimo 3)</span></div><div class="rows">${St.sug.map((s, k) => `<div class="row" style="cursor:default"><div style="min-width:0"><div class="t1">${esc(s.t.nombre)} · ${esc(s.ins.nombre)}</div><div class="t2"><span>Catálogo: <b>${fmtQ(s.cat, s.ins.unidad)}</b></span><span>Uso real promedio: <b>${fmtQ(s.prom, s.ins.unidad)}</b></span><span>${s.docs} consultas</span></div></div><div class="r"><button class="btn sm" data-act="inv-sug" data-t="${s.t.id}" data-i="${s.ins.id}" data-q="${s.prom}">Usar ${fmtQ(s.prom)}</button></div></div>`).join('')}</div></div>` : ''}
+    <div class="two"><div class="panel"><div class="panel-h"><h3>Por insumo</h3></div>${filas.length ? `<div class="tablewrap"><table><thead><tr><th>Insumo</th><th class="r">Estimado</th><th class="r">Real</th><th class="r">Dif.</th></tr></thead><tbody>${filas.map(x => { const d = x.est ? Math.round((x.real - x.est) / x.est * 100) : null; return `<tr><td><b>${esc(x.ins.nombre)}</b>${x.personal ? `<div class="mute" style="font-size:12px">${fmtQ(x.personal, x.ins.unidad)} de insumo personal</div>` : ''}</td><td class="r num">${fmtQ(x.est, x.ins.unidad)}</td><td class="r num"><b>${fmtQ(x.real, x.ins.unidad)}</b></td><td class="r num"><span class="${d > 10 ? 'pill bad' : d < -10 ? 'pill ok' : ''}">${d == null ? 'extra' : (d > 0 ? '+' : '') + d + '%'}</span></td></tr>`; }).join('')}</tbody></table></div>` : '<div class="empty">Aún no hay consultas con materiales confirmados.</div>'}</div>
+      <div class="panel"><div class="panel-h"><h3>Por dentista</h3></div>${Object.keys(St.porDent).length ? `<div class="tablewrap"><table><thead><tr><th>Dentista</th><th class="r">Consultas</th><th class="r">Estimado</th><th class="r">Real</th></tr></thead><tbody>${Object.entries(St.porDent).map(([u, d]) => `<tr><td><b>${esc(nombreUsuario(u))}</b>${d.personal ? `<div class="mute" style="font-size:12px">${money(d.personal)} en insumo personal</div>` : ''}</td><td class="r num">${d.n}</td><td class="r num">${money(d.est)}</td><td class="r num"><b class="${d.real > d.est * 1.1 ? 'neg' : ''}">${money(d.real)}</b></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Sin datos.</div>'}</div></div>`;
+  }
+  const cps = list('movInventario').filter(m => ['compra', 'entrada'].includes(m.tipo)).sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '')).slice(0, 150);
+  const pend = cps.filter(m => m.reembolso?.pendiente), mes = cps.filter(m => fechaDe(m.fecha) >= hoyISO().slice(0, 8) + '01');
+  return head + `<div class="stats"><div class="stat"><b class="num">${money(mes.reduce((a, m) => a + (m.total || 0), 0))}</b><span>Compras de material este mes</span></div><div class="stat ${pend.length ? 'warn' : ''}"><b class="num">${money(pend.reduce((a, m) => a + (m.total || 0), 0))}</b><span>${pend.length} reembolso(s) pendiente(s)</span></div><div class="stat"><b class="num">${mes.filter(m => m.tipo === 'compra').length}</b><span>Compras por faltante este mes</span></div></div>
+    <div class="panel">${cps.length ? `<div class="rows">${cps.map(m => `<button class="row" data-act="inv-ver" data-id="${m.id}"><div style="min-width:0"><div class="t1"><span class="pill ${INV_TIPOS[m.tipo].c}">${INV_TIPOS[m.tipo].l}</span>${esc(m.proveedor || m.pacienteNombre || '')}${m.reembolso?.pendiente ? ' <span class="pill warn">Reembolsar a ' + esc(nombreUsuario(m.reembolso.usuarioId || m.usuarioId)) + '</span>' : m.reembolso?.fecha ? ' <span class="pill ok">Reembolsado</span>' : ''}</div><div class="t2"><span class="num">${fechaHora(m.fecha)}</span><span>${esc(nomSede(m.sedeId))}</span><span>${esc(PAGO_INV[m.pagadoPor] || '')}</span><span>${esc((m.lineas || []).map(x => x.nombre).slice(0, 3).join(', '))}</span></div></div><div class="r"><b class="num">${money(m.total || 0)}</b></div></button>`).join('')}</div>` : '<div class="empty">Sin compras registradas.</div>'}</div>`;
+}
+function alertasInventario() {
+  let bajo = 0, neg = 0; sedesInv().forEach(s => insumosActivos().forEach(i => { const e = existencia(s.id, i.id), m = minimoDe(s.id, i.id); if (e < 0) neg++; else if (m > 0 && e <= m) bajo++; }));
+  const reembolsos = list('movInventario').filter(m => m.reembolso?.pendiente).length;
+  return { bajo, neg, total: bajo + neg, reembolsos };
+}
+function panelInventarioInicio() {
+  if (!puedeInv() || !list('existencias').length) return '';
+  const A = alertasInventario(); if (!A.total && !A.reembolsos) return '';
+  return `<div class="infowarn" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>Inventario:</b><span>${[A.bajo ? `${A.bajo} insumo(s) por surtir` : '', A.neg ? `${A.neg} en negativo` : '', A.reembolsos ? `${A.reembolsos} reembolso(s) pendiente(s)` : ''].filter(Boolean).join(' · ')}</span><span class="sp" style="flex:1"></span><button class="btn sm" data-act="nav" data-view="inventario">Ver inventario</button></div>`;
+}
+
+/* ---------------- Datos de ejemplo ---------------- */
+function seedFase6(D, sys, hace) {
+  D.config.inventario = { principal: 's_centro', ...sys };
+  const ins = Object.keys(D.insumos), rnd = k => (k * 37 % 23);
+  ins.forEach((id, k) => {
+    const i = D.insumos[id], u = pasoDe(i.unidad) === 1, caro = (Number(i.costo) || 0) > 300;
+    const mC = u ? 10 + rnd(k) : 20, mN = u ? 5 + (k % 6) : 10;
+    D.existencias[exId('s_centro', id)] = { sedeId: 's_centro', insumoId: id, cantidad: caro ? 4 + (k % 4) : q2((u ? 40 : 80) + rnd(k) * 3), minimo: caro ? 2 : mC, ...sys };
+    D.existencias[exId('s_norte', id)] = { sedeId: 's_norte', insumoId: id, cantidad: caro ? 1 + (k % 3) : q2((u ? 14 : 30) + rnd(k)), minimo: caro ? 1 : mN, ...sys };
+  });
+  D.existencias[exId('s_norte', 'i_resina')].cantidad = 3.2; D.existencias[exId('s_norte', 'i_resina')].minimo = 6;
+  D.existencias[exId('s_norte', 'i_anest')].cantidad = 4; D.existencias[exId('s_norte', 'i_anest')].minimo = 10;
+  D.existencias[exId('s_centro', 'i_grabador')].cantidad = -0.4;
+  D.movInventario.mi_e1 = { tipo: 'entrada', sedeId: 's_centro', lineas: [{ insumoId: 'i_resina', nombre: D.insumos.i_resina.nombre, unidad: 'g', cant: 20, costo: 2800 }, { insumoId: 'i_anest', nombre: D.insumos.i_anest.nombre, unidad: 'cartucho', cant: 50, costo: 900 }], total: 3700, proveedor: 'Depósito dental (ejemplo)', folio: 'F-1043', pagadoPor: 'clinica', fecha: hace(9) + 'T12:00:00', usuarioId: 'u_admin', ...sys };
+  D.movInventario.mi_t1 = { tipo: 'traspaso', sedeId: 's_centro', sedeDestino: 's_norte', lineas: [{ insumoId: 'i_resina', nombre: D.insumos.i_resina.nombre, unidad: 'g', cant: 4 }, { insumoId: 'i_guantes', nombre: D.insumos.i_guantes.nombre, unidad: 'par', cant: 30 }], nota: 'Surtido semanal', fecha: hace(6) + 'T09:30:00', usuarioId: 'u_karla', ...sys };
+  const tr = D.tratamientos['t_OP-01'];
+  [[14, 1.4, 'u_ana'], [11, 1.5, 'u_ana'], [8, 1.2, 'u_paola'], [5, 1.6, 'u_ana'], [3, 1.3, 'u_sofia']].forEach(([d, f, u], k) => {
+    const lin = (tr.materiales || []).map(x => { const ii = D.insumos[x.insumoId], real = x.insumoId === 'i_resina' ? q2(x.cantidad * f) : x.cantidad; return { insumoId: x.insumoId, nombre: ii.nombre, unidad: ii.unidad, cant: real, estimado: x.cantidad, desdeInventario: real, personal: 0, costo: r2(real * ii.costo), negativo: false }; });
+    D.movInventario['mi_c' + k] = { tipo: 'consumo', sedeId: k % 2 ? 's_norte' : 's_centro', lineas: lin, total: r2(lin.reduce((a, x) => a + x.costo, 0)), estimadoTotal: r2(lin.reduce((a, x) => a + x.estimado * D.insumos[x.insumoId].costo, 0)), negativo: false, citaId: '', pacienteId: 'p5', pacienteNombre: 'Guadalupe Hernández Ortiz', dentistaId: u, tratamientos: [{ tratamientoId: 't_OP-01', n: 1 }], fecha: hace(d) + 'T11:00:00', usuarioId: u, ...sys };
+  });
+  D.movInventario.mi_cp = { tipo: 'compra', sedeId: 's_norte', lineas: [{ insumoId: 'i_grabador', nombre: D.insumos.i_grabador.nombre, unidad: 'ml', cant: 5, costo: 75 }], total: 75, pagadoPor: 'dentista', reembolso: { pendiente: true, usuarioId: 'u_sofia' }, pacienteId: 'p4', pacienteNombre: 'Ricardo Peña Valdez', nota: 'Compra por faltante durante la consulta', fecha: hace(2) + 'T13:10:00', usuarioId: 'u_sofia', ...sys };
+}
+
 const ACT = {
   nav: el => go(el.dataset.view), salir, perfil: () => verPerfil(),
   'reset-demo': async () => { if (!await confirmar('Restablecer datos de ejemplo', 'Se borran los cambios que hiciste en esta demostración y se cargan de nuevo los datos de ejemplo.', { ok: 'Restablecer', peligro: true })) return; const uid = S.me.id; seedDemo(); S.me = get('usuarios', uid) || get('usuarios', 'u_admin'); render(); toast('Datos de ejemplo restablecidos.'); },
@@ -4330,6 +4695,15 @@ document.addEventListener('submit', async e => {
   if (e.target.id === 'msjForm') { e.preventDefault(); try { await guardarMensajes(e.target); } catch (err) { toast(errMsg(err)); } }
   if (e.target.id === 'pwForm') { e.preventDefault(); await cambiarPassword(e.target); }
 });
+
+Object.assign(ACT, {
+  'inv-tab': el => { S.ui.inv.tab = el.dataset.tab; render(); }, 'inv-sede': el => { S.ui.inv.sede = el.dataset.id; render(); },
+  'inv-filtro': el => { S.ui.inv.filtro = el.dataset.f; render(); }, 'inv-tipo': el => { S.ui.inv.tipo = el.dataset.t; render(); }, 'inv-dias': el => { S.ui.inv.dias = +el.dataset.d; render(); },
+  'inv-entrada': () => formEntrada(S.ui.inv?.sede), 'inv-traspaso': formTraspaso, 'inv-conteo': () => formConteo(S.ui.inv.sede), 'inv-ver': el => verMovInv(el.dataset.id),
+  'inv-principal': async () => { const s = S.ui.inv.sede; if (!await confirmar('Inventario principal', `${nomSede(s)} será el inventario principal: de ahí se surten las demás sedes y salen los materiales de las sedes externas.`, { ok: 'Hacer principal' })) return; await guardarLote([{ col: 'config', id: 'inventario', data: { principal: s } }], `Definió ${nomSede(s)} como inventario principal`); toast('Inventario principal actualizado.'); },
+  'inv-sug': async el => { const t = get('tratamientos', el.dataset.t), q = q2(el.dataset.q), ins = get('insumos', el.dataset.i); const mats = deep(t.materiales || []), x = mats.find(m => m.insumoId === ins.id); if (x) x.cantidad = q; else mats.push({ insumoId: ins.id, cantidad: q }); await guardarLote([{ col: 'tratamientos', id: t.id, data: { materiales: mats } }], `Ajustó ${ins.nombre} en ${t.nombre} a ${q} según el uso real`); toast('Catálogo actualizado.'); }
+});
+document.addEventListener('input', e => { const k = e.target.dataset?.inv; if (k && S.ui.inv) { S.ui.inv[k] = e.target.value; render(); } });
 function verPerfil() {
   modal({ title: 'Mi cuenta', body: `<div class="ch" style="display:flex;gap:12px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div><b>${esc(S.me.nombre)}</b><div class="mute">${esc(S.me.email)} · ${ROLES[S.me.rol]}</div></div></div>`,
     footerLeft: `<button type="button" class="btn sm" id="ppSalir">${S.mode === 'demo' ? 'Cambiar de usuario' : 'Cerrar sesión'}</button>`, onOpen: () => $('#ppSalir').onclick = () => { closeModal(); salir(); } });
