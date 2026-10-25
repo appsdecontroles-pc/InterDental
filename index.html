@@ -172,19 +172,20 @@ tbody tr.click:hover td{background:var(--surface2)}
 .roadmap ol{margin:0;padding:0}
 
 /* ---------- Modal ---------- */
-#modalRoot,#confirmRoot{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#modalRoot,#confirmRoot{position:fixed;inset:0;z-index:50;display:grid;place-items:center;overflow:hidden;padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 #confirmRoot{z-index:60}
 .scrim{position:absolute;inset:0;background:rgba(6,18,20,.5)}
-.modal{position:relative;background:var(--surface);border-radius:16px;width:100%;max-width:560px;max-height:100%;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);min-width:0}
+.modal{position:relative;background:var(--surface);border-radius:16px;width:100%;max-width:560px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);min-width:0}
 .modal.wide{max-width:860px}
-.modal>header{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal>header{flex:none;display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
 .modal>header h2{font-size:17px;font-weight:800;flex:1;min-width:0}
-.mbody{padding:18px;overflow:auto;display:grid;gap:14px;min-width:0}
-.modal>footer{display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--line);align-items:center;flex-wrap:wrap}
+.mbody{flex:1 1 auto;min-height:0;padding:18px;overflow-y:auto;overscroll-behavior:contain;display:grid;align-content:start;gap:14px;min-width:0;scrollbar-gutter:stable}
+.mbody::-webkit-scrollbar{width:10px}.mbody::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px;border:2px solid var(--surface)}
+.modal>footer{flex:none;display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--line);align-items:center;flex-wrap:wrap}
 .modal>footer .sp{flex:1}
 @media (max-width:620px){
   #modalRoot{place-items:end center;padding:0}
-  #modalRoot .modal{border-radius:16px 16px 0 0;max-height:94%;padding-bottom:env(safe-area-inset-bottom,0px)}
+  #modalRoot .modal{border-radius:16px 16px 0 0;max-height:94vh;max-height:94dvh;padding-bottom:env(safe-area-inset-bottom,0px)}
 }
 .aviso{max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;white-space:pre-wrap;background:var(--bg)}
 .firma-wrap{display:grid;gap:6px}
