@@ -196,6 +196,91 @@ tbody tr.click:hover td{background:var(--surface2)}
 .portal span{font-size:12px;color:var(--mute);display:block;font-weight:600}
 .portal b{font-family:var(--f-mono);font-size:14px;overflow-wrap:anywhere}
 
+/* Fase 2: expediente */
+.sp{flex:1}
+.exp-head{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.exp-title{display:grid;gap:6px;min-width:0;flex:1}
+.exp-title h2{font-size:24px;font-weight:800}
+.exp-meta{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;color:var(--mute);font-size:13.5px}
+.alerta{display:flex;gap:4px 12px;flex-wrap:wrap;align-items:baseline;background:var(--bad-soft);color:var(--ink);border-radius:12px;padding:10px 14px;font-size:14px}
+.alerta b{color:var(--bad);text-transform:uppercase;letter-spacing:.06em;font-size:12px}
+.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:-6px}
+.tabs button{border:0;background:transparent;padding:10px 14px;font-weight:700;font-size:14px;color:var(--mute);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.bar{height:8px;border-radius:999px;background:var(--surface2);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);border-radius:999px}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tools .tl{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);min-width:96px}
+.toolbtn{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}
+.toolbtn.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block;flex:none}
+.odowrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+svg.odo{display:block;width:100%;min-width:700px;height:auto;user-select:none}
+svg.odo .face{fill:var(--surface);stroke:var(--mute);stroke-width:1;cursor:pointer}
+svg.odo .face:hover{fill:var(--accent-soft)}
+svg.odo .face.on:hover{opacity:.85}
+svg.odo .hit{fill:transparent;cursor:pointer}
+svg.odo .tooth.sel .hit{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+svg.odo .tooth.aus .face{opacity:.35}
+svg.odo .num{font:600 12px var(--f-mono);fill:var(--ink);text-anchor:middle;cursor:pointer}
+svg.odo .mk{fill:none;stroke-width:2.6;stroke-linecap:round;pointer-events:none}
+svg.odo .mk.dash{stroke-dasharray:4 3}
+svg.odo .mk.thin{stroke-width:1}
+svg.odo .imp{fill:#9aa4ad;stroke:var(--ink);stroke-width:1}
+svg.odo .tag{font:800 11px var(--f-ui);fill:#8a6d3b;text-anchor:end}
+svg.odo .notadot{fill:var(--mute)}
+svg.odo .pend{fill:var(--accent)}
+svg.odo .axis{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
+svg.odo .side{font:600 10px var(--f-ui);fill:var(--mute);text-transform:uppercase;letter-spacing:.08em}
+.legend-row{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12.5px;color:var(--mute);align-items:center}
+.legend-row>span{display:inline-flex;gap:6px;align-items:center}
+.pendsw{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block}
+.mini{font-size:13px;display:flex;gap:8px;align-items:center}
+.cita-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;gap:8px;min-width:0}
+.cita-card.done{background:var(--ok-soft)}
+.cita-h{display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap}
+.cita-fecha{width:auto!important;padding:5px 8px!important;font-size:13.5px!important}
+.mini-sel{width:auto!important;padding:4px 6px!important;font-size:13px!important;margin-right:6px}
+tr.rowdone td{color:var(--mute)}
+.icon-btn.sm{width:28px;height:28px;font-size:14px}
+.timeline{display:grid;padding:8px 16px 16px}
+.tl-item{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.tl-item:first-child{border-top:0}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--mute);margin-top:6px}
+.tl-dot.tx{background:var(--ok)}
+.tl-h{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;font-size:13.5px}
+.tl-t{white-space:pre-wrap;font-size:14px;margin-top:3px}
+/* Visor 3D */
+.visor-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:980px){.visor-grid{grid-template-columns:minmax(0,1fr)}}
+.visor-col{display:grid;gap:12px;min-width:0}
+.visor{position:relative;height:58vh;min-height:340px;max-height:640px;border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 38%,#29404f,#0d171e 75%);touch-action:none;user-select:none}
+.visor.xr{background:radial-gradient(circle at 50% 40%,#16303a,#03080a 75%)}
+.vov{position:absolute;z-index:2;display:flex;gap:6px}
+.vseg{top:10px;left:10px;background:rgba(255,255,255,.12);border-radius:999px;padding:3px;flex-wrap:wrap}
+.vseg button,.vxr button{border:0;background:transparent;color:#dce8ee;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer}
+.vseg button.on{background:#fff;color:#1c2631}
+.vseg button:disabled{opacity:.4;cursor:not-allowed}
+.vxr{top:10px;right:10px}
+.vxr button{background:rgba(255,255,255,.12)}
+.vxr button.on{background:#7fd3e3;color:#08222a}
+.vleg{bottom:30px;left:10px;right:10px;flex-wrap:wrap;pointer-events:none}
+.vleg>span{display:flex;align-items:center;gap:4px;font-size:11px;color:#cfdde6;background:rgba(0,0,0,.3);padding:3px 7px;border-radius:999px}
+.vhint{bottom:8px;left:0;right:0;justify-content:center;color:#93a9b8;font-size:12px;pointer-events:none}
+.vmsg{position:absolute;inset:0;display:grid;place-items:center;color:#cfdde6;font-size:14px;padding:20px;text-align:center}
+.steps{list-style:none;margin:4px 0;padding:0;display:grid;gap:2px}
+.steps li{display:flex;gap:10px;padding:9px 8px;border-radius:10px;cursor:pointer;opacity:.6}
+.steps li.on{opacity:1;background:var(--accent-soft)}
+.steps li.done{opacity:.85}
+.steps .n{width:24px;height:24px;border-radius:50%;background:var(--surface2);font-size:12px;font-weight:800;display:grid;place-items:center;flex:none}
+.steps li.on .n,.steps li.done .n{background:var(--accent);color:var(--accent-ink)}
+.steps .st{font-weight:700;font-size:14px}
+.steps .sd{font-size:13px;color:var(--mute);margin-top:2px}
+.steps .sc{font-size:13px;font-weight:700;color:var(--accent);margin-top:3px}
+.tot{display:flex;justify-content:space-between;gap:10px;padding-top:8px;border-top:1px solid var(--line);font-size:14px}
+.cita-row{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px;align-items:center}
+.cita-row:last-child{border-bottom:0}
+.cita-row .n{font-weight:800;color:var(--accent)}
 /* Excel */
 .colpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 14px}
 .colpick .check{font-size:13.5px}
@@ -276,7 +361,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1234567890:web:abc123"
 };
 */
-const VERSION_APP = '1.1 · Fase 1';
+const VERSION_APP = '2.0 · Fase 2';
 
 /* ============================ UTILIDADES ============================ */
 const $ = (s, el = document) => el.querySelector(s);
@@ -305,7 +390,7 @@ const UNIDADES = ['pieza','par','cartucho','caja','jeringa','g','ml','sobre','pu
 const COLORES = ['#0e6b70','#b5527a','#4f6bd8','#c27c1a','#6a4fc2','#2d8a52','#c4483c','#3c8dad'];
 
 /* ============================ ESTADO ============================ */
-const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora'];
+const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora','expedientes','planes','notas'];
 const S = { mode: FIREBASE_CONFIG ? 'firebase' : 'demo', data: {}, me: null, view: 'inicio', ui: { pacQ: '', pacF: 'activos', catTab: 'tratamientos', catQ: '', catCat: '', bitU: '' }, unsubs: [] };
 COLS.forEach(c => S.data[c] = {});
 const list = c => Object.entries(S.data[c] || {}).map(([id, v]) => ({ id, ...v }));
@@ -317,7 +402,7 @@ const nombreUsuario = id => get('usuarios', id)?.nombre || '—';
 
 /* ============================ CAPA DE DATOS ============================ */
 const fb = {};
-const DEMO_KEY = 'appDentista.demo.v1';
+const DEMO_KEY = 'appDentista.demo.v2';
 function demoPersist() { try { localStorage.setItem(DEMO_KEY, JSON.stringify(S.data)); } catch (e) {} }
 function demoLoad() { try { const r = localStorage.getItem(DEMO_KEY); if (r) { const d = JSON.parse(r); COLS.forEach(c => d[c] = d[c] || {}); S.data = d; return true; } } catch (e) {} return false; }
 
@@ -374,7 +459,8 @@ function subscribe() {
     if (col === 'usuarios' && o[S.me.id]) S.me = { id: S.me.id, ...o[S.me.id] };
     render();
   }, err => toast('No se pudo leer ' + col + ': ' + err.message)));
-  ['usuarios','sedes','insumos','tratamientos','pacientes','config'].forEach(c => watch(c));
+  ['usuarios','sedes','insumos','tratamientos','pacientes','config','planes'].forEach(c => watch(c));
+  if (S.me.rol !== 'recepcion') { watch('expedientes'); watch('notas'); }
   if (esAdmin()) {
     watch('cuotas');
     watch('bitacora', F.query(F.collection(fb.db, 'bitacora'), F.orderBy('fecha', 'desc'), F.limit(300)));
@@ -527,6 +613,20 @@ function seedDemo() {
     ['p6','Daniel','Ochoa','Meza','2001-12-05','M','6692223344','dan.ochoa@correo.mx','s_ext1','u_jorge',null]
   ];
   P.forEach(([id,nombres,apPaterno,apMaterno,fechaNac,sexo,telefono,email,sedePref,dentistaResp,cons]) => D.pacientes[id] = { nombres, apPaterno, apMaterno, fechaNac, sexo, telefono, email, sedePref, dentistaResp, ocupacion: '', domicilio: '', cp: '', comoNosConocio: '', contactoEmergencia: { nombre: '', telefono: '' }, notas: '', estado: 'activo', consentimiento: cons, ...sys });
+  /* Expediente, odontograma y plan de ejemplo (María Fernanda) */
+  const hace = n => sumarDias(hoyISO(), -n);
+  const odo1 = {}; [[16, { caras: { O: 'caries', M: 'caries' }, hall: ['pulpa'] }], [26, { caras: { V: 'caries' } }], [47, { caras: { O: 'caries' } }], [11, { hall: ['fractura'] }], [36, { estado: 'ausente' }], [38, { estado: 'retenido' }], [14, { caras: { O: 'resina' } }]].forEach(([f, x]) => odo1[f] = dNorm(x));
+  const mkIt = (clave, dientes, dent, caras = []) => { const tr = D.tratamientos['t_' + clave]; return { id: newId('it'), tratamientoId: 't_' + clave, clave, nombre: tr.nombre, categoria: tr.categoria, animacion: tr.animacion, aplicaA: tr.aplicaA, duracionMin: tr.duracionMin, sesiones: tr.sesiones, precio: tr.precio, descuentoPct: 0, dentistaId: dent, caras, dientes, estado: 'pendiente', hechas: [], citas: Array(tr.sesiones).fill(null) }; };
+  const pl1 = organizarCitas({ items: [mkIt('PR-01', [], 'u_ana'), mkIt('EN-02', [16], 'u_ana'), mkIt('PT-01', [16], 'u_ana'), mkIt('CX-02', [38], 'u_jorge'), mkIt('OP-01', [26], 'u_ana', ['V']), mkIt('OP-01', [47], 'u_ana', ['O']), mkIt('OP-03', [11], 'u_ana'), mkIt('IM-01', [36], 'u_luis'), mkIt('IM-02', [36], 'u_luis')], citas: [] }, { inicio: hace(14), intervalo: 7, maxMin: 90 });
+  const odoHoy = deep(odo1), notas = [];
+  pl1.items.forEach(it => { it.citas.forEach((c, k) => { if (c <= 1) { it.hechas[k] = { fecha: pl1.citas[c].fecha, dentistaId: it.dentistaId, registradoPor: it.dentistaId }; notas.push({ fecha: pl1.citas[c].fecha + 'T11:00:00', it, k }); } });
+    it.hechas = Array.from({ length: it.sesiones }, (_, i) => it.hechas[i] || null);
+    const n = it.hechas.filter(Boolean).length; it.estado = n === it.sesiones ? 'realizado' : n ? 'en_proceso' : 'pendiente';
+    if (it.estado === 'realizado' && EFECTO[it.animacion]) it.dientes.forEach(d => { const tt = dNorm(odoHoy[d]); EFECTO[it.animacion](tt, it); odoHoy[d] = tt; }); });
+  D.planes.pl_demo1 = { pacienteId: 'p1', version: 1, estado: 'en_tratamiento', items: pl1.items, citas: pl1.citas, notas: 'Prefiere citas por la mañana.', aceptado: { fecha: hace(16) + 'T10:00:00', por: 'u_ana', medio: 'Firmó presupuesto en papel' }, ...sys };
+  D.expedientes.p1 = { pacienteId: 'p1', odontograma: odoHoy, odoInicial: odo1, odoInicialFecha: hace(20) + 'T10:00:00', historia: { motivo: 'Dolor en muela superior derecha al masticar', enfermedades: ['Hipertensión'], alergias: 'Penicilina', medicamentos: 'Losartán 50 mg', cirugias: '', presion: '130/85', ultimaVisita: 'Hace 3 años', embarazo: false, habitos: ['Bruxismo (rechina los dientes)'], observaciones: '', actualizado: t, actualizadoPor: 'u_ana' }, ...sys };
+  D.notas.n_demo0 = { pacienteId: 'p1', fecha: hace(20) + 'T10:30:00', autorId: 'u_ana', autor: 'Dra. Ana Robles', tipo: 'nota', texto: 'Valoración inicial. Dolor espontáneo en 16, prueba de frío positiva prolongada. Se indica endodoncia y corona. Radiografía: 38 retenido mesioangulado.' };
+  notas.forEach(({ fecha, it, k }, i) => D.notas['n_demo' + (i + 1)] = { pacienteId: 'p1', fecha, autorId: it.dentistaId, autor: D.usuarios[it.dentistaId].nombre, dentistaId: it.dentistaId, tipo: 'tratamiento', planId: 'pl_demo1', itemId: it.id, texto: `${it.nombre}${it.dientes.length ? ' · diente ' + it.dientes.join(', ') : ''}${it.sesiones > 1 ? ` · sesión ${k + 1} de ${it.sesiones}` : ''}\nSin complicaciones.` });
   D.bitacora[newId('b')] = { fecha: t, uid: 'u_admin', usuario: 'Administrador principal', coleccion: 'config', docId: 'clinica', accion: 'Alta', resumen: 'Se cargaron los datos de ejemplo' };
   S.data = D; demoPersist();
 }
@@ -678,18 +778,20 @@ function sinConsentimiento() { const v = clinica().aviso?.version || 1; return l
 function render() {
   if (!S.me || $('#app').hidden) return;
   const vis = VIEWS.filter(v => !v.admin || esAdmin());
-  if (!vis.find(v => v.id === S.view)) S.view = 'inicio';
+  if (!vis.find(v => v.id === S.view) && S.view !== 'expediente') S.view = 'inicio';
+  const navV = S.view === 'expediente' ? 'pacientes' : S.view;
   const pend = sinConsentimiento().length;
-  $('#nav').innerHTML = vis.map(v => `<button data-act="nav" data-view="${v.id}" class="${S.view === v.id ? 'on' : ''}">${I[v.icon]}<span>${v.label}</span>${v.id === 'pacientes' && pend ? `<span class="badge" title="Pacientes sin consentimiento vigente">${pend}</span>` : ''}</button>`).join('');
-  $('#bnav').innerHTML = vis.map(v => `<button data-act="nav" data-view="${v.id}" class="${S.view === v.id ? 'on' : ''}">${I[v.icon]}<span>${v.label.split(' ')[0]}</span></button>`).join('');
+  $('#nav').innerHTML = vis.map(v => `<button data-act="nav" data-view="${v.id}" class="${navV === v.id ? 'on' : ''}">${I[v.icon]}<span>${v.label}</span>${v.id === 'pacientes' && pend ? `<span class="badge" title="Pacientes sin consentimiento vigente">${pend}</span>` : ''}</button>`).join('');
+  $('#bnav').innerHTML = vis.map(v => `<button data-act="nav" data-view="${v.id}" class="${navV === v.id ? 'on' : ''}">${I[v.icon]}<span>${v.label.split(' ')[0]}</span></button>`).join('');
   const c = clinica();
   $('#sideClinic').textContent = c.nombre; $('#topClinic').textContent = c.nombre;
   $('#meBox').innerHTML = `<div style="display:flex;gap:10px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div style="min-width:0"><b>${esc(S.me.nombre)}</b><span>${ROLES[S.me.rol]}</span></div></div><button class="btn sm" data-act="salir">${S.mode === 'demo' ? 'Cambiar de usuario' : 'Cerrar sesión'}</button>`;
-  const V = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora }[S.view];
+  const VW = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora, expediente: vExpediente }[S.view];
   const view = $('#view');
   const ae = document.activeElement, keep = ae && view.contains(ae) && ae.id ? { id: ae.id, s: ae.selectionStart } : null;
-  view.innerHTML = V();
+  view.innerHTML = VW();
   if (keep) { const el = document.getElementById(keep.id); if (el) { el.focus(); try { el.setSelectionRange(keep.s, keep.s); } catch (e) {} } }
+  if (S.view === 'expediente' && S.ui.expTab === 'visor') montarVisor();
 }
 
 /* ============================ VISTA: INICIO ============================ */
@@ -808,7 +910,7 @@ function formPaciente(id) {
       if (!id) data.estado = 'activo';
       const nid = await guardar('pacientes', id, data, (id ? 'Editó datos de ' : 'Registró a ') + nombreCompleto(data), { nuevo: !id });
       toast(id ? 'Cambios guardados.' : 'Paciente registrado.');
-      setTimeout(() => verPaciente(nid), 0);
+      setTimeout(() => abrirExpediente(nid, 'resumen'), 0);
     } });
 }
 function verPaciente(id) {
@@ -886,7 +988,7 @@ function formConsentimiento(id) {
       const cons = { aceptado: true, version: v, fecha: nowISO(), medio, registradoPor: S.me.id, tutor: menor ? fv(f, 'tutor') : '', firma: medio === 'pantalla' ? f._pad.data() : '',
         noInvitaciones: f.elements.noInvitaciones.checked, noPromociones: f.elements.noPromociones.checked, autorizaFotos: f.elements.autorizaFotos.checked };
       await guardar('pacientes', id, { consentimiento: cons }, `Registró consentimiento (aviso v${v}) de ${nombreCompleto(p)}`);
-      toast('Consentimiento registrado.'); setTimeout(() => verPaciente(id), 0);
+      toast('Consentimiento registrado.'); if (S.view !== 'expediente') setTimeout(() => abrirExpediente(id, 'resumen'), 0);
     } });
 }
 function firmaPad(cv) {
@@ -1463,15 +1565,869 @@ async function ejecutarImport(ent, filas, opts) {
   return { nuevos, actualizados };
 }
 
+/* =====================================================================
+   FASE 2 · EXPEDIENTE, ODONTOGRAMA, PLAN DE TRATAMIENTO Y VISOR 3D
+   ===================================================================== */
+const esClinico = () => S.me && (S.me.rol === 'admin' || S.me.rol === 'dentista');
+const deep = o => JSON.parse(JSON.stringify(o ?? null));
+const hoyISO = () => { const d = new Date(); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+const sumarDias = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+
+/* Guarda varios documentos en una sola operación, con un registro en la bitácora */
+async function guardarLote(ops, resumen) {
+  const t = nowISO();
+  const items = ops.map(o => ({ col: o.col, id: o.id || newId(), data: { ...o.data, actualizado: t, actualizadoPor: S.me.id, ...(o.nuevo ? { creado: t, creadoPor: S.me.id } : {}) }, merge: !o.reemplazar }));
+  const log = { fecha: t, uid: S.me.id, usuario: S.me.nombre, coleccion: ops[0].col, docId: items[0].id, accion: ops.some(o => o.nuevo) ? 'Alta' : 'Cambio', resumen };
+  if (S.mode === 'demo') {
+    items.forEach(o => S.data[o.col][o.id] = o.merge ? { ...(S.data[o.col][o.id] || {}), ...o.data } : o.data);
+    S.data.bitacora[newId('b')] = log; demoPersist(); render();
+  } else {
+    const F = fb.F, b = F.writeBatch(fb.db);
+    /* mergeFields: cada campo de primer nivel se reemplaza completo (así se pueden quitar dientes, caras o citas) */
+    items.forEach(o => b.set(F.doc(fb.db, o.col, o.id), o.data, o.merge ? { mergeFields: Object.keys(o.data) } : {}));
+    b.set(F.doc(F.collection(fb.db, 'bitacora')), log);
+    await b.commit();
+  }
+  return items.map(o => o.id);
+}
+
+/* ---------------- Dientes y diagnósticos ---------------- */
+const D_SUP = [18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28];
+const D_INF = [48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38];
+const D_TODOS = [...D_SUP, ...D_INF];
+function nombreDiente(fdi) {
+  const q = Math.floor(fdi / 10), d = fdi % 10;
+  const n = ['', 'Incisivo central', 'Incisivo lateral', 'Canino', 'Primer premolar', 'Segundo premolar', 'Primer molar', 'Segundo molar', 'Tercer molar'][d];
+  return n + ' ' + ({ 1: 'superior derecho', 2: 'superior izquierdo', 3: 'inferior izquierdo', 4: 'inferior derecho' })[q];
+}
+const CARAS = { V: 'vestibular', L: 'lingual / palatina', M: 'mesial', D: 'distal', O: 'oclusal / incisal' };
+const T_CARA = {
+  caries: { l: 'Caries', c: '#d64545' }, resina: { l: 'Resina existente', c: '#3a6fd8' },
+  sellador: { l: 'Sellador', c: '#2a9d8f' }, fractura: { l: 'Fractura', c: '#d39a12' }, borrar: { l: 'Borrar cara', c: '' }
+};
+const T_DIENTE = {
+  pulpa: { l: 'Nervio afectado', c: '#a3201c', g: 'hall' }, fractura: { l: 'Diente fracturado', c: '#d39a12', g: 'hall' },
+  extraccion: { l: 'Extracción indicada', c: '#c4302b', g: 'hall' }, movilidad: { l: 'Movilidad', c: '#8a6d3b', g: 'hall' },
+  corona: { l: 'Corona existente', c: '#3a6fd8', g: 'prev' }, endodoncia: { l: 'Endodoncia previa', c: '#3a6fd8', g: 'prev' },
+  ausente: { l: 'Ausente', c: '#8794a3', g: 'estado' }, retenido: { l: 'Retenido', c: '#7b5bd6', g: 'estado' }, implante: { l: 'Implante', c: '#5d6f80', g: 'estado' },
+  sano: { l: 'Limpiar diente', c: '', g: 'reset' }
+};
+const dVacio = () => ({ estado: 'presente', caras: {}, hall: [], prev: [], nota: '' });
+const dNorm = t => ({ ...dVacio(), ...(t || {}), caras: { ...(t?.caras || {}) }, hall: [...(t?.hall || [])], prev: [...(t?.prev || [])] });
+const dTieneAlgo = t => t && (t.estado !== 'presente' || Object.keys(t.caras || {}).length || (t.hall || []).length || (t.prev || []).length || t.nota);
+function dxTexto(t) {
+  t = dNorm(t); const out = [];
+  if (t.estado === 'ausente') out.push('Ausente'); if (t.estado === 'retenido') out.push('Muela o diente retenido'); if (t.estado === 'implante') out.push('Implante');
+  const porTipo = {}; Object.entries(t.caras).forEach(([k, v]) => (porTipo[v] = porTipo[v] || []).push(CARAS[k].split(' /')[0]));
+  if (porTipo.caries) out.push('Caries en cara ' + porTipo.caries.join(', '));
+  if (porTipo.fractura) out.push('Fractura en cara ' + porTipo.fractura.join(', '));
+  if (porTipo.resina) out.push('Resina en cara ' + porTipo.resina.join(', '));
+  if (porTipo.sellador) out.push('Sellador');
+  t.hall.forEach(h => out.push(T_DIENTE[h]?.l)); t.prev.forEach(h => out.push(T_DIENTE[h]?.l));
+  if (t.nota) out.push(t.nota);
+  return out.filter(Boolean).join(' · ') || 'Sano';
+}
+function dColor(t) {
+  t = dNorm(t);
+  if (t.hall.includes('pulpa')) return T_DIENTE.pulpa.c;
+  if (Object.values(t.caras).includes('caries')) return T_CARA.caries.c;
+  if (t.hall.includes('fractura') || Object.values(t.caras).includes('fractura')) return T_CARA.fractura.c;
+  if (t.estado === 'retenido') return T_DIENTE.retenido.c;
+  if (t.hall.includes('extraccion')) return T_DIENTE.extraccion.c;
+  if (t.estado === 'ausente') return T_DIENTE.ausente.c;
+  return '';
+}
+/* Qué le pasa al odontograma cuando se termina un tratamiento */
+const EFECTO = {
+  resina: (t, it) => { const cs = it.caras?.length ? it.caras : Object.keys(t.caras).filter(k => t.caras[k] === 'caries'); (cs.length ? cs : ['O']).forEach(k => t.caras[k] = 'resina'); },
+  reconstruccion: t => { t.hall = t.hall.filter(h => h !== 'fractura'); Object.keys(t.caras).forEach(k => { if (t.caras[k] === 'fractura') t.caras[k] = 'resina'; }); },
+  sellador: t => { if (!t.caras.O) t.caras.O = 'sellador'; },
+  endodoncia: t => { t.hall = t.hall.filter(h => h !== 'pulpa'); if (!t.prev.includes('endodoncia')) t.prev.push('endodoncia'); Object.keys(t.caras).forEach(k => { if (t.caras[k] === 'caries') t.caras[k] = 'resina'; }); },
+  corona: t => { t.hall = t.hall.filter(h => h !== 'fractura'); t.caras = {}; if (!t.prev.includes('corona')) t.prev.push('corona'); },
+  extraccion: t => { Object.assign(t, dVacio(), { estado: 'ausente' }); },
+  extraccion_retenido: t => { Object.assign(t, dVacio(), { estado: 'ausente' }); },
+  implante: t => { Object.assign(t, dVacio(), { estado: 'implante' }); },
+  corona_implante: t => { t.estado = 'implante'; t.prev = ['corona']; t.hall = []; t.caras = {}; }
+};
+
+/* ---------------- Datos del paciente ---------------- */
+const expedienteDe = pid => get('expedientes', pid) || { odontograma: {}, historia: {} };
+const planesDe = pid => list('planes').filter(p => p.pacienteId === pid).sort((a, b) => b.version - a.version);
+const planActivo = pid => planesDe(pid).find(p => !['reemplazado', 'cancelado'].includes(p.estado)) || null;
+const notasDe = pid => list('notas').filter(n => n.pacienteId === pid).sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+function alertasClinicas(h) {
+  h = h || {}; const a = [];
+  if (h.alergias) a.push('Alergias: ' + h.alergias);
+  (h.enfermedades || []).forEach(e => a.push(e));
+  if (h.embarazo) a.push('Embarazo');
+  if (h.medicamentos) a.push('Medicamentos: ' + h.medicamentos);
+  return a;
+}
+
+/* ---------------- Página del expediente ---------------- */
+function abrirExpediente(id, tab) {
+  closeModal();
+  S.ui.pacId = id; S.ui.expTab = tab || S.ui.expTab || 'resumen';
+  if (S.ui.odo?.pacId !== id) S.ui.odo = null;
+  S.view = 'expediente'; render(); window.scrollTo(0, 0);
+}
+function vExpediente() {
+  const p = get('pacientes', S.ui.pacId);
+  if (!p) return `<div class="panel"><div class="empty">No se encontró el paciente. <button class="btn" data-act="nav" data-view="pacientes">Volver a pacientes</button></div></div>`;
+  const clin = esClinico();
+  const tabs = [['resumen', 'Resumen'], ...(clin ? [['historia', 'Historia clínica'], ['odontograma', 'Odontograma']] : []), ['plan', 'Plan y presupuesto'], ...(clin ? [['notas', 'Notas de evolución'], ['visor', 'Visor 3D']] : [])];
+  if (!tabs.find(t => t[0] === S.ui.expTab)) S.ui.expTab = 'resumen';
+  const e = edad(p.fechaNac), ex = expedienteDe(p.id), al = clin ? alertasClinicas(ex.historia) : [];
+  const pa = planActivo(p.id);
+  const body = { resumen: tabResumen, historia: tabHistoria, odontograma: tabOdontograma, plan: tabPlan, notas: tabNotas, visor: tabVisor }[S.ui.expTab](p);
+  return `<div class="exp-head">
+      <button class="btn sm ghost" data-act="nav" data-view="pacientes">← Pacientes</button>
+      <div class="exp-title"><h2>${esc(nombreCompleto(p))}</h2>
+        <div class="exp-meta"><span>${e !== null ? e + ' años' : ''}</span><span class="mono">${esc(p.telefono || '')}</span>${p.dentistaResp ? `<span>${esc(nombreUsuario(p.dentistaResp))}</span>` : ''}${estadoConsent(p)}${pa ? `<span class="pill ${PLAN_EST[pa.estado].c}">Plan v${pa.version}: ${PLAN_EST[pa.estado].l}</span>` : ''}</div></div>
+    </div>
+    ${al.length ? `<div class="alerta" role="alert"><b>Atención clínica</b><span>${al.map(esc).join(' · ')}</span></div>` : ''}
+    <nav class="tabs" aria-label="Secciones del expediente">${tabs.map(([k, l]) => `<button data-act="exp-tab" data-tab="${k}" class="${S.ui.expTab === k ? 'on' : ''}">${l}</button>`).join('')}</nav>
+    ${body}`;
+}
+
+/* ---------------- Resumen ---------------- */
+function tabResumen(p) {
+  const e = edad(p.fechaNac), d = get('usuarios', p.dentistaResp), s = get('sedes', p.sedePref), c = p.consentimiento;
+  const tel = telDigits(p.telefono), wa = waLink(p.telefono), pa = planActivo(p.id);
+  const tot = pa ? totalesPlan(pa) : null;
+  return `<div class="two">
+    <div style="display:grid;gap:18px">
+      <div class="panel"><div class="panel-h"><h3>Datos del paciente</h3><span class="sp"></span><button class="btn sm" data-act="pac-editar">Editar</button></div><div class="panel-b" style="display:grid;gap:14px">
+        <div class="quick">${tel ? `<a class="btn sm" href="tel:${tel}">Llamar · <span class="mono">${esc(p.telefono)}</span></a>` : ''}${wa ? `<a class="btn sm" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>` : ''}${p.email ? `<a class="btn sm" href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : ''}</div>
+        <dl class="kv" style="margin:0">
+          <dt>Nacimiento</dt><dd>${fechaCorta(p.fechaNac)}${e !== null ? ` · ${e} años` : ''}</dd>
+          <dt>Sexo</dt><dd>${{ F: 'Femenino', M: 'Masculino', O: 'Otro' }[p.sexo] || '—'}</dd>
+          <dt>Ocupación</dt><dd>${esc(p.ocupacion) || '—'}</dd>
+          <dt>Domicilio</dt><dd>${esc(p.domicilio) || '—'}${p.cp ? ` · CP <span class="mono">${esc(p.cp)}</span>` : ''}</dd>
+          <dt>Emergencia</dt><dd>${esc(p.contactoEmergencia?.nombre) || '—'}${p.contactoEmergencia?.telefono ? ` · <span class="mono">${esc(p.contactoEmergencia.telefono)}</span>` : ''}</dd>
+          <dt>Dentista resp.</dt><dd>${d ? esc(d.nombre) : '—'}</dd>
+          <dt>Sede habitual</dt><dd>${s ? esc(s.nombre) : '—'}</dd>
+          <dt>Registro</dt><dd>${fechaCorta(p.creado)} por ${esc(nombreUsuario(p.creadoPor))}</dd>
+        </dl>
+        ${p.notas ? `<div class="info"><b>Notas:</b> ${esc(p.notas)}</div>` : ''}
+        <div class="portal"><div><span>Usuario del portal</span><b>${esc(usuarioPortal(p))}</b></div><div><span>Contraseña</span><b>${esc(clavePortal(p.fechaNac))}</b></div><span class="mute" style="font-size:12.5px">El portal se activa en la fase 5.</span></div>
+        <div><button class="btn sm ${p.estado === 'baja' ? '' : 'danger'}" data-act="pac-baja">${p.estado === 'baja' ? 'Reactivar paciente' : 'Dar de baja'}</button></div>
+      </div></div>
+      ${extrasHTML(p.extras)}
+    </div>
+    <div style="display:grid;gap:18px">
+      <div class="panel"><div class="panel-h"><h3>Plan de tratamiento</h3></div><div class="panel-b">
+        ${pa ? `<dl class="kv" style="margin:0"><dt>Versión</dt><dd>v${pa.version} · <span class="pill ${PLAN_EST[pa.estado].c}">${PLAN_EST[pa.estado].l}</span></dd><dt>Total</dt><dd class="num"><b>${money(tot.total)}</b></dd><dt>Realizado</dt><dd class="num">${money(tot.realizado)} · ${tot.pctAvance}% del plan</dd><dt>Citas</dt><dd>${tot.citas} propuestas · ${tot.citasHechas} completadas</dd></dl>
+          <div class="bar" style="margin-top:12px"><span style="width:${tot.pctAvance}%"></span></div>
+          <div style="margin-top:12px"><button class="btn sm" data-act="exp-tab" data-tab="plan">Ver plan</button></div>` : `<p class="mute" style="margin:0">Sin plan de tratamiento.</p>${esClinico() ? '<div style="margin-top:10px"><button class="btn sm primary" data-act="exp-tab" data-tab="odontograma">Empezar por el odontograma</button></div>' : ''}`}
+      </div></div>
+      <div class="panel"><div class="panel-h"><h3>Consentimiento y aviso</h3></div><div class="panel-b" style="display:grid;gap:10px">
+        ${c?.aceptado ? `<dl class="kv" style="margin:0"><dt>Firmado</dt><dd>${fechaHora(c.fecha)}</dd><dt>Versión</dt><dd>v${c.version || 1}${(c.version || 1) < (clinica().aviso?.version || 1) ? ' <span class="pill warn">Hay una versión más reciente</span>' : ''}</dd><dt>Medio</dt><dd>${c.medio === 'pantalla' ? 'Firma en pantalla' : 'Firma en papel'}</dd>${c.tutor ? `<dt>Tutor</dt><dd>${esc(c.tutor)}</dd>` : ''}<dt>Adicionales</dt><dd>${[c.noInvitaciones ? 'Sin invitaciones' : 'Acepta invitaciones', c.noPromociones ? 'sin promociones' : 'acepta promociones', c.autorizaFotos ? 'autoriza fotos anónimas' : 'no autoriza fotos'].join(' · ')}</dd></dl>${c.firma ? `<img class="firma-img" src="${c.firma}" alt="Firma del paciente">` : ''}` : '<p class="mute" style="margin:0">Aún no firma el aviso de privacidad. Regístralo antes de capturar datos clínicos.</p>'}
+        <div><button class="btn sm ${c?.aceptado ? '' : 'primary'}" data-act="pac-consent">${c?.aceptado ? 'Registrar nueva firma' : 'Registrar consentimiento'}</button></div>
+      </div></div>
+    </div></div>`;
+}
+
+/* ---------------- Historia clínica ---------------- */
+const ENFERMEDADES = ['Diabetes', 'Hipertensión', 'Cardiopatía', 'Problemas de coagulación', 'Asma', 'Epilepsia', 'Enfermedad renal', 'Enfermedad hepática', 'VIH', 'Hepatitis', 'Tiroides', 'Cáncer o tratamiento oncológico', 'Osteoporosis / bifosfonatos'];
+const HABITOS = ['Fuma', 'Bruxismo (rechina los dientes)', 'Se muerde las uñas', 'Respira por la boca', 'Consumo frecuente de azúcar'];
+function tabHistoria(p) {
+  const h = expedienteDe(p.id).historia || {};
+  const vacio = !Object.keys(h).filter(k => !['actualizado', 'actualizadoPor'].includes(k)).length;
+  const fila = (l, v) => `<dt>${l}</dt><dd>${v ? esc(v) : '<span class="mute">—</span>'}</dd>`;
+  return `<div class="panel"><div class="panel-h"><h3>Historia clínica</h3>${h.actualizado ? `<span class="mute" style="font-size:13px">Actualizada ${fechaHora(h.actualizado)} por ${esc(nombreUsuario(h.actualizadoPor))}</span>` : ''}<span class="sp"></span><button class="btn sm ${vacio ? 'primary' : ''}" data-act="historia-editar">${vacio ? 'Capturar historia clínica' : 'Actualizar'}</button></div>
+    <div class="panel-b">${vacio ? '<div class="empty">Aún no se captura la historia clínica.</div>' : `<dl class="kv" style="margin:0">
+      ${fila('Motivo de consulta', h.motivo)}
+      <dt>Enfermedades</dt><dd>${(h.enfermedades || []).length ? h.enfermedades.map(x => `<span class="pill warn">${esc(x)}</span>`).join(' ') : '<span class="mute">Ninguna referida</span>'}</dd>
+      ${fila('Alergias', h.alergias)}${fila('Medicamentos actuales', h.medicamentos)}${fila('Cirugías u hospitalizaciones', h.cirugias)}
+      <dt>Embarazo</dt><dd>${h.embarazo ? '<span class="pill warn">Sí</span>' : 'No'}</dd>
+      <dt>Hábitos</dt><dd>${(h.habitos || []).length ? h.habitos.map(esc).join(', ') : '—'}</dd>
+      ${fila('Presión arterial', h.presion)}${fila('Última visita al dentista', h.ultimaVisita)}${fila('Observaciones', h.observaciones)}
+    </dl>`}</div></div>`;
+}
+function formHistoria() {
+  const p = get('pacientes', S.ui.pacId), h = expedienteDe(p.id).historia || {};
+  const chk = (name, v, arr) => `<label class="check"><input type="checkbox" name="${name}" value="${esc(v)}" ${(arr || []).includes(v) ? 'checked' : ''}> ${esc(v)}</label>`;
+  modal({ title: 'Historia clínica · ' + esc(nombreCompleto(p)), wide: true, submit: 'Guardar historia clínica', body: `
+    ${!p.consentimiento?.aceptado ? '<div class="infowarn">El paciente aún no firma el aviso de privacidad. Regístralo antes de capturar sus datos de salud.</div>' : ''}
+    <label class="f">Motivo de consulta<textarea name="motivo" id="hcMotivo" style="min-height:60px">${esc(h.motivo)}</textarea></label>
+    <fieldset><legend>Enfermedades</legend><div class="colpick">${ENFERMEDADES.map(x => chk('enf', x, h.enfermedades)).join('')}</div>
+      <label class="f">Otra enfermedad<input type="text" name="enfOtra" id="hcEnfOtra" value="${esc((h.enfermedades || []).filter(x => !ENFERMEDADES.includes(x)).join(', '))}"></label></fieldset>
+    <div class="grid2">
+      <label class="f">Alergias<input type="text" name="alergias" id="hcAlergias" value="${esc(h.alergias)}" placeholder="Ej. penicilina, látex. Vacío si no tiene"></label>
+      <label class="f">Medicamentos actuales<input type="text" name="medicamentos" id="hcMed" value="${esc(h.medicamentos)}"></label>
+      <label class="f">Cirugías u hospitalizaciones<input type="text" name="cirugias" id="hcCir" value="${esc(h.cirugias)}"></label>
+      <label class="f">Presión arterial<input type="text" name="presion" id="hcPres" value="${esc(h.presion)}" placeholder="120/80"></label>
+      <label class="f">Última visita al dentista<input type="text" name="ultimaVisita" id="hcUlt" value="${esc(h.ultimaVisita)}" placeholder="Ej. hace 2 años"></label>
+      <label class="check" style="align-self:end"><input type="checkbox" name="embarazo" id="hcEmb" ${h.embarazo ? 'checked' : ''}> Embarazo actual</label>
+    </div>
+    <fieldset><legend>Hábitos</legend><div class="colpick">${HABITOS.map(x => chk('hab', x, h.habitos)).join('')}</div></fieldset>
+    <label class="f">Observaciones<textarea name="observaciones" id="hcObs" style="min-height:60px">${esc(h.observaciones)}</textarea></label>`,
+    onSubmit: async f => {
+      const enf = $$('input[name=enf]:checked', f).map(x => x.value).concat(fv(f, 'enfOtra').split(',').map(x => x.trim()).filter(Boolean));
+      const historia = { motivo: fv(f, 'motivo'), enfermedades: [...new Set(enf)], alergias: fv(f, 'alergias'), medicamentos: fv(f, 'medicamentos'), cirugias: fv(f, 'cirugias'), presion: fv(f, 'presion'), ultimaVisita: fv(f, 'ultimaVisita'), embarazo: f.elements.embarazo.checked, habitos: $$('input[name=hab]:checked', f).map(x => x.value), observaciones: fv(f, 'observaciones'), actualizado: nowISO(), actualizadoPor: S.me.id };
+      await guardar('expedientes', p.id, { pacienteId: p.id, historia }, `Actualizó la historia clínica de ${nombreCompleto(p)}`, { nuevo: !get('expedientes', p.id) });
+      toast('Historia clínica guardada.');
+    } });
+}
+
+/* ---------------- Odontograma ---------------- */
+function odoTrabajo(pid) {
+  if (!S.ui.odo || S.ui.odo.pacId !== pid) S.ui.odo = { pacId: pid, data: deep(expedienteDe(pid).odontograma || {}) || {}, dirty: false, tool: 'c:caries', sel: [], ver: null };
+  return S.ui.odo;
+}
+function carasCaja(fdi) {
+  const q = Math.floor(fdi / 10), sup = q === 1 || q === 2, izq = q === 1 || q === 4;
+  return { top: sup ? 'V' : 'L', bottom: sup ? 'L' : 'V', left: izq ? 'D' : 'M', right: izq ? 'M' : 'D', center: 'O' };
+}
+function odoSVG(data, { sel = [], pend = {}, interactivo = true } = {}) {
+  const W = 40, G = 7, QG = 18, X0 = 14;
+  const xOf = i => X0 + i * (W + G) + (i >= 8 ? QG : 0);
+  const out = [];
+  const tooth = (fdi, x, y, numY) => {
+    const t = dNorm(data[fdi]), cc = carasCaja(fdi), act = interactivo ? `data-act="odo" data-fdi="${fdi}"` : '';
+    const face = (k, pts) => { const v = t.caras[cc[k]], col = v ? T_CARA[v]?.c : ''; return `<polygon points="${pts}" class="face${v ? ' on' : ''}" ${col ? `style="fill:${col}"` : ''} ${interactivo ? `data-act="odo" data-fdi="${fdi}" data-cara="${cc[k]}"` : ''}><title>${fdi} · cara ${CARAS[cc[k]]}${v ? ': ' + T_CARA[v].l : ''}</title></polygon>`; };
+    const P = (a) => a.map(([px, py]) => `${x + px},${y + py}`).join(' ');
+    const ausente = t.estado === 'ausente', s = sel.includes(fdi);
+    out.push(`<g class="tooth${ausente ? ' aus' : ''}${s ? ' sel' : ''}">`);
+    out.push(`<rect x="${x - 3}" y="${Math.min(y, numY - 14) - 3}" width="${W + 6}" height="${W + 26}" rx="6" class="hit" ${act}></rect>`);
+    out.push(`<text x="${x + W / 2}" y="${numY}" class="num" ${act}>${fdi}</text>`);
+    out.push(face('top', P([[0, 0], [W, 0], [28, 12], [12, 12]])), face('bottom', P([[0, W], [W, W], [28, 28], [12, 28]])), face('left', P([[0, 0], [12, 12], [12, 28], [0, W]])), face('right', P([[W, 0], [W, W], [28, 28], [28, 12]])));
+    const cv = t.caras.O, ccol = cv ? T_CARA[cv]?.c : '';
+    out.push(`<rect x="${x + 12}" y="${y + 12}" width="16" height="16" class="face${cv ? ' on' : ''}" ${ccol ? `style="fill:${ccol}"` : ''} ${interactivo ? `data-act="odo" data-fdi="${fdi}" data-cara="O"` : ''}><title>${fdi} · cara oclusal / incisal${cv ? ': ' + T_CARA[cv].l : ''}</title></rect>`);
+    if (ausente) out.push(`<path d="M${x - 2} ${y - 2} L${x + W + 2} ${y + W + 2} M${x + W + 2} ${y - 2} L${x - 2} ${y + W + 2}" class="mk" style="stroke:${T_DIENTE.ausente.c}" ${act}/>`);
+    if (t.hall.includes('extraccion')) out.push(`<path d="M${x - 2} ${y - 2} L${x + W + 2} ${y + W + 2} M${x + W + 2} ${y - 2} L${x - 2} ${y + W + 2}" class="mk" style="stroke:${T_DIENTE.extraccion.c}" ${act}/>`);
+    if (t.estado === 'retenido') out.push(`<rect x="${x - 4}" y="${y - 4}" width="${W + 8}" height="${W + 8}" rx="8" class="mk dash" style="stroke:${T_DIENTE.retenido.c}" ${act}/>`);
+    if (t.prev.includes('corona')) out.push(`<circle cx="${x + W / 2}" cy="${y + W / 2}" r="${W / 2 + 3}" class="mk" style="stroke:${T_DIENTE.corona.c}" ${act}/>`);
+    if (t.estado === 'implante') out.push(`<g ${act}><rect x="${x + 15}" y="${y + 6}" width="10" height="28" rx="3" class="imp"/><path d="M${x + 13} ${y + 13}h14M${x + 13} ${y + 20}h14M${x + 13} ${y + 27}h14" class="mk thin" style="stroke:var(--ink)"/></g>`);
+    const ry = numY < y ? y - 9 : y + W + 4, rl = 6;
+    if (t.prev.includes('endodoncia')) out.push(`<path d="M${x + W / 2 - 4} ${ry} v${rl}" class="mk" style="stroke:${T_DIENTE.endodoncia.c}" ${act}/>`);
+    if (t.hall.includes('pulpa')) out.push(`<path d="M${x + W / 2 + 4} ${ry} v${rl}" class="mk" style="stroke:${T_DIENTE.pulpa.c}" ${act}/>`);
+    if (t.hall.includes('fractura')) out.push(`<path d="M${x + 4} ${y + 6} l8 8 l-4 6 l10 10 l-3 6" class="mk" style="stroke:${T_DIENTE.fractura.c}" ${act}/>`);
+    if (t.hall.includes('movilidad')) out.push(`<text x="${x + W - 2}" y="${numY}" class="tag" ${act}>M</text>`);
+    if (t.nota) out.push(`<circle cx="${x + 3}" cy="${numY - 4}" r="2.5" class="notadot" ${act}><title>${esc(t.nota)}</title></circle>`);
+    if (pend[fdi]) out.push(`<circle cx="${x + W / 2}" cy="${numY < y ? y + W + 9 : y - 9}" r="3.4" class="pend" ${act}><title>${pend[fdi]} tratamiento(s) en el plan</title></circle>`);
+    out.push('</g>');
+  };
+  D_SUP.forEach((f, i) => tooth(f, xOf(i), 30, 20));
+  D_INF.forEach((f, i) => tooth(f, xOf(i), 108, 166));
+  const w = xOf(15) + W + 14;
+  return `<svg class="odo" viewBox="0 0 ${w} 180" role="img" aria-label="Odontograma">
+    <line x1="${xOf(8) - QG / 2 - G / 2}" y1="8" x2="${xOf(8) - QG / 2 - G / 2}" y2="174" class="axis"/><line x1="6" y1="94" x2="${w - 6}" y2="94" class="axis"/>
+    <text x="8" y="90" class="side">Derecha</text><text x="${w - 8}" y="90" class="side" text-anchor="end">Izquierda</text>
+    ${out.join('')}</svg>`;
+}
+function pendientesPorDiente(pid) {
+  const pa = planActivo(pid), m = {};
+  (pa?.items || []).filter(it => !['realizado', 'cancelado'].includes(it.estado)).forEach(it => (it.dientes || []).forEach(d => m[d] = (m[d] || 0) + 1));
+  return m;
+}
+function tabOdontograma(p) {
+  const O = odoTrabajo(p.id), sel = O.sel, ver = O.ver;
+  const vt = ver ? dNorm(O.data[ver]) : null;
+  const toolBtn = (k, d) => `<button data-act="odo-tool" data-tool="${k}" class="toolbtn ${O.tool === k ? 'on' : ''}" title="${esc(d.l)}">${d.c ? `<span class="sw" style="background:${d.c}"></span>` : ''}${esc(d.l)}</button>`;
+  const ex = expedienteDe(p.id);
+  return `<div class="panel">
+    <div class="panel-h"><h3>Odontograma</h3><span class="mute" style="font-size:13px">Numeración FDI · vista del dentista (la derecha del paciente a tu izquierda)</span><span class="sp"></span>
+      ${O.dirty ? '<span class="pill warn">Cambios sin guardar</span><button class="btn sm ghost" data-act="odo-descartar">Descartar</button>' : ''}<button class="btn sm primary" data-act="odo-guardar" ${O.dirty ? '' : 'disabled'}>Guardar odontograma</button></div>
+    <div class="panel-b" style="display:grid;gap:12px">
+      <div class="tools"><span class="tl">Pintar cara</span>${Object.entries(T_CARA).map(([k, d]) => toolBtn('c:' + k, d)).join('')}</div>
+      <div class="tools"><span class="tl">Marcar diente</span>${Object.entries(T_DIENTE).map(([k, d]) => toolBtn('d:' + k, d)).join('')}</div>
+      <div class="tools"><span class="tl">Plan</span><button data-act="odo-tool" data-tool="sel" class="toolbtn ${O.tool === 'sel' ? 'on' : ''}">Seleccionar dientes para el plan</button><button data-act="odo-tool" data-tool="ver" class="toolbtn ${O.tool === 'ver' ? 'on' : ''}">Ver / anotar diente</button>
+        ${sel.length ? `<span class="pill acc">${sel.length} seleccionados: ${sel.join(', ')}</span><button class="btn sm primary" data-act="plan-item-nuevo">Agregar tratamiento a estos dientes</button><button class="btn sm ghost" data-act="odo-sel-limpiar">Quitar selección</button>` : ''}</div>
+      <div class="odowrap">${odoSVG(O.data, { sel, pend: pendientesPorDiente(p.id) })}</div>
+      <div class="legend-row"><span><span class="sw" style="background:${T_CARA.caries.c}"></span>Problema / pendiente</span><span><span class="sw" style="background:${T_CARA.resina.c}"></span>Tratamiento existente</span><span><span class="pendsw"></span>Tiene tratamiento en el plan</span>${ex.odoInicialFecha ? `<span class="mute">"Cómo llegó" guardado el ${fechaCorta(ex.odoInicialFecha)}</span>` : ''}</div>
+    </div></div>
+    ${vt ? `<div class="panel"><div class="panel-h"><h3>${ver} · ${nombreDiente(ver)}</h3><span class="sp"></span><button class="btn sm ghost" data-act="odo-ver-cerrar">Cerrar</button></div><div class="panel-b" style="display:grid;gap:10px">
+      <p style="margin:0">${esc(dxTexto(vt))}</p>
+      <label class="f">Nota del diente<input type="text" id="odoNota" data-fdi="${ver}" value="${esc(vt.nota)}" placeholder="Ej. sensibilidad al frío, fisura vertical"></label>
+      ${(planActivo(p.id)?.items || []).filter(it => (it.dientes || []).includes(ver)).map(it => `<div class="mini">${ITEM_EST[it.estado] || ''} ${esc(it.nombre)} · ${money(precioItem(it))}</div>`).join('')}
+    </div></div>` : ''}
+    <div class="panel"><div class="panel-h"><h3>Hallazgos registrados</h3></div>${D_TODOS.filter(f => dTieneAlgo(O.data[f])).length ? `<div class="tablewrap"><table><tbody>${D_TODOS.filter(f => dTieneAlgo(O.data[f])).map(f => `<tr class="click" data-act="odo-ver" data-fdi="${f}"><td class="mono" style="width:60px"><b>${f}</b></td><td>${esc(nombreDiente(f))}</td><td>${dColor(O.data[f]) ? `<span class="dot" style="background:${dColor(O.data[f])}"></span> ` : ''}${esc(dxTexto(O.data[f]))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Sin hallazgos. Elige una herramienta y toca las caras o los dientes.</div>'}</div>`;
+}
+function odoClick(el) {
+  const O = S.ui.odo; if (!O) return;
+  const fdi = +el.dataset.fdi, cara = el.dataset.cara; let tool = O.tool;
+  if (tool === 'sel') { O.sel = O.sel.includes(fdi) ? O.sel.filter(x => x !== fdi) : [...O.sel, fdi].sort((a, b) => D_TODOS.indexOf(a) - D_TODOS.indexOf(b)); render(); return; }
+  if (tool === 'ver') { O.ver = fdi; render(); return; }
+  const t = dNorm(O.data[fdi]), grupo = tool.slice(0, 2);
+  tool = tool.slice(2);
+  if (grupo === 'c:') {
+    if (!cara) { toast('Toca una cara del diente para pintarla.'); return; }
+    if (tool === 'borrar' || t.caras[cara] === tool) delete t.caras[cara]; else t.caras[cara] = tool;
+    if (t.estado === 'ausente') t.estado = 'presente';
+  } else if (grupo === 'd:' && T_DIENTE[tool]) {
+    const d = T_DIENTE[tool];
+    if (d.g === 'reset') { Object.assign(t, dVacio(), { nota: t.nota }); }
+    else if (d.g === 'estado') { t.estado = t.estado === tool ? 'presente' : tool; if (tool === 'ausente' || tool === 'implante') { t.caras = {}; t.hall = t.hall.filter(h => h === 'extraccion' && tool !== 'ausente'); if (tool === 'ausente') t.prev = []; } }
+    else { const arr = t[d.g]; const i = arr.indexOf(tool); if (i >= 0) arr.splice(i, 1); else arr.push(tool); }
+  }
+  if (dTieneAlgo(t)) O.data[fdi] = t; else delete O.data[fdi];
+  O.dirty = true; O.ver = fdi; render();
+}
+async function odoGuardar() {
+  const O = S.ui.odo, p = get('pacientes', O.pacId), ex = get('expedientes', p.id);
+  const data = { pacienteId: p.id, odontograma: O.data };
+  if (!ex?.odoInicial) { data.odoInicial = deep(O.data); data.odoInicialFecha = nowISO(); }
+  await guardarLote([{ col: 'expedientes', id: p.id, data, nuevo: !ex }], `Actualizó el odontograma de ${nombreCompleto(p)}`);
+  O.dirty = false; toast(ex?.odoInicial ? 'Odontograma guardado.' : 'Odontograma guardado. También quedó como "cómo llegó" el paciente.'); render();
+}
+
+/* ---------------- Plan de tratamiento ---------------- */
+const PLAN_EST = {
+  borrador: { l: 'Borrador', c: '' }, presentado: { l: 'Presentado al paciente', c: 'warn' }, aceptado: { l: 'Aceptado', c: 'acc' },
+  en_tratamiento: { l: 'En tratamiento', c: 'acc' }, terminado: { l: 'Terminado', c: 'ok' }, cancelado: { l: 'Cancelado', c: 'bad' }, reemplazado: { l: 'Versión anterior', c: '' }
+};
+const ITEM_EST = { pendiente: '<span class="pill">Pendiente</span>', en_proceso: '<span class="pill warn">En proceso</span>', realizado: '<span class="pill ok">Realizado</span>', cancelado: '<span class="pill bad">Cancelado</span>' };
+const editable = pl => pl && ['borrador', 'presentado'].includes(pl.estado);
+const precioItem = it => Math.round((Number(it.precio) || 0) * (1 - (Number(it.descuentoPct) || 0) / 100) * 100) / 100;
+const precioSesion = it => precioItem(it) / (it.sesiones || 1);
+function sesionesDeCita(pl, ci) { const out = []; (pl.items || []).forEach(it => { if (it.estado === 'cancelado') return; (it.citas || []).forEach((c, k) => { if (c === ci) out.push({ it, k }); }); }); return out; }
+function totalesPlan(pl) {
+  const its = (pl.items || []).filter(it => it.estado !== 'cancelado');
+  const subtotal = its.reduce((a, it) => a + (Number(it.precio) || 0), 0), total = its.reduce((a, it) => a + precioItem(it), 0);
+  const realizado = its.reduce((a, it) => a + precioSesion(it) * (it.hechas || []).filter(Boolean).length, 0);
+  const citas = (pl.citas || []).length;
+  const citasHechas = (pl.citas || []).filter((c, i) => { const ss = sesionesDeCita(pl, i); return ss.length && ss.every(({ it, k }) => (it.hechas || [])[k]); }).length;
+  return { subtotal, descuento: subtotal - total, total, realizado, pendiente: total - realizado, citas, citasHechas, pctAvance: total ? Math.round(realizado / total * 100) : 0, sinCita: its.filter(it => it.estado !== 'realizado' && (it.citas || []).some(c => c == null)).length };
+}
+const PRIORIDAD = { extraccion: 0, extraccion_retenido: 0, endodoncia: 0, perio: 1, limpieza: 1, '': 2, resina: 2, reconstruccion: 2, sellador: 2, implante: 3, corona: 4, corona_implante: 5, ortodoncia: 6, blanqueamiento: 6 };
+/* Agrupa los tratamientos en citas: urgencias primero, respeta el orden por diente, la duración máxima por cita y el mismo dentista */
+function organizarCitas(pl, { maxMin = 90, inicio = sumarDias(hoyISO(), 7), intervalo = 7 } = {}) {
+  const its = (pl.items || []).filter(it => !['cancelado', 'realizado'].includes(it.estado));
+  (pl.items || []).filter(it => it.estado === 'realizado').forEach(it => it.citas = (it.citas || []).map(() => null));
+  const orden = [...its].sort((a, b) => (PRIORIDAD[a.animacion] ?? 2) - (PRIORIDAD[b.animacion] ?? 2) || (D_TODOS.indexOf(a.dientes?.[0]) - D_TODOS.indexOf(b.dientes?.[0])));
+  const citas = [], ultimaPorDiente = {};
+  orden.forEach(it => {
+    let min = 0; (it.dientes || []).forEach(d => { if (ultimaPorDiente[d] != null) min = Math.max(min, ultimaPorDiente[d] + 1); });
+    const dur = Number(it.duracionMin) || 30; it.citas = [];
+    for (let s = 0; s < (it.sesiones || 1); s++) {
+      let idx = citas.findIndex((c, i) => i >= min && c.dentistaId === it.dentistaId && c.min + dur <= maxMin && !c.items.includes(it.id));
+      if (idx < 0) { citas.push({ dentistaId: it.dentistaId, min: 0, items: [] }); idx = citas.length - 1; }
+      citas[idx].min += dur; citas[idx].items.push(it.id); it.citas.push(idx); min = idx + 1;
+    }
+    (it.dientes || []).forEach(d => ultimaPorDiente[d] = it.citas[it.citas.length - 1]);
+  });
+  /* fechas: una cita cada "intervalo" días; la corona sobre implante espera 90 días después del implante */
+  const fechas = [];
+  citas.forEach((c, i) => {
+    let f = i === 0 ? inicio : sumarDias(fechas[i - 1], intervalo);
+    its.filter(it => it.animacion === 'corona_implante' && it.citas.includes(i)).forEach(it => {
+      its.filter(x => x.animacion === 'implante' && x.dientes.some(d => it.dientes.includes(d))).forEach(x => { const fi = fechas[x.citas[x.citas.length - 1]]; if (fi) { const m = sumarDias(fi, 90); if (m > f) f = m; } });
+    });
+    fechas.push(f);
+  });
+  pl.citas = citas.map((c, i) => ({ id: newId('c'), fecha: fechas[i], dentistaId: c.dentistaId, nota: '' }));
+  pl.items = (pl.items || []).map(it => its.find(x => x.id === it.id) || it);
+  return pl;
+}
+function tabPlan(p) {
+  const planes = planesDe(p.id), clin = esClinico();
+  const vid = S.ui.planVer && planes.find(x => x.id === S.ui.planVer) ? S.ui.planVer : planes.find(x => !['reemplazado', 'cancelado'].includes(x.estado))?.id || planes[0]?.id;
+  const pl = planes.find(x => x.id === vid);
+  if (!pl) return `<div class="panel"><div class="empty"><b>Este paciente aún no tiene plan de tratamiento.</b><span>${clin ? 'Marca el diagnóstico en el odontograma, selecciona los dientes y agrega los tratamientos del catálogo. También puedes crear el plan vacío.' : 'El dentista lo creará después de la valoración.'}</span>${clin ? '<div class="quick" style="justify-content:center"><button class="btn primary" data-act="plan-nuevo">Crear plan de tratamiento</button><button class="btn" data-act="exp-tab" data-tab="odontograma">Ir al odontograma</button></div>' : ''}</div></div>`;
+  const T = totalesPlan(pl), ed = clin && editable(pl), vigente = !['reemplazado', 'cancelado'].includes(pl.estado);
+  const acciones = [];
+  if (clin && vigente) {
+    if (ed) acciones.push('<button class="btn sm primary" data-act="plan-item-nuevo">Agregar tratamiento</button>', '<button class="btn sm" data-act="plan-organizar">Organizar citas</button>', '<button class="btn sm" data-act="plan-cita-nueva">Agregar cita</button>');
+    if (pl.estado === 'borrador') acciones.push('<button class="btn sm" data-act="plan-estado" data-est="presentado">Marcar como presentado</button>');
+    if (ed) acciones.push('<button class="btn sm" data-act="plan-aceptar">Registrar aceptación</button>');
+    if (!ed && ['aceptado', 'en_tratamiento'].includes(pl.estado)) acciones.push('<button class="btn sm" data-act="plan-version">Modificar (nueva versión)</button>');
+    if (pl.estado !== 'terminado') acciones.push('<button class="btn sm ghost danger" data-act="plan-cancelar">Cancelar plan</button>');
+  }
+  const citasHTML = (pl.citas || []).map((c, i) => {
+    const ss = sesionesDeCita(pl, i), dur = ss.reduce((a, { it }) => a + (Number(it.duracionMin) || 30), 0), monto = ss.reduce((a, { it }) => a + precioSesion(it), 0);
+    const hecha = ss.length && ss.every(({ it, k }) => (it.hechas || [])[k]);
+    const dn = get('usuarios', c.dentistaId);
+    return `<div class="cita-card${hecha ? ' done' : ''}"><div class="cita-h"><b>Cita ${i + 1}</b>
+      ${ed ? `<input type="date" class="cita-fecha" data-change-cita="${i}" id="cf${i}" value="${esc(c.fecha || '')}" aria-label="Fecha sugerida de la cita ${i + 1}">` : `<span>${c.fecha ? fechaCorta(c.fecha) : 'Sin fecha'}</span>`}
+      <span class="mute">${dn ? esc(dn.nombre) : 'Sin dentista'} · ${dur} min</span><span class="sp"></span><b class="num">${money(monto)}</b>${hecha ? '<span class="pill ok">Completada</span>' : ''}${ed && !ss.length ? `<button class="btn sm ghost" data-act="plan-cita-quitar" data-ci="${i}">Quitar</button>` : ''}</div>
+      ${ss.length ? `<div class="tablewrap"><table><tbody>${ss.map(({ it, k }) => filaSesion(pl, it, k, ed, clin)).join('')}</tbody></table></div>` : '<p class="mute" style="margin:6px 0 0;font-size:13px">Sin tratamientos asignados.</p>'}</div>`;
+  }).join('');
+  const sinCita = [];
+  (pl.items || []).forEach(it => { if (['cancelado', 'realizado'].includes(it.estado)) return; (it.citas || []).forEach((c, k) => { if (c == null) sinCita.push({ it, k }); }); });
+  const hechosSinCita = (pl.items || []).filter(it => it.estado === 'realizado' && (it.citas || []).every(c => c == null));
+  const cancelados = (pl.items || []).filter(it => it.estado === 'cancelado');
+  return `<div class="panel"><div class="panel-h">
+      <select id="planVer" data-change="planVer" style="max-width:240px" aria-label="Versión del plan">${planes.map(x => opt(x.id, `Plan v${x.version} · ${PLAN_EST[x.estado].l}`, vid)).join('')}</select>
+      <span class="pill ${PLAN_EST[pl.estado].c}">${PLAN_EST[pl.estado].l}</span>${pl.aceptado ? `<span class="mute" style="font-size:13px">Aceptado el ${fechaCorta(pl.aceptado.fecha)} (${esc(pl.aceptado.medio)})</span>` : ''}<span class="sp"></span>${acciones.join('')}</div>
+    <div class="panel-b"><div class="stats">
+      <div class="stat"><b class="num">${money(T.total)}</b><span>Total del plan${T.descuento ? ` · descuento ${money(T.descuento)}` : ''}</span></div>
+      <div class="stat"><b class="num">${money(T.realizado)}</b><span>Realizado · ${T.pctAvance}%</span></div>
+      <div class="stat"><b class="num">${money(T.pendiente)}</b><span>Por realizar</span></div>
+      <div class="stat"><b class="num">${T.citasHechas}/${T.citas}</b><span>Citas completadas</span></div>
+    </div><div class="bar" style="margin-top:12px"><span style="width:${T.pctAvance}%"></span></div>
+    ${!ed && clin && vigente && pl.estado !== 'terminado' ? '<p class="mute" style="margin:10px 0 0;font-size:13px">El plan ya fue aceptado: puedes marcar tratamientos como realizados. Para cambiar tratamientos o precios crea una nueva versión; la anterior queda guardada.</p>' : ''}
+    </div></div>
+    ${sinCita.length ? `<div class="panel"><div class="panel-h"><h3>Sin cita asignada</h3><span class="mute" style="font-size:13px">Usa "Organizar citas" o elige la cita en cada tratamiento</span></div><div class="tablewrap"><table><tbody>${sinCita.map(({ it, k }) => filaSesion(pl, it, k, ed, clin)).join('')}</tbody></table></div></div>` : ''}
+    <div style="display:grid;gap:12px">${citasHTML || '<div class="panel"><div class="empty">Aún no hay citas. Agrega tratamientos y usa "Organizar citas".</div></div>'}</div>
+    ${hechosSinCita.length ? `<div class="panel"><div class="panel-h"><h3>Ya realizados</h3></div><div class="tablewrap"><table><tbody>${hechosSinCita.map(it => `<tr class="rowdone"><td class="mono">${(it.dientes || []).join(', ') || 'Boca'}</td><td>${esc(it.nombre)}</td><td class="r num">${money(precioItem(it))}</td><td class="r"><span class="pill ok">Realizado</span></td></tr>`).join('')}</tbody></table></div></div>` : ''}
+    ${cancelados.length ? `<div class="panel"><div class="panel-h"><h3>Tratamientos cancelados</h3></div><div class="tablewrap"><table><tbody>${cancelados.map(it => `<tr><td class="mono">${(it.dientes || []).join(', ') || '—'}</td><td>${esc(it.nombre)}</td><td class="r num mute">${money(precioItem(it))}</td></tr>`).join('')}</tbody></table></div></div>` : ''}
+    ${pl.notas ? `<div class="info"><b>Notas del plan:</b> ${esc(pl.notas)}</div>` : ''}`;
+}
+function filaSesion(pl, it, k, ed, clin) {
+  const hecha = (it.hechas || [])[k], ses = (it.sesiones || 1) > 1 ? ` · sesión ${k + 1} de ${it.sesiones}` : '';
+  const citaSel = ed ? `<select class="mini-sel" data-move-item="${it.id}" data-k="${k}" id="mv_${it.id}_${k}" aria-label="Mover a cita">${opt('', 'Sin cita', it.citas[k] == null ? '' : null)}${(pl.citas || []).map((c, i) => opt(i, 'Cita ' + (i + 1), it.citas[k])).join('')}</select>` : '';
+  return `<tr class="${hecha ? 'rowdone' : ''}"><td class="mono" style="width:72px"><b>${(it.dientes || []).join(', ') || 'Boca'}</b>${it.caras?.length ? `<div class="mute" style="font-size:11.5px">${it.caras.join('')}</div>` : ''}</td>
+    <td><b>${esc(it.nombre)}</b><span class="mute">${ses}</span><div class="mute" style="font-size:12.5px">${esc(nombreUsuario(it.dentistaId))}${it.descuentoPct ? ` · ${it.descuentoPct}% desc.` : ''}${hecha ? ` · realizado ${fechaCorta(hecha.fecha)} por ${esc(nombreUsuario(hecha.dentistaId))}` : ''}</div></td>
+    <td class="r num" style="white-space:nowrap">${money(precioSesion(it))}</td>
+    <td class="r" style="white-space:nowrap">${citaSel}${clin && !hecha && !['reemplazado', 'cancelado', 'terminado'].includes(pl.estado) && pl.estado !== 'borrador' && pl.estado !== 'presentado' ? `<button class="btn sm" data-act="plan-hecho" data-item="${it.id}" data-k="${k}">Marcar realizado</button>` : ''}${hecha ? '<span class="pill ok">Realizado</span>' : ''}
+      ${ed ? `<button class="icon-btn sm" data-act="plan-item-editar" data-item="${it.id}" aria-label="Editar tratamiento" title="Editar">✎</button>` : ''}</td></tr>`;
+}
+async function nuevoPlan(pid, items = []) {
+  const vers = planesDe(pid).map(x => x.version);
+  const pl = { pacienteId: pid, version: (Math.max(0, ...vers)) + 1, estado: 'borrador', items, citas: [], notas: '' };
+  const [id] = await guardarLote([{ col: 'planes', data: pl, nuevo: true }], `Creó el plan de tratamiento v${pl.version} de ${nombreCompleto(get('pacientes', pid))}`);
+  S.ui.planVer = id; return id;
+}
+async function guardarPlan(pl, resumen) {
+  const { id, ...data } = pl;
+  ['creado', 'creadoPor', 'actualizado', 'actualizadoPor'].forEach(k => delete data[k]);
+  await guardarLote([{ col: 'planes', id, data }], resumen);
+}
+function planVisible(pid) { const planes = planesDe(pid); return planes.find(x => x.id === S.ui.planVer) || planActivo(pid); }
+function formItem(itemId) {
+  const p = get('pacientes', S.ui.pacId); let pl = planVisible(p.id);
+  const it = itemId ? pl.items.find(x => x.id === itemId) : null;
+  const trs = list('tratamientos').filter(t => t.activo !== false).sort((a, b) => a.categoria.localeCompare(b.categoria) || a.nombre.localeCompare(b.nombre));
+  const cats = [...new Set(trs.map(t => t.categoria))];
+  const sel = it ? it.dientes : (S.ui.odo?.pacId === p.id ? S.ui.odo.sel : []);
+  const dentDef = it?.dentistaId || ((S.me.rol === 'dentista' || S.me.atiende) ? S.me.id : p.dentistaResp) || '';
+  modal({ title: it ? 'Editar tratamiento del plan' : 'Agregar tratamiento al plan', wide: true, submit: it ? 'Guardar cambios' : 'Agregar al plan', body: `
+    <div class="grid2">
+      <label class="f span2">Tratamiento <span class="req">*</span><select name="trat" id="fitTrat" required>${opt('', 'Elige del catálogo', it?.tratamientoId)}${cats.map(c => `<optgroup label="${esc(c)}">${trs.filter(t => t.categoria === c).map(t => opt(t.id, `${t.clave} · ${t.nombre} · ${money(t.precio)}`, it?.tratamientoId)).join('')}</optgroup>`).join('')}</select></label>
+      <label class="f">Dientes (FDI)<input type="text" name="dientes" id="fitDientes" value="${esc((sel || []).join(', '))}" placeholder="Ej. 16, 26" inputmode="numeric"><span class="mute" style="font-weight:500;font-size:12px" id="fitAyuda"></span></label>
+      <fieldset><legend>Caras (opcional)</legend><div style="display:flex;gap:10px;flex-wrap:wrap">${Object.entries(CARAS).map(([k, l]) => `<label class="check" title="${l}"><input type="checkbox" name="caras" value="${k}" ${(it?.caras || []).includes(k) ? 'checked' : ''}> ${k}</label>`).join('')}</div></fieldset>
+      <label class="f">Precio por ${it ? 'diente' : 'diente o servicio'} (MXN)<input type="number" name="precio" id="fitPrecio" min="0" step="0.01" value="${esc(it?.precio ?? '')}"></label>
+      <label class="f">Descuento (%)<input type="number" name="desc" id="fitDesc" min="0" max="100" step="any" value="${esc(it?.descuentoPct ?? 0)}"></label>
+      <label class="f">Dentista que lo realiza<select name="dent" id="fitDent">${dentistas().map(d => opt(d.id, d.nombre, dentDef)).join('')}</select></label>
+      <label class="f">Número de citas<input type="number" name="ses" id="fitSes" min="1" step="1" value="${esc(it?.sesiones ?? '')}"></label>
+    </div>
+    <div class="info" id="fitResumen" hidden></div>`,
+    footerLeft: it ? '<button type="button" class="btn sm danger" id="fitQuitar">Quitar del plan</button>' : '',
+    onOpen: f => {
+      const upd = (cambioTrat) => {
+        const t = get('tratamientos', f.elements.trat.value);
+        if (t && cambioTrat) { f.elements.precio.value = t.precio; f.elements.ses.value = t.sesiones || 1; }
+        const ds = parseDientes(f.elements.dientes.value);
+        $('#fitAyuda').textContent = t?.aplicaA === 'diente' ? 'Se crea un tratamiento por cada diente.' : t ? `Este tratamiento se cobra ${APLICA[t.aplicaA].toLowerCase()}; los dientes son opcionales.` : '';
+        const r = $('#fitResumen');
+        if (t) { const n = t.aplicaA === 'diente' ? Math.max(ds.ok.length, 1) : 1, pr = (Number(f.elements.precio.value) || 0) * (1 - (Number(f.elements.desc.value) || 0) / 100);
+          r.hidden = false; r.innerHTML = `${n} × ${money(pr)} = <b>${money(n * pr)}</b>${ds.mal.length ? ` · <span style="color:var(--bad)">Números no válidos: ${ds.mal.join(', ')}</span>` : ''}${t.descripcionPaciente ? `<br><span class="mute">${esc(t.descripcionPaciente)}</span>` : ''}`; } else r.hidden = true;
+      };
+      f.elements.trat.addEventListener('change', () => upd(true));
+      ['dientes', 'precio', 'desc'].forEach(n => f.elements[n].addEventListener('input', () => upd(false)));
+      if (!it) upd(true); else upd(false);
+      const q = $('#fitQuitar'); if (q) q.onclick = async () => {
+        if (!await confirmar('Quitar tratamiento', `Se quita "${esc(it.nombre)}" del plan.`, { ok: 'Quitar', peligro: true })) return;
+        pl = planVisible(p.id); pl.items = pl.items.filter(x => x.id !== it.id); closeModal();
+        await guardarPlan(pl, `Quitó ${it.nombre} del plan v${pl.version} de ${nombreCompleto(p)}`); toast('Tratamiento quitado.');
+      };
+    },
+    onSubmit: async f => {
+      const t = get('tratamientos', f.elements.trat.value); if (!t) return formErr(f, 'Elige un tratamiento del catálogo.');
+      const ds = parseDientes(f.elements.dientes.value);
+      if (ds.mal.length) return formErr(f, `Estos números no son dientes FDI válidos (11 a 48): ${ds.mal.join(', ')}`);
+      if (t.aplicaA === 'diente' && !ds.ok.length) return formErr(f, 'Este tratamiento se cobra por diente: indica al menos un diente.');
+      const base = { tratamientoId: t.id, clave: t.clave, nombre: t.nombre, categoria: t.categoria, animacion: t.animacion || '', aplicaA: t.aplicaA, duracionMin: Number(t.duracionMin) || 30,
+        sesiones: Math.max(1, Math.round(Number(f.elements.ses.value) || t.sesiones || 1)), precio: Number(f.elements.precio.value) || 0, descuentoPct: Math.min(100, Math.max(0, Number(f.elements.desc.value) || 0)),
+        dentistaId: f.elements.dent.value, caras: $$('input[name=caras]:checked', f).map(x => x.value) };
+      let cur = planVisible(p.id), esNuevo = false;
+      if (!cur || !editable(cur)) { cur = { id: newId('pl'), pacienteId: p.id, version: Math.max(0, ...planesDe(p.id).map(x => x.version)) + 1, estado: 'borrador', items: [], citas: [], notas: '' }; esNuevo = true; }
+      pl = deep(cur);
+      if (it) {
+        const i = pl.items.findIndex(x => x.id === it.id), viejo = pl.items[i];
+        const citas = base.sesiones === (viejo.citas || []).length ? viejo.citas : Array.from({ length: base.sesiones }, (_, k) => viejo.citas?.[k] ?? null);
+        pl.items[i] = { ...viejo, ...base, dientes: ds.ok.length ? ds.ok : viejo.dientes, citas };
+        await guardarPlan(pl, `Editó ${base.nombre} en el plan v${pl.version} de ${nombreCompleto(p)}`);
+      } else {
+        const grupos = t.aplicaA === 'diente' ? ds.ok.map(d => [d]) : [ds.ok];
+        grupos.forEach(dd => pl.items.push({ id: newId('it'), ...base, dientes: dd, estado: 'pendiente', hechas: [], citas: Array.from({ length: base.sesiones }, () => null) }));
+        const res = `Agregó ${base.nombre}${ds.ok.length ? ' (dientes ' + ds.ok.join(', ') + ')' : ''} al plan v${pl.version} de ${nombreCompleto(p)}`;
+        if (esNuevo) { const { id, ...d } = pl; await guardarLote([{ col: 'planes', id, data: d, nuevo: true }], res); S.ui.planVer = id; } else await guardarPlan(pl, res);
+        if (S.ui.odo) S.ui.odo.sel = [];
+      }
+      toast(it ? 'Tratamiento actualizado.' : 'Agregado al plan. Usa "Organizar citas" para acomodarlo.');
+      S.ui.expTab = 'plan';
+    } });
+}
+function parseDientes(txt) { const ok = [], mal = []; String(txt || '').split(/[\s,;]+/).filter(Boolean).forEach(x => { const n = Number(x); if (D_TODOS.includes(n)) { if (!ok.includes(n)) ok.push(n); } else mal.push(x); }); return { ok, mal }; }
+function formOrganizar() {
+  const p = get('pacientes', S.ui.pacId), pl = planVisible(p.id);
+  modal({ title: 'Organizar citas', submit: 'Organizar', body: `<p style="margin:0">Se acomodan los tratamientos en citas: primero urgencias (extracciones y endodoncias), luego limpieza y resinas, después implantes y coronas. Se respeta el orden en cada diente y que cada cita sea con un solo dentista. La corona sobre implante se agenda 90 días después del implante.</p>
+    <div class="grid3"><label class="f">Primera cita<input type="date" name="inicio" id="orgIni" value="${sumarDias(hoyISO(), 7)}" required></label>
+    <label class="f">Días entre citas<input type="number" name="int" id="orgInt" min="1" value="7" required></label>
+    <label class="f">Duración máxima por cita (min)<input type="number" name="max" id="orgMax" min="20" step="5" value="90" required></label></div>
+    ${(pl.citas || []).length ? '<div class="infowarn">Las citas actuales se reemplazan por la nueva organización. Después puedes mover tratamientos y cambiar fechas.</div>' : ''}`,
+    onSubmit: async f => {
+      const nuevo = organizarCitas(deep(pl), { inicio: f.elements.inicio.value, intervalo: Number(f.elements.int.value) || 7, maxMin: Number(f.elements.max.value) || 90 });
+      nuevo.id = pl.id; await guardarPlan(nuevo, `Organizó las citas del plan v${pl.version} de ${nombreCompleto(p)} (${nuevo.citas.length} citas)`);
+      toast(`Plan organizado en ${nuevo.citas.length} citas.`);
+    } });
+}
+function formAceptar() {
+  const p = get('pacientes', S.ui.pacId), pl = planVisible(p.id), T = totalesPlan(pl);
+  if (T.sinCita) { toast('Hay tratamientos sin cita. Organiza las citas antes de registrar la aceptación.'); return; }
+  if (!pl.items.filter(i => i.estado !== 'cancelado').length) { toast('El plan no tiene tratamientos.'); return; }
+  modal({ title: 'Registrar aceptación del plan', submit: 'Registrar aceptación', body: `<p style="margin:0">Plan v${pl.version} · ${pl.citas.length} citas · total <b>${money(T.total)}</b>.</p>
+    <label class="f">¿Cómo lo aceptó?<select name="medio" id="acMedio"><option>De palabra en consulta</option><option>Firmó presupuesto en papel</option><option>Por WhatsApp</option><option>Por correo</option></select></label>
+    <label class="f">Notas del plan (opcional)<textarea name="notas" id="acNotas" placeholder="Ej. prefiere empezar después de la quincena">${esc(pl.notas)}</textarea></label>
+    <div class="infowarn">Después de aceptado, los cambios de tratamientos o precios se hacen en una nueva versión del plan. El plan de pagos se define en la fase 4.</div>`,
+    onSubmit: async f => {
+      const n = deep(pl); n.id = pl.id; n.estado = 'aceptado'; n.notas = fv(f, 'notas'); n.aceptado = { fecha: nowISO(), por: S.me.id, medio: f.elements.medio.value };
+      const ops = [{ col: 'planes', id: pl.id, data: (({ id, creado, creadoPor, actualizado, actualizadoPor, ...d }) => d)(n) }];
+      const ex = get('expedientes', p.id);
+      if (!ex?.odoInicial) ops.push({ col: 'expedientes', id: p.id, data: { pacienteId: p.id, odoInicial: deep(ex?.odontograma || {}), odoInicialFecha: nowISO() }, nuevo: !ex });
+      await guardarLote(ops, `Registró la aceptación del plan v${pl.version} de ${nombreCompleto(p)} (${money(T.total)})`);
+      toast('Plan aceptado.');
+    } });
+}
+async function nuevaVersion() {
+  const p = get('pacientes', S.ui.pacId), pl = planVisible(p.id);
+  if (!await confirmar('Crear nueva versión del plan', `Se crea el plan v${pl.version + 1} como copia para modificarlo. La versión ${pl.version} queda guardada como antecedente. Los tratamientos ya realizados se conservan.`, { ok: 'Crear versión' })) return;
+  const n = deep(pl); delete n.id; ['creado', 'creadoPor', 'actualizado', 'actualizadoPor', 'aceptado'].forEach(k => delete n[k]);
+  n.version = pl.version + 1; n.estado = 'borrador'; n.versionAnterior = pl.id;
+  const nid = newId('pl');
+  await guardarLote([{ col: 'planes', id: nid, data: n, nuevo: true }, { col: 'planes', id: pl.id, data: { estado: 'reemplazado', reemplazadoPor: nid } }], `Creó la versión ${n.version} del plan de ${nombreCompleto(p)}`);
+  S.ui.planVer = nid; toast(`Versión ${n.version} creada. Ya puedes modificarla.`);
+}
+async function cancelarPlan() {
+  const p = get('pacientes', S.ui.pacId), pl = planVisible(p.id);
+  if (!await confirmar('Cancelar plan', 'El plan queda cancelado y guardado en el historial. Los tratamientos realizados se conservan en el expediente.', { ok: 'Cancelar plan', peligro: true })) return;
+  await guardarLote([{ col: 'planes', id: pl.id, data: { estado: 'cancelado' } }], `Canceló el plan v${pl.version} de ${nombreCompleto(p)}`); toast('Plan cancelado.');
+}
+function formHecho(itemId, k) {
+  const p = get('pacientes', S.ui.pacId), pl = planVisible(p.id), it = pl.items.find(x => x.id === itemId);
+  const ultima = (it.hechas || []).filter(Boolean).length + 1 >= (it.sesiones || 1);
+  modal({ title: 'Registrar tratamiento realizado', submit: 'Registrar', body: `<p style="margin:0"><b>${esc(it.nombre)}</b>${(it.dientes || []).length ? ' · diente ' + it.dientes.join(', ') : ''}${(it.sesiones || 1) > 1 ? ` · sesión ${k + 1} de ${it.sesiones}` : ''}</p>
+    <div class="grid2"><label class="f">Fecha<input type="date" name="fecha" id="hhF" value="${hoyISO()}" max="${hoyISO()}" required></label>
+    <label class="f">Lo realizó<select name="dent" id="hhD">${dentistas().map(d => opt(d.id, d.nombre, (S.me.rol === 'dentista' || S.me.atiende) ? S.me.id : it.dentistaId)).join('')}</select></label></div>
+    <label class="f">Nota de evolución<textarea name="nota" id="hhN" placeholder="Anestesia, materiales, indicaciones al paciente, observaciones"></textarea></label>
+    ${ultima && EFECTO[it.animacion] && (it.dientes || []).length ? '<div class="info">Al ser la última sesión, el odontograma se actualiza con el resultado del tratamiento.</div>' : ''}`,
+    onSubmit: async f => {
+      const fecha = f.elements.fecha.value, dent = f.elements.dent.value, texto = fv(f, 'nota');
+      const n = deep(pl); n.id = pl.id; const ni = n.items.find(x => x.id === itemId);
+      ni.hechas = ni.hechas || []; ni.hechas[k] = { fecha, dentistaId: dent, registradoPor: S.me.id };
+      ni.hechas = Array.from({ length: Math.max(ni.hechas.length, ni.sesiones || 1) }, (_, i) => ni.hechas[i] || null);
+      const completas = Array.from({ length: ni.sesiones || 1 }, (_, i) => !!ni.hechas[i]).every(Boolean);
+      ni.estado = completas ? 'realizado' : 'en_proceso';
+      const vivos = n.items.filter(x => x.estado !== 'cancelado');
+      n.estado = vivos.every(x => x.estado === 'realizado') ? 'terminado' : 'en_tratamiento';
+      const ops = [{ col: 'planes', id: pl.id, data: (({ id, creado, creadoPor, actualizado, actualizadoPor, ...d }) => d)(n) }];
+      if (completas && EFECTO[ni.animacion] && (ni.dientes || []).length) {
+        const ex = get('expedientes', p.id), odo = deep(ex?.odontograma || {});
+        ni.dientes.forEach(d => { const t = dNorm(odo[d]); EFECTO[ni.animacion](t, ni); if (dTieneAlgo(t)) odo[d] = t; else delete odo[d]; });
+        ops.push({ col: 'expedientes', id: p.id, data: { pacienteId: p.id, odontograma: odo }, nuevo: !ex });
+        if (S.ui.odo?.pacId === p.id && !S.ui.odo.dirty) S.ui.odo = null;
+      }
+      ops.push({ col: 'notas', data: { pacienteId: p.id, fecha: fecha + 'T' + new Date().toTimeString().slice(0, 8), autorId: S.me.id, autor: S.me.nombre, dentistaId: dent, tipo: 'tratamiento', planId: pl.id, itemId, texto: `${ni.nombre}${(ni.dientes || []).length ? ' · diente ' + ni.dientes.join(', ') : ''}${(ni.sesiones || 1) > 1 ? ` · sesión ${k + 1} de ${ni.sesiones}` : ''}${texto ? '\n' + texto : ''}` }, nuevo: true });
+      await guardarLote(ops, `Registró ${ni.nombre} realizado a ${nombreCompleto(p)}`);
+      toast(n.estado === 'terminado' ? '¡Plan terminado!' : 'Tratamiento registrado.');
+    } });
+}
+
+/* ---------------- Notas de evolución ---------------- */
+function tabNotas(p) {
+  const ns = notasDe(p.id);
+  return `<div class="panel"><div class="panel-h"><h3>Notas de evolución</h3><span class="mute" style="font-size:13px">No se editan ni se borran. Para corregir, agrega una nota nueva.</span><span class="sp"></span><button class="btn sm primary" data-act="nota-nueva">Agregar nota</button></div>
+    ${ns.length ? `<div class="timeline">${ns.map(n => `<div class="tl-item"><div class="tl-dot ${n.tipo === 'tratamiento' ? 'tx' : ''}"></div><div><div class="tl-h"><b>${fechaHora(n.fecha)}</b><span class="mute">${esc(n.autor || nombreUsuario(n.autorId))}${n.dentistaId && n.dentistaId !== n.autorId ? ` · realizó ${esc(nombreUsuario(n.dentistaId))}` : ''}</span>${n.tipo === 'tratamiento' ? '<span class="pill ok">Tratamiento</span>' : ''}</div><div class="tl-t">${esc(n.texto)}</div></div></div>`).join('')}</div>` : '<div class="empty">Sin notas. Las notas se agregan aquí o al marcar un tratamiento como realizado.</div>'}</div>`;
+}
+function formNota() {
+  const p = get('pacientes', S.ui.pacId);
+  modal({ title: 'Nota de evolución', submit: 'Guardar nota', body: `<label class="f">Nota<textarea name="texto" id="nnT" required style="min-height:140px" placeholder="Hallazgos, procedimiento, indicaciones, próximos pasos"></textarea></label><p class="mute" style="margin:0;font-size:12.5px">Una vez guardada no se puede modificar.</p>`,
+    onSubmit: async f => {
+      await guardarLote([{ col: 'notas', data: { pacienteId: p.id, fecha: nowISO(), autorId: S.me.id, autor: S.me.nombre, tipo: 'nota', texto: fv(f, 'texto') }, nuevo: true }], `Agregó una nota de evolución a ${nombreCompleto(p)}`);
+      toast('Nota guardada.');
+    } });
+}
+
+/* =====================================================================
+   VISOR 3D (Three.js)
+   ===================================================================== */
+const D0 = { present: 1, nat: 1, caries: 0, cavity: 0, resin: 0, chip: 0, pulp: 0, canal: 0, implant: 0, cap: 0, tilt: 0, sink: 0 };
+const st = s => Object.assign({}, D0, s || {});
+function estado3D(t) {
+  const s = st(); if (!t) return s; t = dNorm(t);
+  const cv = Object.values(t.caras);
+  if (t.estado === 'ausente') s.present = 0;
+  if (t.estado === 'implante') { s.nat = 0; s.implant = 1; s.present = t.prev.includes('corona') ? 1 : 0; s.cap = s.present; }
+  if (t.estado === 'retenido') { s.tilt = .75; s.sink = .55; }
+  const nc = cv.filter(v => v === 'caries').length; if (nc) s.caries = Math.min(1, .4 + .15 * nc);
+  const nr = cv.filter(v => v === 'resina' || v === 'sellador').length; if (nr) s.resin = Math.min(1, .45 + .15 * nr);
+  if (t.hall.includes('pulpa')) { s.pulp = 1; s.caries = Math.max(s.caries, .9); }
+  if (t.hall.includes('fractura') || cv.includes('fractura')) s.chip = 1;
+  if (t.prev.includes('endodoncia')) s.canal = 1;
+  if (t.prev.includes('corona') && t.estado !== 'implante') s.cap = 1;
+  return s;
+}
+const ETAPAS = {
+  resina: s => [{ t: 'Retirar la caries', d: 'Con anestesia local se retira el tejido dañado.', s: { caries: 0, cavity: 1 } }, { t: 'Resina', d: 'Se rellena con resina del color del diente y se pule.', s: { cavity: 0, resin: Math.max(s.resin, .9) } }],
+  reconstruccion: () => [{ t: 'Reconstrucción', d: 'Se reconstruye la parte perdida del diente con resina estética.', s: { chip: 0, resin: .7 } }],
+  sellador: s => [{ t: 'Sellador', d: 'Se sellan las fisuras de la muela para prevenir caries.', s: { resin: Math.max(s.resin, .5) } }],
+  endodoncia: () => [{ t: 'Endodoncia', d: 'Se retira el nervio dañado, se limpian los conductos y se sellan.', s: { caries: 0, pulp: 0, canal: 1, resin: .8 }, xray: true }],
+  corona: () => [{ t: 'Corona', d: 'Se coloca una corona que protege el diente y le devuelve su forma.', s: { cap: 1, caries: 0, cavity: 0, chip: 0 } }],
+  extraccion: () => [{ t: 'Extracción', d: 'Se retira el diente con anestesia local. La encía cicatriza en 1 a 2 semanas.', s: { sink: -1.4, present: 0 } }],
+  extraccion_retenido: () => [{ t: 'Extracción', d: 'Se retira la muela retenida con anestesia local.', s: { sink: -1.4, present: 0 }, xray: true }],
+  implante: () => [{ t: 'Implante', d: 'Se coloca un tornillo de titanio en el hueso. Se esperan 3 a 4 meses para que se integre.', s: { present: 0, nat: 0, implant: 1, sink: 0, tilt: 0, cap: 0, caries: 0, resin: 0, chip: 0, pulp: 0, canal: 0 }, xray: true }],
+  corona_implante: () => [{ t: 'Corona sobre implante', d: 'Sobre el implante se fija una corona que funciona como un diente natural.', s: { nat: 0, implant: 1, present: 1, cap: 1, sink: 0 } }]
+};
+/* Etapas de un diente: cómo está hoy + cada tratamiento pendiente del plan, en orden de cita */
+function etapasDiente(fdi, odo, pl) {
+  const t = odo[fdi], hoy = estado3D(t), etapas = [{ t: 'Así está hoy', d: dxTexto(t), s: hoy, xray: hoy.pulp > 0 || hoy.tilt > 0 || hoy.canal > 0 || hoy.implant > 0 }];
+  const its = (pl?.items || []).filter(it => !['realizado', 'cancelado'].includes(it.estado) && (it.dientes || []).includes(fdi))
+    .sort((a, b) => (a.citas?.[0] ?? 99) - (b.citas?.[0] ?? 99));
+  let cur = { ...hoy };
+  its.forEach(it => {
+    const tpl = ETAPAS[it.animacion], tr = get('tratamientos', it.tratamientoId), cita = it.citas?.[0] != null ? `Cita ${it.citas[0] + 1} · ` : '';
+    const lista = tpl ? tpl(cur) : [{ t: it.nombre, d: '', s: {} }];
+    lista.forEach((e, i) => { cur = { ...cur, ...e.s }; etapas.push({ t: cita + e.t, d: (i === lista.length - 1 && tr?.descripcionPaciente) ? tr.descripcionPaciente : e.d, s: { ...cur }, xray: e.xray, cost: i === lista.length - 1 ? precioItem(it) : 0, item: it.nombre }); });
+  });
+  return { etapas, final: cur, items: its };
+}
+let THREEp = null;
+function cargarThree() {
+  if (window.THREE) return Promise.resolve(window.THREE);
+  if (!THREEp) THREEp = new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'; s.onload = () => res(window.THREE); s.onerror = () => { THREEp = null; rej(new Error('No se pudo cargar el visor 3D. Revisa tu conexión.')); }; document.head.appendChild(s); });
+  return THREEp;
+}
+const V = { ready: false };
+function visorCrear() {
+  const T3 = window.THREE;
+  V.renderer = new T3.WebGLRenderer({ antialias: true, alpha: true });
+  V.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  V.scene = new T3.Scene();
+  V.camera = new T3.PerspectiveCamera(38, 1, .1, 100);
+  V.dist = 12; V.rotY = 0; V.rotX = .28;
+  V.scene.add(new T3.HemisphereLight(0xffffff, 0x334455, .8));
+  const key = new T3.DirectionalLight(0xffffff, .85); key.position.set(2, 4, 8); V.scene.add(key);
+  const rim = new T3.DirectionalLight(0x9fd3ff, .4); rim.position.set(-4, -2, -6); V.scene.add(rim);
+  V.mouth = new T3.Group(); V.scene.add(V.mouth);
+  V.gumMat = new T3.MeshStandardMaterial({ color: 0xd8707c, roughness: .6, transparent: true });
+  V.C_PULP = new T3.Color(0xe9a0a0); V.C_INF = new T3.Color(0x9b0d0d); V.C_GUT = new T3.Color(0xe07b2c);
+  V.teeth = {}; V.pick = [];
+  const UW = [0, .86, .68, .78, .7, .68, 1.0, .92, .84], LW = [0, .54, .6, .7, .7, .72, 1.08, 1.0, .94], GAP = .12;
+  const arch = sc => { const P = [[-2.45, -2.3], [-2.3, -.6], [-1.75, 1.0], [-.9, 2.05], [0, 2.35], [.9, 2.05], [1.75, 1.0], [2.3, -.6], [2.45, -2.3]]; return new T3.CatmullRomCurve3(P.map(p => new T3.Vector3(p[0] * sc, 0, p[1] * sc + (1 - sc) * .4))); };
+  const makeTooth = (fdi, upper, w) => {
+    const d = fdi % 10, sgn = upper ? 1 : -1;
+    const dm = d <= 2 ? { h: upper ? (d === 1 ? 1.0 : .9) : .85, dp: .36 } : d === 3 ? { h: 1.05, dp: .55 } : d <= 5 ? { h: .82, dp: .72 } : { h: .74, dp: .94 };
+    const h = dm.h, dp = dm.dp, g = new T3.Group(), body = new T3.Group(); g.add(body);
+    const sph = new T3.SphereGeometry(.5, 28, 18);
+    const crownMat = new T3.MeshStandardMaterial({ color: 0xf3eee0, roughness: .38, transparent: true });
+    const crown = new T3.Mesh(sph, crownMat); crown.scale.set(w, h, dp); crown.position.y = sgn * h * .5; body.add(crown);
+    const rootMat = new T3.MeshStandardMaterial({ color: 0xe8dcc0, roughness: .6, transparent: true, opacity: .7, depthWrite: false });
+    const root = new T3.Mesh(new T3.ConeGeometry(w * .3, 1.4, 14), rootMat); root.position.y = sgn * (h + .45); if (!upper) root.rotation.x = Math.PI; body.add(root);
+    const pulpMat = new T3.MeshBasicMaterial({ color: 0xe9a0a0 });
+    const pulp = new T3.Mesh(upper ? new T3.CylinderGeometry(.025, .07, 1.5, 10) : new T3.CylinderGeometry(.07, .025, 1.5, 10), pulpMat); pulp.position.y = sgn * (h * .4 + .7); body.add(pulp);
+    const spot = new T3.SphereGeometry(1, 16, 12);
+    const caries = new T3.Mesh(spot, new T3.MeshStandardMaterial({ color: 0x3a2210, roughness: .9 }));
+    const cavity = new T3.Mesh(spot, new T3.MeshStandardMaterial({ color: 0x7a6a5c, roughness: .9 }));
+    const resin = new T3.Mesh(spot, new T3.MeshStandardMaterial({ color: 0xf1e4c4, roughness: .3 }));
+    [caries, cavity, resin].forEach(m => { m.position.set(0, sgn * h * .5, dp * .43); body.add(m); });
+    const capMat = new T3.MeshStandardMaterial({ color: 0xfffcf2, roughness: .18, metalness: .05, transparent: true });
+    const cap = new T3.Mesh(sph, capMat); cap.position.y = sgn * h * .5; body.add(cap);
+    const metal = new T3.MeshStandardMaterial({ color: 0x9aa4ad, metalness: .85, roughness: .3 });
+    const imp = new T3.Group(); body.add(imp);
+    const screw = new T3.Mesh(new T3.CylinderGeometry(.12, .17, 1.0, 16), metal); screw.position.y = -sgn * .5; if (!upper) screw.rotation.x = Math.PI; imp.add(screw);
+    for (let j = 0; j < 5; j++) { const th = new T3.Mesh(new T3.TorusGeometry(.165 - j * .008, .03, 8, 20), metal); th.rotation.x = Math.PI / 2; th.position.y = -sgn * (.12 + j * .18); imp.add(th); }
+    const abut = new T3.Mesh(new T3.CylinderGeometry(.11, .14, .35, 14), metal); abut.position.y = -sgn * 1.12; imp.add(abut);
+    const marker = new T3.Mesh(new T3.SphereGeometry(.12, 16, 12), new T3.MeshBasicMaterial({ color: 0xffffff })); marker.position.set(0, sgn * h * .5, dp / 2 + .38); g.add(marker);
+    [crown, cap, marker, screw, root].forEach(m => { m.userData.fdi = fdi; V.pick.push(m); });
+    return { fdi, upper, sgn, w, h, dp, g, body, crown, crownMat, root, rootMat, pulp, pulpMat, caries, cavity, resin, cap, capMat, imp, marker, p: st(), from: st(), to: st(), t: 1, dur: 1.2 };
+  };
+  [true, false].forEach(upper => {
+    const sgn = upper ? 1 : -1, sc = upper ? 1 : .93, curve = arch(sc), jaw = new T3.Group(); jaw.position.y = sgn * GAP; V.mouth.add(jaw);
+    const order = upper ? D_SUP : D_INF, W = upper ? UW : LW, ws = order.map(f => W[f % 10]);
+    const total = ws.reduce((a, b) => a + b, 0), L = curve.getLength(), k = L * .985 / total, off = L * .0075; let cum = 0;
+    order.forEach((fdi, i) => {
+      const span = ws[i] * k, u = (off + cum + span / 2) / L; cum += span;
+      const pos = curve.getPointAt(u), tan = curve.getTangentAt(u);
+      const T = makeTooth(fdi, upper, ws[i] * Math.min(k, 1.1) * .97);
+      T.g.position.copy(pos); T.g.rotation.y = Math.atan2(-tan.z, tan.x); jaw.add(T.g); V.teeth[fdi] = T;
+    });
+    const gp = curve.getPoints(80).map(p => new T3.Vector3(p.x, sgn * 1.05, p.z));
+    jaw.add(new T3.Mesh(new T3.TubeGeometry(new T3.CatmullRomCurve3(gp), 140, .44, 16, false), V.gumMat));
+    [gp[0], gp[gp.length - 1]].forEach(p => { const c = new T3.Mesh(new T3.SphereGeometry(.44, 16, 12), V.gumMat); c.position.copy(p); jaw.add(c); });
+  });
+  /* controles: arrastrar gira, rueda o pellizco acerca, tocar selecciona */
+  const el = V.renderer.domElement; el.style.touchAction = 'none'; el.style.display = 'block'; el.style.width = '100%'; el.style.height = '100%';
+  const ptrs = new Map(); let moved = 0, pinch0 = 0, dist0 = 12;
+  el.addEventListener('pointerdown', e => { el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); moved = 0; if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); dist0 = V.dist; } });
+  el.addEventListener('pointermove', e => {
+    const pr = ptrs.get(e.pointerId); if (!pr) return;
+    if (ptrs.size === 2) { pr.x = e.clientX; pr.y = e.clientY; const [a, b] = [...ptrs.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); if (pinch0) V.dist = Math.min(18, Math.max(5.5, dist0 * pinch0 / d)); moved += 10; return; }
+    const dx = e.clientX - pr.x, dy = e.clientY - pr.y; pr.x = e.clientX; pr.y = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
+    V.rotY = Math.max(-1.6, Math.min(1.6, V.rotY + dx * .01)); V.rotX = Math.max(-.9, Math.min(1.1, V.rotX + dy * .008));
+  });
+  const up = e => { const was = ptrs.size; ptrs.delete(e.pointerId); if (was === 1 && moved < 6) visorTocar(e); if (ptrs.size < 2) pinch0 = 0; };
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', e => ptrs.delete(e.pointerId));
+  el.addEventListener('wheel', e => { e.preventDefault(); V.dist = Math.min(18, Math.max(5.5, V.dist * (1 + Math.sign(e.deltaY) * .08))); }, { passive: false });
+  V.ray = new T3.Raycaster(); V.clock = new T3.Clock();
+  V.ready = true;
+}
+function visorTocar(e) {
+  const r = V.renderer.domElement.getBoundingClientRect();
+  const m = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  V.ray.setFromCamera(m, V.camera);
+  const visible = o => { for (let x = o; x; x = x.parent) if (!x.visible) return false; return true; };
+  const hit = V.ray.intersectObjects(V.pick, false).find(h => visible(h.object));
+  if (hit) { S.ui.vSel = hit.object.userData.fdi; S.ui.vEtapa = 0; visorAnimarEtapa(0); render(); }
+}
+const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+function visorAplicar(T) {
+  const s = T.p, x = V.xray, vis = s.present > .02;
+  T.body.rotation.z = s.tilt * .65 * (T.upper ? 1 : -1);
+  T.body.position.y = T.sgn * s.sink * .9;
+  T.crown.visible = vis; T.crownMat.opacity = (x ? .22 : 1) * Math.min(1, s.present); T.crownMat.depthWrite = !x && s.present > .98;
+  T.crown.scale.set(T.w, T.h * (1 - .22 * s.chip), T.dp); T.crown.position.y = T.sgn * T.h * (.5 + .11 * s.chip);
+  T.root.visible = s.nat > .02 && s.present > .02; T.rootMat.opacity = (x ? .95 : .7) * Math.min(1, s.present); T.rootMat.color.set(x ? 0xfff6e0 : 0xe8dcc0);
+  T.pulp.visible = T.root.visible && (x || s.pulp > .3);
+  T.pulpMat.color.copy(V.C_PULP).lerp(V.C_INF, Math.min(1, s.pulp)).lerp(V.C_GUT, Math.min(1, s.canal));
+  const hideSpots = s.cap > .5 || !vis;
+  [['caries', s.caries], ['cavity', s.cavity], ['resin', s.resin]].forEach(([k, v]) => { const m = T[k]; m.visible = !hideSpots && v > .02; const r = .19 * T.w * Math.max(v, .001); m.scale.set(r, r, r * .6); });
+  T.cap.visible = s.cap > .02; T.capMat.opacity = (x ? .3 : 1) * Math.min(1, s.cap); const cs = 1.06 * (.9 + .1 * s.cap); T.cap.scale.set(T.w * cs, T.h * cs, T.dp * cs);
+  T.imp.visible = s.implant > .02; T.imp.position.y = T.sgn * (T.h + .85 + (1 - s.implant) * 1.6);
+}
+function visorEstados(map, animar) {
+  Object.values(V.teeth).forEach(T => { const s = st(map[T.fdi]); if (animar) { T.from = { ...T.p }; T.to = s; T.t = 0; } else { T.p = { ...s }; T.from = { ...s }; T.to = s; T.t = 1; visorAplicar(T); } });
+}
+function visorLoop() {
+  if (!V.renderer.domElement.isConnected) { V.loop = false; return; }
+  V.loop = true;
+  const dt = Math.min(V.clock.getDelta(), .05);
+  Object.values(V.teeth).forEach(T => {
+    if (T.t < 1) { T.t = Math.min(1, T.t + dt / T.dur); const k = ease(T.t); for (const key in T.to) T.p[key] = T.from[key] + (T.to[key] - T.from[key]) * k; visorAplicar(T); }
+    if (T.marker.visible) { const sc = 1 + Math.sin(performance.now() / 300) * .12; T.marker.scale.set(sc, sc, sc); }
+  });
+  V.mouth.rotation.y += (V.rotY - V.mouth.rotation.y) * .15; V.mouth.rotation.x += (V.rotX - V.mouth.rotation.x) * .15;
+  V.camera.position.set(0, .4, V.dist); V.camera.lookAt(0, 0, 0);
+  V.renderer.render(V.scene, V.camera);
+  requestAnimationFrame(visorLoop);
+}
+function visorTam() { const c = V.renderer.domElement.parentElement; if (!c) return; const w = c.clientWidth, h = c.clientHeight; if (!w || !h) return; V.renderer.setSize(w, h, false); V.camera.aspect = w / h; V.camera.updateProjectionMatrix(); }
+function visorXray(on) {
+  V.xray = on; V.gumMat.opacity = on ? .12 : 1; V.gumMat.depthWrite = !on;
+  Object.values(V.teeth).forEach(visorAplicar);
+}
+/* Qué estados mostrar según el modo */
+function visorDatos(pid) {
+  const ex = expedienteDe(pid), odo = ex.odontograma || {}, pl = planActivo(pid), modo = S.ui.vModo || 'hoy';
+  const base = modo === 'inicio' ? (ex.odoInicial || odo) : odo;
+  const map = {}, info = {};
+  D_TODOS.forEach(f => {
+    const e = etapasDiente(f, odo, pl);
+    map[f] = modo === 'final' ? e.final : estado3D(base[f]);
+    info[f] = { color: dColor(base[f]), pend: e.items.length };
+  });
+  return { map, info, pl, odo };
+}
+async function montarVisor() {
+  const box = document.getElementById('visor3d'); if (!box || S.view !== 'expediente' || S.ui.expTab !== 'visor') return;
+  const msg = document.getElementById('visorMsg');
+  try {
+    await cargarThree();
+    if (!V.ready) visorCrear();
+    if (!document.getElementById('visor3d')) return;
+    const box2 = document.getElementById('visor3d');
+    if (V.renderer.domElement.parentElement !== box2) box2.prepend(V.renderer.domElement);
+    if (msg) msg.hidden = true;
+    visorTam();
+    if (!V.ro) { V.ro = new ResizeObserver(() => visorTam()); }
+    V.ro.disconnect(); V.ro.observe(box2);
+    const D = visorDatos(S.ui.pacId), sig = JSON.stringify([S.ui.pacId, S.ui.vModo, D.map, S.ui.vSel, S.ui.vEtapa]);
+    const cambio = V.sig !== sig; V.sig = sig;
+    if (cambio && !S.ui.vAnimando) {
+      if (S.ui.vSel && S.ui.vEtapa > 0) { const e = etapasDiente(S.ui.vSel, D.odo, D.pl).etapas; const mp = { ...D.map }; mp[S.ui.vSel] = e[Math.min(S.ui.vEtapa, e.length - 1)].s; visorEstados(mp, false); }
+      else visorEstados(D.map, V.pac === S.ui.pacId && V.modo !== S.ui.vModo);
+    }
+    V.pac = S.ui.pacId; V.modo = S.ui.vModo;
+    const xr = !!S.ui.vXray; if (V.xray !== xr) visorXray(xr);
+    Object.values(V.teeth).forEach(T => {
+      const inf = D.info[T.fdi], showM = S.ui.vModo !== 'final' && (inf.color || inf.pend);
+      T.marker.visible = !!showM; if (showM) T.marker.material.color.set(inf.color || '#5cc3d6');
+      T.crownMat.emissive && T.crownMat.emissive.set(T.fdi === S.ui.vSel ? 0x1d4f5c : 0x000000);
+    });
+    if (!V.loop) { V.clock.getDelta(); visorLoop(); }
+  } catch (e) { if (msg) { msg.hidden = false; msg.textContent = errMsg(e); } }
+}
+function visorAnimarEtapa(i) {
+  if (!V.ready || !S.ui.vSel) return;
+  const D = visorDatos(S.ui.pacId), e = etapasDiente(S.ui.vSel, D.odo, D.pl).etapas, E = e[Math.min(i, e.length - 1)];
+  Object.values(V.teeth).forEach(X => { if (X.fdi === S.ui.vSel) return; const m = st(D.map[X.fdi]); if (Object.keys(m).some(k => Math.abs((X.p[k] || 0) - m[k]) > .001)) { X.from = { ...X.p }; X.to = m; X.t = 0; } });
+  const T = V.teeth[S.ui.vSel]; T.from = { ...T.p }; T.to = st(E.s); T.t = 0;
+  if (E.xray && !S.ui.vXray) { S.ui.vXray = true; visorXray(true); }
+  V.sig = JSON.stringify([S.ui.pacId, S.ui.vModo, D.map, S.ui.vSel, i]);
+}
+function tabVisor(p) {
+  const D = visorDatos(p.id), modo = S.ui.vModo || 'hoy', sel = S.ui.vSel;
+  const ex = expedienteDe(p.id), pl = D.pl, T = pl ? totalesPlan(pl) : null;
+  const conTx = D_TODOS.filter(f => D.info[f].pend);
+  const leyenda = [[T_CARA.caries.c, 'Caries'], [T_DIENTE.pulpa.c, 'Nervio afectado'], [T_CARA.fractura.c, 'Fractura'], [T_DIENTE.retenido.c, 'Retenido'], [T_DIENTE.ausente.c, 'Ausente'], ['#5cc3d6', 'Con tratamiento']];
+  let det = '';
+  if (sel) {
+    const e = etapasDiente(sel, D.odo, pl), et = Math.min(S.ui.vEtapa || 0, e.etapas.length - 1), tot = e.items.reduce((a, it) => a + precioItem(it), 0);
+    det = `<div class="panel"><div class="panel-h"><span class="dot" style="background:${dColor(D.odo[sel]) || '#5cc3d6'}"></span><h3>${sel} · ${nombreDiente(sel)}</h3><span class="sp"></span><button class="icon-btn" data-act="v-cerrar" aria-label="Cerrar">×</button></div><div class="panel-b" style="display:grid;gap:8px">
+      <p style="margin:0">${esc(dxTexto(D.odo[sel]))}</p>
+      ${e.items.length ? `<ol class="steps">${e.etapas.map((x, i) => `<li class="${i === et ? 'on' : i < et ? 'done' : ''}" data-act="v-etapa" data-i="${i}"><span class="n">${i + 1}</span><div><div class="st">${esc(x.t)}</div>${x.d ? `<div class="sd">${esc(x.d)}</div>` : ''}${x.cost ? `<div class="sc num">${money(x.cost)}</div>` : ''}</div></li>`).join('')}</ol>
+        <div class="quick"><button class="btn primary" data-act="v-etapa" data-i="${Math.min(et + 1, e.etapas.length - 1)}" ${et >= e.etapas.length - 1 ? 'disabled' : ''}>Siguiente etapa</button><button class="btn" data-act="v-play">Ver todo el proceso</button><button class="btn ghost" data-act="v-etapa" data-i="0">Reiniciar</button></div>
+        <div class="tot"><span>Costo de este diente</span><b class="num">${money(tot)}</b></div>` : '<p class="mute" style="margin:0">Sin tratamientos pendientes en el plan para este diente.</p>'}
+    </div></div>`;
+  }
+  return `<div class="visor-grid"><div class="visor-col">
+      <div id="visor3d" class="visor ${S.ui.vXray ? 'xr' : ''}">
+        <div class="vov vseg">${[['inicio', 'Cómo llegó'], ['hoy', 'Hoy'], ['final', 'Resultado final']].map(([k, l]) => `<button data-act="v-modo" data-m="${k}" class="${modo === k ? 'on' : ''}" ${k === 'inicio' && !ex.odoInicial ? 'disabled title="Se guarda al registrar el primer odontograma"' : ''}>${l}</button>`).join('')}</div>
+        <div class="vov vxr"><button data-act="v-xray" class="${S.ui.vXray ? 'on' : ''}">Rayos X</button></div>
+        <div class="vov vleg">${leyenda.map(([c, l]) => `<span><span class="dot" style="background:${c}"></span>${l}</span>`).join('')}</div>
+        <div class="vov vhint">Arrastra para girar · pellizca o usa la rueda para acercar · toca un diente</div>
+        <div class="vmsg" id="visorMsg">Cargando visor 3D…</div>
+      </div>
+      <p class="mute" style="margin:0;font-size:12.5px">Modelo ilustrativo. Los dientes son formas simplificadas; el modelo anatómico realista se integra cuando tengamos el archivo 3D con licencia.</p>
+    </div>
+    <div class="visor-col">
+      ${det}
+      <div class="panel"><div class="panel-h"><h3>Dientes por atender</h3>${pl ? `<span class="pill ${PLAN_EST[pl.estado].c}">Plan v${pl.version}</span>` : ''}</div>
+        ${conTx.length ? `<div class="rows">${conTx.map(f => { const e = etapasDiente(f, D.odo, pl); return `<button class="row" data-act="v-sel" data-fdi="${f}"><div style="min-width:0"><div class="t1"><span class="dot" style="background:${dColor(D.odo[f]) || '#5cc3d6'}"></span>${f} · ${esc(nombreDiente(f))}</div><div class="t2">${e.items.map(i => esc(i.nombre)).join(' + ')}</div></div><div class="r num"><b>${money(e.items.reduce((a, i) => a + precioItem(i), 0))}</b></div></button>`; }).join('')}</div>` : `<div class="empty">${pl ? 'No hay tratamientos pendientes por diente.' : 'Aún no hay plan de tratamiento.'}</div>`}
+        ${T ? `<div class="panel-b"><div class="tot"><span>Total del plan</span><b class="num">${money(T.total)}</b></div><div class="tot"><span>Realizado</span><span class="num">${money(T.realizado)} · ${T.pctAvance}%</span></div></div>` : ''}
+      </div>
+      ${pl && (pl.citas || []).length ? `<div class="panel"><div class="panel-h"><h3>Citas propuestas</h3></div><div class="panel-b">${pl.citas.map((c, i) => { const ss = sesionesDeCita(pl, i); const hecha = ss.length && ss.every(({ it, k }) => (it.hechas || [])[k]); return `<div class="cita-row"><span class="n">Cita ${i + 1}</span><span class="d">${c.fecha ? fechaCorta(c.fecha) + ' · ' : ''}${ss.map(({ it }) => esc(it.nombre) + ((it.dientes || []).length ? ' (' + it.dientes.join(', ') + ')' : '')).join(', ')}</span><span class="c num">${hecha ? '<span class="pill ok">Hecha</span>' : money(ss.reduce((a, { it }) => a + precioSesion(it), 0))}</span></div>`; }).join('')}</div></div>` : ''}
+    </div></div>`;
+}
+async function visorPlay() {
+  if (!S.ui.vSel) return;
+  const D = visorDatos(S.ui.pacId), n = etapasDiente(S.ui.vSel, D.odo, D.pl).etapas.length;
+  S.ui.vAnimando = true;
+  for (let i = 0; i < n; i++) { if (S.view !== 'expediente' || S.ui.expTab !== 'visor' || !S.ui.vSel) break; S.ui.vEtapa = i; visorAnimarEtapa(i); render(); await new Promise(r => setTimeout(r, 1900)); }
+  S.ui.vAnimando = false;
+}
 /* ============================ EVENTOS ============================ */
 const ACT = {
   nav: el => go(el.dataset.view), salir, perfil: () => verPerfil(),
   'reset-demo': async () => { if (!await confirmar('Restablecer datos de ejemplo', 'Se borran los cambios que hiciste en esta demostración y se cargan de nuevo los datos de ejemplo.', { ok: 'Restablecer', peligro: true })) return; const uid = S.me.id; seedDemo(); S.me = get('usuarios', uid) || get('usuarios', 'u_admin'); render(); toast('Datos de ejemplo restablecidos.'); },
-  'pac-nuevo': () => formPaciente(), 'pac-ver': el => verPaciente(el.dataset.id), 'pac-filtro': el => { S.ui.pacF = el.dataset.f; render(); },
+  'pac-nuevo': () => formPaciente(), 'pac-ver': el => abrirExpediente(el.dataset.id, 'resumen'), 'pac-filtro': el => { S.ui.pacF = el.dataset.f; render(); },
   'cat-tab': el => { S.ui.catTab = el.dataset.tab; S.ui.catQ = ''; render(); }, 'cat-ejemplo': cargarCatalogoEjemplo,
   'tr-nuevo': () => formTratamiento(), 'tr-ver': el => verTratamiento(el.dataset.id), 'in-nuevo': () => formInsumo(), 'in-editar': el => formInsumo(el.dataset.id),
   'us-nuevo': () => formUsuario(), 'us-editar': el => formUsuario(el.dataset.id), cuotas: el => formCuotas(el.dataset.id), 'mis-cuotas': () => formCuotas(S.me.id, true),
-  'se-nuevo': () => formSede(), 'se-editar': el => formSede(el.dataset.id), 'aviso-editar': formAviso, excel: el => modalExcel(el.dataset.ent)
+  'se-nuevo': () => formSede(), 'se-editar': el => formSede(el.dataset.id), 'aviso-editar': formAviso, excel: el => modalExcel(el.dataset.ent),
+  'exp-tab': el => { S.ui.expTab = el.dataset.tab; render(); window.scrollTo(0, 0); },
+  'pac-editar': () => formPaciente(S.ui.pacId), 'pac-consent': () => formConsentimiento(S.ui.pacId),
+  'pac-baja': async () => { const p = get('pacientes', S.ui.pacId), baja = p.estado !== 'baja';
+    if (!await confirmar(baja ? 'Dar de baja al paciente' : 'Reactivar paciente', baja ? 'El paciente deja de aparecer en el directorio activo. Su expediente se conserva y se puede reactivar.' : 'El paciente vuelve al directorio activo.', { ok: baja ? 'Dar de baja' : 'Reactivar', peligro: baja })) return;
+    await guardar('pacientes', p.id, { estado: baja ? 'baja' : 'activo' }, (baja ? 'Dio de baja a ' : 'Reactivó a ') + nombreCompleto(p)); toast(baja ? 'Paciente dado de baja.' : 'Paciente reactivado.'); },
+  'historia-editar': formHistoria,
+  odo: el => odoClick(el), 'odo-tool': el => { S.ui.odo.tool = el.dataset.tool; if (el.dataset.tool !== 'ver') S.ui.odo.ver = S.ui.odo.ver; render(); },
+  'odo-guardar': odoGuardar, 'odo-descartar': async () => { if (!await confirmar('Descartar cambios', 'Se pierden los cambios del odontograma que no guardaste.', { ok: 'Descartar', peligro: true })) return; S.ui.odo = null; render(); },
+  'odo-sel-limpiar': () => { S.ui.odo.sel = []; render(); }, 'odo-ver': el => { odoTrabajo(S.ui.pacId).ver = +el.dataset.fdi; render(); }, 'odo-ver-cerrar': () => { S.ui.odo.ver = null; render(); },
+  'plan-nuevo': async () => { await nuevoPlan(S.ui.pacId); toast('Plan creado. Agrega los tratamientos.'); },
+  'plan-item-nuevo': () => { const pl = planActivo(S.ui.pacId); if (pl && !editable(pl)) { toast(`El plan v${pl.version} ya fue aceptado. Para agregar tratamientos crea una nueva versión desde la pestaña Plan.`); return; } formItem(); },
+  'plan-item-editar': el => formItem(el.dataset.item), 'plan-organizar': formOrganizar, 'plan-aceptar': formAceptar, 'plan-version': nuevaVersion, 'plan-cancelar': cancelarPlan,
+  'plan-estado': async el => { const p = get('pacientes', S.ui.pacId), pl = planVisible(p.id); await guardarLote([{ col: 'planes', id: pl.id, data: { estado: el.dataset.est } }], `Cambió el plan v${pl.version} de ${nombreCompleto(p)} a "${PLAN_EST[el.dataset.est].l}"`); toast('Plan actualizado.'); },
+  'plan-cita-nueva': async () => { const p = get('pacientes', S.ui.pacId), pl = deep(planVisible(p.id)); const ult = pl.citas[pl.citas.length - 1]; pl.citas.push({ id: newId('c'), fecha: ult?.fecha ? sumarDias(ult.fecha, 7) : sumarDias(hoyISO(), 7), dentistaId: p.dentistaResp || S.me.id, nota: '' }); await guardarPlan(pl, `Agregó la cita ${pl.citas.length} al plan v${pl.version} de ${nombreCompleto(p)}`); },
+  'plan-cita-quitar': async el => { const p = get('pacientes', S.ui.pacId), pl = deep(planVisible(p.id)), ci = +el.dataset.ci; pl.citas.splice(ci, 1); pl.items.forEach(it => it.citas = (it.citas || []).map(c => c == null ? null : c > ci ? c - 1 : c === ci ? null : c)); await guardarPlan(pl, `Quitó una cita del plan v${pl.version} de ${nombreCompleto(p)}`); },
+  'plan-hecho': el => formHecho(el.dataset.item, +el.dataset.k), 'nota-nueva': formNota,
+  'v-modo': el => { S.ui.vModo = el.dataset.m; S.ui.vSel = null; S.ui.vEtapa = 0; render(); },
+  'v-xray': () => { S.ui.vXray = !S.ui.vXray; render(); },
+  'v-sel': el => { S.ui.vSel = +el.dataset.fdi; S.ui.vEtapa = 0; if (S.ui.vModo === 'final') S.ui.vModo = 'hoy'; visorAnimarEtapa(0); render(); },
+  'v-etapa': el => { S.ui.vEtapa = +el.dataset.i; visorAnimarEtapa(S.ui.vEtapa); render(); },
+  'v-play': () => visorPlay(), 'v-cerrar': () => { S.ui.vSel = null; S.ui.vEtapa = 0; render(); }
 };
 function verPerfil() {
   modal({ title: 'Mi cuenta', body: `<div class="ch" style="display:flex;gap:12px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div><b>${esc(S.me.nombre)}</b><div class="mute">${esc(S.me.email)} · ${ROLES[S.me.rol]}</div></div></div>`,
@@ -1483,6 +2439,23 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => { const k = e.target.dataset?.input; if (k) { S.ui[k] = e.target.value; render(); } });
 document.addEventListener('change', e => { const k = e.target.dataset?.change; if (k) { S.ui[k] = e.target.value; render(); } });
+document.addEventListener('change', async e => {
+  const el = e.target; if (!el.closest || !el.closest('#view')) return;
+  try {
+    if (el.dataset.moveItem) {
+      const p = get('pacientes', S.ui.pacId), pl = deep(planVisible(p.id)), it = pl.items.find(x => x.id === el.dataset.moveItem), k = +el.dataset.k;
+      it.citas[k] = el.value === '' ? null : +el.value;
+      if (it.citas[k] != null && pl.citas[it.citas[k]] && !sesionesDeCita(pl, it.citas[k]).filter(x => x.it.id !== it.id).length) pl.citas[it.citas[k]].dentistaId = it.dentistaId;
+      await guardarPlan(pl, `Movió ${it.nombre} a ${el.value === '' ? 'sin cita' : 'la cita ' + (+el.value + 1)} en el plan v${pl.version} de ${nombreCompleto(p)}`);
+    } else if (el.dataset.changeCita != null) {
+      const p = get('pacientes', S.ui.pacId), pl = deep(planVisible(p.id)), ci = +el.dataset.changeCita;
+      pl.citas[ci].fecha = el.value; await guardarPlan(pl, `Cambió la fecha de la cita ${ci + 1} del plan v${pl.version} de ${nombreCompleto(p)}`);
+    } else if (el.id === 'odoNota') {
+      const O = S.ui.odo, f = +el.dataset.fdi, t = dNorm(O.data[f]); t.nota = el.value.trim();
+      if (dTieneAlgo(t)) O.data[f] = t; else delete O.data[f]; O.dirty = true; render();
+    }
+  } catch (err) { toast(errMsg(err)); }
+});
 document.addEventListener('submit', async e => {
   if (e.target.id !== 'clinForm') return; e.preventDefault(); const f = e.target;
   try { await guardar('config', 'clinica', { nombre: fv(f, 'nombre'), responsable: fv(f, 'responsable'), domicilio: fv(f, 'domicilio'), telefono: fv(f, 'telefono'), correo: fv(f, 'correo') }, 'Actualizó los datos de la clínica'); toast('Datos de la clínica guardados.'); }
