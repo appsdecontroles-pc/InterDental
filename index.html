@@ -464,7 +464,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1234567890:web:abc123"
 };
 */
-const VERSION_APP = '6.0 · Fase 6';
+const VERSION_APP = '6.1';
 
 /* ============================ UTILIDADES ============================ */
 const $ = (s, el = document) => el.querySelector(s);
@@ -996,7 +996,7 @@ function vInicio() {
     <div style="display:grid;gap:18px">
       ${S.me.rol !== 'recepcion' ? `<div class="panel"><div class="panel-h"><h3>Mis pacientes</h3><span class="pill acc">${mios.length}</span></div>
         ${mios.length ? `<div class="rows">${mios.slice(0, 5).map(p => filaPaciente(p, true)).join('')}</div>` : `<div class="empty">Aún no tienes pacientes asignados como dentista responsable.</div>`}</div>` : ''}
-      <div class="panel"><div class="panel-h"><h3>Plan del proyecto</h3></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li class="${i === 5 ? 'now' : ''}"><span class="n">${i + 1}</span><div><b>${f[0]}${i < 5 ? ' <span class="pill ok">Lista</span>' : ' <span class="pill acc">Actual</span>'}</b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
+      <div class="panel"><div class="panel-h"><h3>Módulos de la plataforma</h3><span class="pill ok">Las 6 fases están listas</span></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li><span class="n">${i + 1}</span><div><b>${f[0]} <span class="pill ok">Lista</span></b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
     </div>
   </div>`;
 }
