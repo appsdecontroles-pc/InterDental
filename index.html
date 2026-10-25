@@ -188,6 +188,23 @@ tbody tr.click:hover td{background:var(--surface2)}
 }
 .aviso{max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;white-space:pre-wrap;background:var(--bg)}
 .firma-wrap{display:grid;gap:6px}
+.firma-box{display:grid;place-items:center;gap:4px;min-height:96px;border:1.5px dashed var(--line);border-radius:12px;background:var(--bg);cursor:pointer;padding:10px;text-align:center}
+.firma-box:hover{border-color:var(--accent)}
+.firma-box.ok{background:#fff;border-style:solid}
+.firma-box img{max-height:80px;max-width:100%}
+.firma-re{font-size:12px;color:#5b6d73}
+.firma-mini{height:34px;background:#fff;border-radius:6px;border:1px solid var(--line)}
+#firmaRoot{position:fixed;inset:0;z-index:90;background:var(--surface);padding-block:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+body.firmando{overflow:hidden}
+.ff{height:100%;display:flex;flex-direction:column;gap:10px}
+.ff-h{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;justify-content:space-between}
+.ff-h b{font-size:17px;display:block}.ff-h span{font-size:13.5px}
+.ff-area{position:relative;flex:1;min-height:200px;border:2px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.ff-area canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.ff-line{position:absolute;left:8%;right:8%;bottom:26%;border-bottom:2px solid #c9d3d6;pointer-events:none}
+.ff-x{position:absolute;left:5%;bottom:calc(26% + 4px);color:#9aa8ab;font-size:20px;pointer-events:none}
+.ff-f{display:flex;gap:8px;align-items:center}
+.ff-f .btn{padding:12px 18px;font-size:15px}
 .firma{width:100%;height:150px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;touch-action:none;display:block}
 .firma-img{max-width:260px;background:#fff;border-radius:8px;border:1px solid var(--line)}
 .mat-row{display:grid;grid-template-columns:minmax(0,1fr) 90px 34px;gap:8px;align-items:center}
@@ -260,6 +277,8 @@ tr.rowdone td{color:var(--mute)}
 @media (max-width:980px){.visor-grid{grid-template-columns:minmax(0,1fr)}}
 .visor-col{display:grid;gap:12px;min-width:0}
 .visor{position:relative;height:58vh;min-height:340px;max-height:640px;border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 38%,#29404f,#0d171e 75%);touch-action:none;user-select:none}
+.visor.claro:not(.xr){background:radial-gradient(circle at 50% 38%,#f4f1ec,#c9d2d6 80%)}
+.visor.claro:not(.xr) .vhint{color:#4c5b63}
 .visor.xr{background:radial-gradient(circle at 50% 40%,#16303a,#03080a 75%)}
 .vov{position:absolute;z-index:2;display:flex;gap:6px}
 .vseg{top:10px;left:10px;background:rgba(255,255,255,.12);border-radius:999px;padding:3px;flex-wrap:wrap}
@@ -332,6 +351,12 @@ input[type=color]{width:44px;height:32px;border:1px solid var(--line);border-rad
 .splash-prev{padding:22px;border:1px dashed var(--line);border-radius:12px;background:var(--bg)}
 .splash-prev img{max-width:110px;max-height:110px}
 @media (prefers-reduced-motion:no-preference){.splash{animation:up .3s ease-out}}
+/* Diagnóstico detallado */
+.subpick{display:grid;gap:8px;padding:10px 12px;border:1px solid var(--accent);border-radius:12px;background:var(--accent-soft)}
+.subpick b{font-size:13.5px}
+.subchip{border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;padding:5px 11px}
+.subchip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.vxr{gap:6px}
 /* Fase 4 */
 tr.rowpago td{background:var(--ok-soft)}
 .recibo{display:grid;gap:6px;border:1px dashed var(--line);border-radius:12px;padding:16px;background:var(--bg)}
@@ -389,6 +414,7 @@ tr.rowpago td{background:var(--ok-soft)}
 </div>
 <div id="modalRoot" hidden></div>
 <div id="confirmRoot" hidden></div>
+<div id="firmaRoot" hidden></div>
 <div id="toast" hidden></div>
 
 <script>
@@ -417,7 +443,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1234567890:web:abc123"
 };
 */
-const VERSION_APP = '4.0 · Fase 4';
+const VERSION_APP = '4.2 · Fase 4';
 
 /* ============================ UTILIDADES ============================ */
 const $ = (s, el = document) => el.querySelector(s);
@@ -458,7 +484,7 @@ const nombreUsuario = id => get('usuarios', id)?.nombre || '—';
 
 /* ============================ CAPA DE DATOS ============================ */
 const fb = {};
-const DEMO_KEY = 'appDentista.demo.v4';
+const DEMO_KEY = 'appDentista.demo.v5';
 function demoPersist() { try { localStorage.setItem(DEMO_KEY, JSON.stringify(S.data)); } catch (e) {} }
 function demoLoad() { try { const r = localStorage.getItem(DEMO_KEY); if (r) { const d = JSON.parse(r); COLS.forEach(c => d[c] = d[c] || {}); S.data = d; return true; } } catch (e) {} return false; }
 
@@ -679,7 +705,7 @@ function seedDemo() {
   P.forEach(([id,nombres,apPaterno,apMaterno,fechaNac,sexo,telefono,email,sedePref,dentistaResp,cons]) => D.pacientes[id] = { nombres, apPaterno, apMaterno, fechaNac, sexo, telefono, email, sedePref, dentistaResp, ocupacion: '', domicilio: '', cp: '', comoNosConocio: '', contactoEmergencia: { nombre: '', telefono: '' }, notas: '', estado: 'activo', consentimiento: cons, ...sys });
   /* Expediente, odontograma y plan de ejemplo (María Fernanda) */
   const hace = n => sumarDias(hoyISO(), -n);
-  const odo1 = {}; [[16, { caras: { O: 'caries', M: 'caries' }, hall: ['pulpa'] }], [26, { caras: { V: 'caries' } }], [47, { caras: { O: 'caries' } }], [11, { hall: ['fractura'] }], [36, { estado: 'ausente' }], [38, { estado: 'retenido' }], [14, { caras: { O: 'resina' } }]].forEach(([f, x]) => odo1[f] = dNorm(x));
+  const odo1 = {}; [[16, { caras: { O: 'caries', M: 'caries' }, hall: ['pulpar:irreversible', 'apical:absceso'] }], [21, { hall: ['reabsorcion:ext2'] }], [33, { hall: ['nocariosa:abrasion', 'periodonto:recesion'] }], [42, { hall: ['deposito:calculo'] }], [26, { caras: { V: 'caries' } }], [47, { caras: { O: 'caries' } }], [11, { hall: ['fractura:esmalte_dentina'] }], [36, { estado: 'ausente' }], [38, { estado: 'retenido' }], [14, { caras: { O: 'resina' } }]].forEach(([f, x]) => odo1[f] = dNorm(x));
   const mkIt = (clave, dientes, dent, caras = []) => { const tr = D.tratamientos['t_' + clave]; return { id: newId('it'), tratamientoId: 't_' + clave, clave, nombre: tr.nombre, categoria: tr.categoria, animacion: tr.animacion, aplicaA: tr.aplicaA, duracionMin: tr.duracionMin, sesiones: tr.sesiones, precio: tr.precio, descuentoPct: 0, dentistaId: dent, caras, dientes, estado: 'pendiente', hechas: [], citas: Array(tr.sesiones).fill(null) }; };
   const pl1 = organizarCitas({ items: [mkIt('PR-01', [], 'u_ana'), mkIt('EN-02', [16], 'u_ana'), mkIt('PT-01', [16], 'u_ana'), mkIt('CX-02', [38], 'u_jorge'), mkIt('OP-01', [26], 'u_ana', ['V']), mkIt('OP-01', [47], 'u_ana', ['O']), mkIt('OP-03', [11], 'u_ana'), mkIt('IM-01', [36], 'u_luis'), mkIt('IM-02', [36], 'u_luis')], citas: [] }, { inicio: hace(14), intervalo: 7, maxMin: 90 });
   const odoHoy = deep(odo1), notas = [];
@@ -1070,8 +1096,8 @@ function formConsentimiento(id) {
     <p style="margin:0">Muestra el aviso al paciente${menor ? ' y a su madre, padre o tutor' : ''}. Versión vigente: <b>v${v}</b>.</p>
     <div class="aviso">${esc(avisoTexto())}</div>
     ${menor ? `<label class="f">Nombre y parentesco de quien firma <span class="req">*</span><input type="text" name="tutor" id="fcTutor" required placeholder="Ej. Laura Ruiz (madre)"></label>` : ''}
-    <div class="seg" role="radiogroup" aria-label="Medio de firma"><button type="button" class="on" data-medio="pantalla">Firma en pantalla</button><button type="button" data-medio="papel">Firmó en papel</button></div>
-    <div class="firma-wrap" id="fcFirmaWrap"><canvas class="firma" id="fcFirma" aria-label="Área para firmar"></canvas><div style="display:flex;justify-content:space-between;align-items:center"><span class="mute" style="font-size:12.5px">Firma con el dedo o el mouse</span><button type="button" class="btn sm ghost" id="fcLimpiar">Borrar firma</button></div></div>
+    <div class="seg" role="radiogroup" aria-label="Medio de firma"><button type="button" class="on" data-medio="pantalla">Firma en la app</button><button type="button" data-medio="papel">Firmó en papel</button></div>
+    <div class="firma-wrap" id="fcFirmaWrap">${firmaCampo('fcFirma', menor ? 'Toca aquí para que firme el tutor' : 'Toca aquí para que firme el paciente')}</div>
     <p class="mute" id="fcPapel" hidden style="margin:0">Archiva el formato firmado en papel en la carpeta del paciente.</p>
     <label class="check"><input type="checkbox" name="acepta" id="fcAcepta" required> ${menor ? 'El tutor leyó' : 'El paciente leyó'} el aviso de privacidad y otorga su consentimiento expreso para el tratamiento de sus datos personales sensibles.</label>
     <fieldset><legend>Finalidades adicionales (marca solo lo que el paciente pida)</legend>
@@ -1081,33 +1107,59 @@ function formConsentimiento(id) {
     </fieldset>`,
     onOpen: f => {
       let medio = 'pantalla'; f.dataset.medio = medio;
-      const pad = firmaPad($('#fcFirma'));
-      $('#fcLimpiar').onclick = () => pad.clear();
+      activarFirma($('#fcFirma'), { titulo: 'Aviso de privacidad · firma de consentimiento', nombre: nombreCompleto(p) });
       $$('[data-medio]', f).forEach(b => b.onclick = () => { medio = b.dataset.medio; f.dataset.medio = medio; $$('[data-medio]', f).forEach(x => x.classList.toggle('on', x === b)); $('#fcFirmaWrap').hidden = medio !== 'pantalla'; $('#fcPapel').hidden = medio === 'pantalla'; });
-      f._pad = pad;
     },
     onSubmit: async f => {
       const medio = f.dataset.medio;
-      if (medio === 'pantalla' && f._pad.empty()) return formErr(f, 'Falta la firma. Pide que firme en el recuadro o elige "Firmó en papel".');
-      const cons = { aceptado: true, version: v, fecha: nowISO(), medio, registradoPor: S.me.id, tutor: menor ? fv(f, 'tutor') : '', firma: medio === 'pantalla' ? f._pad.data() : '',
+      const firma = $('#fcFirma').dataset.firma || '';
+      if (medio === 'pantalla' && !firma) return formErr(f, 'Falta la firma. Toca el recuadro para que firme, o elige "Firmó en papel".');
+      const cons = { aceptado: true, version: v, fecha: nowISO(), medio, registradoPor: S.me.id, tutor: menor ? fv(f, 'tutor') : '', firma: medio === 'pantalla' ? firma : '',
         noInvitaciones: f.elements.noInvitaciones.checked, noPromociones: f.elements.noPromociones.checked, autorizaFotos: f.elements.autorizaFotos.checked };
       await guardar('pacientes', id, { consentimiento: cons }, `Registró consentimiento (aviso v${v}) de ${nombreCompleto(p)}`);
       toast('Consentimiento registrado.'); if (S.view !== 'expediente') setTimeout(() => abrirExpediente(id, 'resumen'), 0);
     } });
 }
-function firmaPad(cv) {
-  const ctx = cv.getContext('2d'); let drawing = false, last = null, dirty = false;
-  const fit = () => { const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2); cv.width = r.width * dpr; cv.height = r.height * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#13232a'; };
+function firmaPad(cv, { grosor = 2.6 } = {}) {
+  const ctx = cv.getContext('2d'); let drawing = false, last = null, dirty = false, bx = [1e9, 1e9, -1e9, -1e9];
+  const fit = () => { const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2); cv.width = r.width * dpr; cv.height = r.height * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineWidth = grosor; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#13232a'; ctx.fillStyle = '#13232a'; };
   requestAnimationFrame(fit);
-  const pt = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
-  cv.addEventListener('pointerdown', e => { drawing = true; last = pt(e); cv.setPointerCapture(e.pointerId); ctx.beginPath(); ctx.arc(last.x, last.y, 1, 0, 7); ctx.fillStyle = '#13232a'; ctx.fill(); dirty = true; });
-  cv.addEventListener('pointermove', e => { if (!drawing) return; const p = pt(e); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; });
+  const pt = e => { const r = cv.getBoundingClientRect(), p = { x: e.clientX - r.left, y: e.clientY - r.top }; bx = [Math.min(bx[0], p.x), Math.min(bx[1], p.y), Math.max(bx[2], p.x), Math.max(bx[3], p.y)]; return p; };
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); drawing = true; last = pt(e); cv.setPointerCapture(e.pointerId); ctx.beginPath(); ctx.arc(last.x, last.y, grosor / 2, 0, 7); ctx.fill(); dirty = true; });
+  cv.addEventListener('pointermove', e => { if (!drawing) return; e.preventDefault(); const p = pt(e); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => cv.addEventListener(t, () => drawing = false));
   return {
-    clear: () => { ctx.clearRect(0, 0, cv.width, cv.height); dirty = false; },
+    clear: () => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); ctx.restore(); dirty = false; bx = [1e9, 1e9, -1e9, -1e9]; },
     empty: () => !dirty,
-    data: () => { const o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height; const c2 = o.getContext('2d'); c2.fillStyle = '#fff'; c2.fillRect(0, 0, o.width, o.height); c2.drawImage(cv, 0, 0); return o.toDataURL('image/jpeg', .7); }
+    /* recorta al trazo, fondo blanco y tamaño de documento (máx. 600 px de ancho) */
+    data: () => {
+      const dpr = cv.width / cv.getBoundingClientRect().width || 1, pad = 14;
+      const x0 = Math.max(0, (bx[0] - pad) * dpr), y0 = Math.max(0, (bx[1] - pad) * dpr), x1 = Math.min(cv.width, (bx[2] + pad) * dpr), y1 = Math.min(cv.height, (bx[3] + pad) * dpr);
+      const w = Math.max(1, x1 - x0), h = Math.max(1, y1 - y0), k = Math.min(1, 600 / w);
+      const o = document.createElement('canvas'); o.width = Math.round(w * k); o.height = Math.round(h * k);
+      const c2 = o.getContext('2d'); c2.fillStyle = '#fff'; c2.fillRect(0, 0, o.width, o.height); c2.drawImage(cv, x0, y0, w, h, 0, 0, o.width, o.height);
+      return o.toDataURL('image/jpeg', .8);
+    }
   };
+}
+/* Recuadro pequeño en el formulario; al tocarlo se abre en pantalla completa para firmar con el dedo */
+const firmaCampo = (id, txt = 'Toca aquí para firmar') => `<div class="firma-box" id="${id}" role="button" tabindex="0" aria-label="${esc(txt)}"><span class="mute">${esc(txt)}</span></div>`;
+function activarFirma(box, { titulo = 'Firme dentro del recuadro', nombre = '' } = {}) {
+  const abrir = () => abrirFirma({ titulo, nombre }, data => { box.dataset.firma = data; box.classList.add('ok'); box.innerHTML = `<img src="${data}" alt="Firma"><span class="firma-re">Toca para volver a firmar</span>`; });
+  box.onclick = abrir; box.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } };
+}
+function abrirFirma({ titulo, nombre }, ok) {
+  const r = $('#firmaRoot');
+  r.innerHTML = `<div class="ff"><div class="ff-h"><div><b>${esc(titulo)}</b>${nombre ? `<span>${esc(nombre)}</span>` : ''}</div><span class="mute">Use el dedo o un lápiz. Puede girar el teléfono para tener más espacio.</span></div>
+    <div class="ff-area"><canvas id="ffCanvas" aria-label="Área de firma"></canvas><div class="ff-line"></div><span class="ff-x">✕</span></div>
+    <div class="ff-f"><button type="button" class="btn ghost" id="ffNo">Cancelar</button><span class="sp"></span><button type="button" class="btn" id="ffBorrar">Borrar</button><button type="button" class="btn primary" id="ffOk">Listo</button></div></div>`;
+  r.hidden = false; document.body.classList.add('firmando');
+  let pad = firmaPad($('#ffCanvas'), { grosor: 3 });
+  const cerrar = () => { r.hidden = true; r.innerHTML = ''; document.body.classList.remove('firmando'); window.removeEventListener('resize', rz); };
+  const rz = () => { if (pad.empty()) pad = firmaPad($('#ffCanvas'), { grosor: 3 }); };
+  window.addEventListener('resize', rz);
+  $('#ffNo').onclick = cerrar; $('#ffBorrar').onclick = () => pad.clear();
+  $('#ffOk').onclick = () => { if (pad.empty()) { toast('Falta la firma.'); return; } const d = pad.data(); cerrar(); ok(d); };
 }
 
 /* ============================ VISTA: CATÁLOGO ============================ */
@@ -1724,9 +1776,31 @@ const T_CARA = {
   caries: { l: 'Caries', c: '#d64545' }, resina: { l: 'Resina existente', c: '#3a6fd8' },
   sellador: { l: 'Sellador', c: '#2a9d8f' }, fractura: { l: 'Fractura', c: '#d39a12' }, borrar: { l: 'Borrar cara', c: '' }
 };
+/* Diagnóstico detallado: tipo y nivel de cada hallazgo (se guarda como "grupo:tipo") */
+const HALL = {
+  caries: { l: 'Caries', c: '#d64545', p: '¿Qué tipo de caries?', subs: { esmalte: 'Inicial, solo esmalte', dentina: 'En dentina', profunda: 'Profunda, cerca del nervio', secundaria: 'Secundaria (junto a una restauración)', radicular: 'Radicular (en la raíz)' },
+    s: (s, k) => { s.caries = Math.max(s.caries, { esmalte: .4, dentina: .65, profunda: .95, secundaria: .6, radicular: .6 }[k] || .6); if (k === 'radicular') s.cariesRaiz = 1; if (k === 'secundaria') s.resin = Math.max(s.resin, .7); if (k === 'profunda') s.pulp = Math.max(s.pulp, .35); } },
+  pulpar: { l: 'Patología pulpar', c: '#a3201c', p: '¿Qué tiene el nervio?', subs: { reversible: 'Pulpitis reversible', irreversible: 'Pulpitis irreversible', necrosis: 'Necrosis pulpar', degenerativa: 'Cambios degenerativos (calcificación)' },
+    s: (s, k) => { if (k === 'necrosis') s.necro = 1; else if (k === 'degenerativa') s.calcPulp = 1; else s.pulp = k === 'reversible' ? .5 : 1; } },
+  apical: { l: 'Lesión periapical', c: '#7a1f1f', p: '¿Qué tipo de lesión en la punta de la raíz?', subs: { absceso: 'Absceso apical agudo', granuloma: 'Granuloma apical', quiste: 'Quiste periapical' },
+    s: (s, k) => { s.apical = { absceso: .7, granuloma: .55, quiste: 1 }[k] || .6; s.necro = Math.max(s.necro, .8); } },
+  reabsorcion: { l: 'Reabsorción', c: '#c2185b', p: '¿Qué tipo y nivel de reabsorción?', subs: { ext1: 'Cervical externa · clase 1 (dentina cervical)', ext2: 'Cervical externa · clase 2 (cerca de la pulpa)', ext3: 'Cervical externa · clase 3 (tercio coronal de la raíz)', ext4: 'Cervical externa · clase 4 (tercio medio y apical)', interna: 'Interna inflamatoria', sustitucion: 'Interna por sustitución' },
+    s: (s, k) => { if (k.startsWith('ext')) s.resorb = +k.slice(3) / 4; else s.resorbInt = k === 'interna' ? 1 : .7; } },
+  fractura: { l: 'Fractura', c: '#d39a12', p: '¿Qué tan profunda es la fractura?', subs: { esmalte: 'Solo esmalte', esmalte_dentina: 'Esmalte y dentina', complicada: 'Con exposición del nervio', radicular: 'Radicular', vertical: 'Vertical' },
+    s: (s, k) => { s.chip = Math.max(s.chip, { esmalte: .35, esmalte_dentina: .75, complicada: 1, radicular: 0, vertical: .3 }[k] || 0); if (k === 'complicada') s.pulp = 1; if (k === 'radicular' || k === 'vertical') s.frRoot = 1; } },
+  nocariosa: { l: 'Lesión no cariosa', c: '#b07d2b', p: '¿Qué tipo de desgaste o lesión?', subs: { abrasion: 'Abrasión', abfraccion: 'Abfracción', erosion: 'Erosión', atricion: 'Atrición (desgaste por bruxismo)', pigmentacion: 'Pigmentación del diente', decoloracion: 'Decoloración' },
+    s: (s, k) => { if (k === 'abrasion' || k === 'abfraccion') s.abrasion = k === 'abfraccion' ? 1 : .7; if (k === 'erosion') { s.wear = Math.max(s.wear, .3); s.stain = Math.max(s.stain, .35); } if (k === 'atricion') s.wear = 1; if (k === 'pigmentacion') s.stain = 1; if (k === 'decoloracion') s.stain = Math.max(s.stain, .6); } },
+  deposito: { l: 'Depósitos', c: '#a68b2c', p: '¿Qué tipo de depósito?', subs: { placa: 'Placa bacteriana', calculo: 'Cálculo (sarro)', pigmento: 'Manchas externas (café, tabaco)' },
+    s: (s, k) => { if (k === 'placa') s.plaque = 1; if (k === 'calculo') s.calc = 1; if (k === 'pigmento') s.stain = Math.max(s.stain, .7); } },
+  periodonto: { l: 'Encía y periodonto', c: '#c0392b', p: '¿Qué tiene la encía?', subs: { gingivitis: 'Gingivitis', p1: 'Periodontitis estadio I', p2: 'Periodontitis estadio II', p3: 'Periodontitis estadio III', p4: 'Periodontitis estadio IV', recesion: 'Recesión gingival' },
+    s: (s, k) => { if (k === 'gingivitis') s.gingiv = 1; else if (k === 'recesion') s.recession = Math.max(s.recession, .6); else { const n = +k.slice(1) || 1; s.gingiv = Math.max(s.gingiv, .8); s.recession = Math.max(s.recession, n * .25); if (n >= 3) s.mov = Math.max(s.mov, (n - 2) * .4); } } },
+  movilidad: { l: 'Movilidad', c: '#8a6d3b', p: '¿Qué grado de movilidad?', subs: { 1: 'Grado 1', 2: 'Grado 2', 3: 'Grado 3' }, s: (s, k) => { s.mov = Math.max(s.mov, (+k || 1) / 3); } },
+  anomalia: { l: 'Anomalía del esmalte', c: '#6d6875', p: '¿Qué anomalía?', subs: { fluorosis: 'Fluorosis', amelogenesis: 'Amelogénesis imperfecta', hipoplasia: 'Hipoplasia del esmalte' }, s: (s, k) => { if (k === 'fluorosis') s.fluor = 1; else { s.stain = Math.max(s.stain, .8); s.wear = Math.max(s.wear, .35); } } }
+};
+const hallG = (t, g) => (t.hall || []).find(h => h.split(':')[0] === g);
+const hallSub = (t, g) => (hallG(t, g) || '').split(':')[1] || '';
+const hallTxt = h => { const [g, k] = h.split(':'); return HALL[g] ? `${HALL[g].l}: ${(HALL[g].subs[k] || k || '').toLowerCase()}` : h; };
 const T_DIENTE = {
-  pulpa: { l: 'Nervio afectado', c: '#a3201c', g: 'hall' }, fractura: { l: 'Diente fracturado', c: '#d39a12', g: 'hall' },
-  movilidad: { l: 'Movilidad', c: '#8a6d3b', g: 'hall' },
   corona: { l: 'Corona existente', c: '#3a6fd8', g: 'prev' }, endodoncia: { l: 'Endodoncia previa', c: '#3a6fd8', g: 'prev' },
   ausente: { l: 'Ausente', c: '#8794a3', g: 'estado' }, retenido: { l: 'Retenido', c: '#7b5bd6', g: 'estado' }, implante: { l: 'Implante', c: '#5d6f80', g: 'estado' }, protesis: { l: 'Prótesis existente', c: '#3a6fd8', g: 'estado' },
   sano: { l: 'Limpiar diente', c: '', g: 'reset' }
@@ -1746,8 +1820,10 @@ const PLAN_T = {
 };
 const planKeyDeAnim = a => Object.keys(PLAN_T).find(k => PLAN_T[k].anim.includes(a));
 const dVacio = () => ({ estado: 'presente', caras: {}, hall: [], prev: [], plan: [], nota: '' });
+const HALL_VIEJO = { pulpa: 'pulpar:irreversible', fractura: 'fractura:esmalte_dentina', movilidad: 'movilidad:1' };
 const dNorm = t => { const n = { ...dVacio(), ...(t || {}), caras: { ...(t?.caras || {}) }, hall: [...(t?.hall || [])], prev: [...(t?.prev || [])], plan: [...(t?.plan || [])] };
-  if (n.hall.includes('extraccion')) { n.hall = n.hall.filter(h => h !== 'extraccion'); if (!n.plan.includes('extraccion')) n.plan.unshift('extraccion'); } return n; };
+  if (n.hall.includes('extraccion')) { n.hall = n.hall.filter(h => h !== 'extraccion'); if (!n.plan.includes('extraccion')) n.plan.unshift('extraccion'); }
+  n.hall = [...new Set(n.hall.map(h => HALL_VIEJO[h] || h))]; return n; };
 const dTieneAlgo = t => t && (t.estado !== 'presente' || Object.keys(t.caras || {}).length || (t.hall || []).length || (t.prev || []).length || (t.plan || []).length || t.nota);
 const planTexto = t => (dNorm(t).plan || []).map((k, i) => `${i + 1}. ${PLAN_T[k]?.l || k}`).join(' → ');
 function dxTexto(t) {
@@ -1758,15 +1834,16 @@ function dxTexto(t) {
   if (porTipo.fractura) out.push('Fractura en cara ' + porTipo.fractura.join(', '));
   if (porTipo.resina) out.push('Resina en cara ' + porTipo.resina.join(', '));
   if (porTipo.sellador) out.push('Sellador');
-  t.hall.forEach(h => out.push(T_DIENTE[h]?.l)); t.prev.forEach(h => out.push(T_DIENTE[h]?.l));
+  t.hall.forEach(h => out.push(hallTxt(h))); t.prev.forEach(h => out.push(T_DIENTE[h]?.l));
   if (t.nota) out.push(t.nota);
   return out.filter(Boolean).join(' · ') || 'Sano';
 }
 function dColor(t) {
   t = dNorm(t);
-  if (t.hall.includes('pulpa')) return T_DIENTE.pulpa.c;
-  if (Object.values(t.caras).includes('caries')) return T_CARA.caries.c;
-  if (t.hall.includes('fractura') || Object.values(t.caras).includes('fractura')) return T_CARA.fractura.c;
+  for (const g of ['apical', 'pulpar', 'reabsorcion']) if (hallG(t, g)) return HALL[g].c;
+  if (Object.values(t.caras).includes('caries') || hallG(t, 'caries')) return T_CARA.caries.c;
+  if (hallG(t, 'fractura') || Object.values(t.caras).includes('fractura')) return T_CARA.fractura.c;
+  for (const g of ['periodonto', 'nocariosa', 'anomalia', 'deposito', 'movilidad']) if (hallG(t, g)) return HALL[g].c;
   if (t.estado === 'retenido') return T_DIENTE.retenido.c;
   if (t.plan.includes('extraccion')) return '#c4302b';
   if (t.estado === 'ausente') return T_DIENTE.ausente.c;
@@ -1774,18 +1851,18 @@ function dColor(t) {
 }
 /* Qué le pasa al odontograma cuando se termina un tratamiento */
 const EFECTO = {
-  resina: (t, it) => { const cs = it.caras?.length ? it.caras : Object.keys(t.caras).filter(k => t.caras[k] === 'caries'); (cs.length ? cs : ['O']).forEach(k => t.caras[k] = 'resina'); },
-  reconstruccion: t => { t.hall = t.hall.filter(h => h !== 'fractura'); Object.keys(t.caras).forEach(k => { if (t.caras[k] === 'fractura') t.caras[k] = 'resina'; }); },
+  resina: (t, it) => { const cs = it.caras?.length ? it.caras : Object.keys(t.caras).filter(k => t.caras[k] === 'caries'); (cs.length ? cs : ['O']).forEach(k => t.caras[k] = 'resina'); t.hall = t.hall.filter(h => !/^caries:/.test(h) && !/^nocariosa:(abrasion|abfraccion|erosion)$/.test(h) && !/^reabsorcion:ext[12]$/.test(h)); },
+  reconstruccion: t => { t.hall = t.hall.filter(h => !/^fractura:(esmalte|esmalte_dentina)$/.test(h) && !/^nocariosa:(atricion|erosion)$/.test(h)); Object.keys(t.caras).forEach(k => { if (t.caras[k] === 'fractura') t.caras[k] = 'resina'; }); },
   sellador: t => { if (!t.caras.O) t.caras.O = 'sellador'; },
-  endodoncia: t => { t.hall = t.hall.filter(h => h !== 'pulpa'); if (!t.prev.includes('endodoncia')) t.prev.push('endodoncia'); Object.keys(t.caras).forEach(k => { if (t.caras[k] === 'caries') t.caras[k] = 'resina'; }); },
-  corona: t => { t.hall = t.hall.filter(h => h !== 'fractura'); t.caras = {}; if (!t.prev.includes('corona')) t.prev.push('corona'); },
+  endodoncia: t => { t.hall = t.hall.filter(h => !/^(pulpar|apical):/.test(h) && !/^reabsorcion:(interna|sustitucion|ext3)$/.test(h)).map(h => h === 'fractura:complicada' ? 'fractura:esmalte_dentina' : h); if (!t.prev.includes('endodoncia')) t.prev.push('endodoncia'); Object.keys(t.caras).forEach(k => { if (t.caras[k] === 'caries') t.caras[k] = 'resina'; }); },
+  corona: t => { t.hall = t.hall.filter(h => !/^(fractura|caries|nocariosa|anomalia):/.test(h) && !/^reabsorcion:ext[123]$/.test(h)); t.caras = {}; if (!t.prev.includes('corona')) t.prev.push('corona'); },
   extraccion: t => { Object.assign(t, dVacio(), { estado: 'ausente' }); },
   extraccion_retenido: t => { Object.assign(t, dVacio(), { estado: 'ausente' }); },
   implante: t => { Object.assign(t, dVacio(), { estado: 'implante' }); },
   corona_implante: t => { t.estado = 'implante'; t.prev = ['corona']; t.hall = []; t.caras = {}; },
   protesis: t => { const pl = t.plan; Object.assign(t, dVacio(), { estado: 'protesis', plan: pl }); },
   protesis_removible: t => { const pl = t.plan; Object.assign(t, dVacio(), { estado: 'protesis', plan: pl }); },
-  carilla: t => { t.caras.V = 'resina'; }
+  carilla: t => { t.caras.V = 'resina'; t.hall = t.hall.filter(h => !/^(anomalia|nocariosa):/.test(h) && h !== 'deposito:pigmento'); }
 };
 function aplicarEfecto(t, it) {
   const plan = [...(t.plan || [])], nota = t.nota;
@@ -1947,9 +2024,12 @@ function odoSVG(data, { sel = [], pend = {}, interactivo = true } = {}) {
     if (t.estado === 'implante') out.push(`<g ${act}><rect x="${x + 15}" y="${y + 6}" width="10" height="28" rx="3" class="imp"/><path d="M${x + 13} ${y + 13}h14M${x + 13} ${y + 20}h14M${x + 13} ${y + 27}h14" class="mk thin" style="stroke:var(--ink)"/></g>`);
     const ry = numY < y ? y - 9 : y + W + 4, rl = 6;
     if (t.prev.includes('endodoncia')) out.push(`<path d="M${x + W / 2 - 4} ${ry} v${rl}" class="mk" style="stroke:${T_DIENTE.endodoncia.c}" ${act}/>`);
-    if (t.hall.includes('pulpa')) out.push(`<path d="M${x + W / 2 + 4} ${ry} v${rl}" class="mk" style="stroke:${T_DIENTE.pulpa.c}" ${act}/>`);
-    if (t.hall.includes('fractura')) out.push(`<path d="M${x + 4} ${y + 6} l8 8 l-4 6 l10 10 l-3 6" class="mk" style="stroke:${T_DIENTE.fractura.c}" ${act}/>`);
-    if (t.hall.includes('movilidad')) out.push(`<text x="${x + W - 4}" y="${numY}" class="tag" ${act}>M</text>`);
+    if (hallG(t, 'pulpar') || hallG(t, 'apical')) out.push(`<path d="M${x + W / 2 + 4} ${ry} v${rl}" class="mk" style="stroke:${HALL.pulpar.c}" ${act}/>`);
+    if (hallG(t, 'apical')) out.push(`<circle cx="${x + W / 2 + 4}" cy="${numY < y ? ry - 1 : ry + rl + 1}" r="2.6" style="fill:${HALL.apical.c}" ${act}/>`);
+    if (hallG(t, 'fractura')) out.push(`<path d="M${x + 4} ${y + 6} l8 8 l-4 6 l10 10 l-3 6" class="mk" style="stroke:${HALL.fractura.c}" ${act}/>`);
+    if (hallG(t, 'movilidad')) out.push(`<text x="${x + W - 4}" y="${numY}" class="tag" ${act}>M${hallSub(t, 'movilidad')}</text>`);
+    const otros = t.hall.filter(h => !/^(pulpar|apical|fractura|movilidad):/.test(h));
+    if (otros.length) out.push(`<rect x="${x - 2}" y="${y - 2}" width="${W + 4}" height="${W + 4}" rx="5" class="mk thin" style="stroke:${HALL[otros[0].split(':')[0]]?.c || '#888'};stroke-width:2" ${act}><title>${esc(otros.map(hallTxt).join(' · '))}</title></rect>`);
     if (t.nota) out.push(`<circle cx="${x + W}" cy="${numY - 4}" r="2.5" class="notadot" ${act}><title>${esc(t.nota)}</title></circle>`);
     if (pend[fdi]) out.push(`<circle cx="${x + 4}" cy="${numY - 4}" r="3.4" class="pend" ${act}><title>${pend[fdi]} tratamiento(s) en el plan</title></circle>`);
     if (t.plan.length) {
@@ -1981,7 +2061,9 @@ function tabOdontograma(p) {
       ${O.dirty ? '<span class="pill warn">Cambios sin guardar</span><button class="btn sm ghost" data-act="odo-descartar">Descartar</button>' : ''}<button class="btn sm" data-act="odo-guardar" ${O.dirty ? '' : 'disabled'}>Guardar odontograma</button><button class="btn sm primary" data-act="plan-sugerido">Generar plan de tratamiento</button></div>
     <div class="panel-b" style="display:grid;gap:12px">
       <div class="tools"><span class="tl">Pintar cara</span>${Object.entries(T_CARA).map(([k, d]) => toolBtn('c:' + k, d)).join('')}</div>
-      <div class="tools"><span class="tl">Lo que tiene</span>${Object.entries(T_DIENTE).map(([k, d]) => toolBtn('d:' + k, d)).join('')}</div>
+      <div class="tools"><span class="tl">Diagnóstico</span>${Object.entries(HALL).map(([k, d]) => `<button data-act="odo-tool" data-tool="h:${k}" class="toolbtn ${O.tool === 'h:' + k ? 'on' : ''}"><span class="sw" style="background:${d.c}"></span>${esc(d.l)}</button>`).join('')}</div>
+      ${O.tool.startsWith('h:') ? (() => { const g = O.tool.slice(2), H = HALL[g], cur = (O.sub || {})[g] || Object.keys(H.subs)[0]; return `<div class="subpick"><b>${esc(H.p)}</b><div class="chips">${Object.entries(H.subs).map(([k, l]) => `<button type="button" class="chip subchip ${cur === k ? 'on' : ''}" data-act="odo-sub" data-g="${g}" data-k="${k}">${esc(l)}</button>`).join('')}</div><span class="mute" style="font-size:12.5px">Después toca el diente. Tocarlo otra vez con la misma opción la quita.</span></div>`; })() : ''}
+      <div class="tools"><span class="tl">Estado del diente</span>${Object.entries(T_DIENTE).map(([k, d]) => toolBtn('d:' + k, d)).join('')}</div>
       <div class="tools"><span class="tl">Por hacer, en orden</span>${Object.entries(PLAN_T).map(([k, d]) => `<button data-act="odo-tool" data-tool="p:${k}" class="toolbtn plan ${O.tool === 'p:' + k ? 'on' : ''}"><span class="ab">${esc(d.ab)}</span>${esc(d.l)}</button>`).join('')}<button data-act="odo-tool" data-tool="p:__quitar" class="toolbtn ${O.tool === 'p:__quitar' ? 'on' : ''}">Quitar último paso</button></div>
       <div class="tools"><span class="tl">Plan</span><button data-act="odo-tool" data-tool="sel" class="toolbtn ${O.tool === 'sel' ? 'on' : ''}">Seleccionar dientes para el plan</button><button data-act="odo-tool" data-tool="ver" class="toolbtn ${O.tool === 'ver' ? 'on' : ''}">Ver / anotar diente</button>
         ${sel.length ? `<span class="pill acc">${sel.length} seleccionados: ${sel.join(', ')}</span><button class="btn sm primary" data-act="plan-item-nuevo">Agregar tratamiento a estos dientes</button><button class="btn sm ghost" data-act="odo-sel-limpiar">Quitar selección</button>` : ''}</div>
@@ -2006,6 +2088,10 @@ function odoClick(el) {
   if (grupo === 'c:') {
     if (!cara) { toast('Toca una cara del diente para pintarla.'); return; }
     if (tool === 'borrar' || t.caras[cara] === tool) delete t.caras[cara]; else t.caras[cara] = tool;
+    if (t.estado === 'ausente') t.estado = 'presente';
+  } else if (grupo === 'h:') {
+    const sub = (O.sub || {})[tool] || Object.keys(HALL[tool].subs)[0], val = `${tool}:${sub}`, prev = hallG(t, tool);
+    t.hall = t.hall.filter(h => h.split(':')[0] !== tool); if (prev !== val) t.hall.push(val);
     if (t.estado === 'ausente') t.estado = 'presente';
   } else if (grupo === 'p:') {
     if (tool === '__quitar') t.plan.pop();
@@ -2107,7 +2193,7 @@ function tabPlan(p) {
   const cancelados = (pl.items || []).filter(it => it.estado === 'cancelado');
   return `<div class="panel"><div class="panel-h">
       <select id="planVer" data-change="planVer" style="max-width:240px" aria-label="Versión del plan">${planes.map(x => opt(x.id, `Plan v${x.version} · ${PLAN_EST[x.estado].l}`, vid)).join('')}</select>
-      <span class="pill ${PLAN_EST[pl.estado].c}">${PLAN_EST[pl.estado].l}</span>${pl.aceptado ? `<span class="mute" style="font-size:13px">Aceptado el ${fechaCorta(pl.aceptado.fecha)} (${esc(pl.aceptado.medio)})</span>` : ''}<span class="sp"></span>${acciones.join('')}</div>
+      <span class="pill ${PLAN_EST[pl.estado].c}">${PLAN_EST[pl.estado].l}</span>${pl.aceptado ? `<span class="mute" style="font-size:13px">Aceptado el ${fechaCorta(pl.aceptado.fecha)} (${esc(pl.aceptado.medio)})</span>${pl.aceptado.firma ? `<img class="firma-mini" src="${pl.aceptado.firma}" alt="Firma de aceptación">` : ''}` : ''}<span class="sp"></span>${acciones.join('')}</div>
     <div class="panel-b"><div class="stats">
       <div class="stat"><b class="num">${money(T.total)}</b><span>Total del plan${T.descuento ? ` · descuento ${money(T.descuento)}` : ''}</span></div>
       <div class="stat"><b class="num">${money(T.realizado)}</b><span>Realizado · ${T.pctAvance}%</span></div>
@@ -2227,11 +2313,15 @@ function formAceptar() {
   if (T.sinCita) { toast('Hay tratamientos sin cita. Organiza las citas antes de registrar la aceptación.'); return; }
   if (!pl.items.filter(i => i.estado !== 'cancelado').length) { toast('El plan no tiene tratamientos.'); return; }
   modal({ title: 'Registrar aceptación del plan', submit: 'Registrar aceptación', body: `<p style="margin:0">Plan v${pl.version} · ${pl.citas.length} citas · total <b>${money(T.total)}</b>.</p>
-    <label class="f">¿Cómo lo aceptó?<select name="medio" id="acMedio"><option>De palabra en consulta</option><option>Firmó presupuesto en papel</option><option>Por WhatsApp</option><option>Por correo</option></select></label>
+    <label class="f">¿Cómo lo aceptó?<select name="medio" id="acMedio"><option>Firmó en la app</option><option>De palabra en consulta</option><option>Firmó presupuesto en papel</option><option>Por WhatsApp</option><option>Por correo</option></select></label>
+    <div id="acFirmaW">${firmaCampo('acFirma', 'Toca aquí para que el paciente firme el presupuesto')}</div>
     <label class="f">Notas del plan (opcional)<textarea name="notas" id="acNotas" placeholder="Ej. prefiere empezar después de la quincena">${esc(pl.notas)}</textarea></label>
-    <div class="infowarn">Después de aceptado, los cambios de tratamientos o precios se hacen en una nueva versión del plan. El plan de pagos se define en la fase 4.</div>`,
+    <div class="infowarn">Después de aceptado, los cambios de tratamientos o precios se hacen en una nueva versión del plan.</div>`,
+    onOpen: f => { activarFirma($('#acFirma'), { titulo: `Acepto el plan de tratamiento v${pl.version} por ${money(T.total)}`, nombre: nombreCompleto(p) }); const t = () => { $('#acFirmaW').hidden = f.elements.medio.value !== 'Firmó en la app'; }; f.elements.medio.onchange = t; t(); },
     onSubmit: async f => {
-      const n = deep(pl); n.id = pl.id; n.estado = 'aceptado'; n.notas = fv(f, 'notas'); n.aceptado = { fecha: nowISO(), por: S.me.id, medio: f.elements.medio.value };
+      const firma = f.elements.medio.value === 'Firmó en la app' ? ($('#acFirma').dataset.firma || '') : '';
+      if (f.elements.medio.value === 'Firmó en la app' && !firma) return formErr(f, 'Falta la firma del paciente. Toca el recuadro para que firme.');
+      const n = deep(pl); n.id = pl.id; n.estado = 'aceptado'; n.notas = fv(f, 'notas'); n.aceptado = { fecha: nowISO(), por: S.me.id, medio: f.elements.medio.value, firma };
       const ops = [{ col: 'planes', id: pl.id, data: (({ id, creado, creadoPor, actualizado, actualizadoPor, ...d }) => d)(n) }];
       const ex = get('expedientes', p.id);
       if (!ex?.odoInicial) ops.push({ col: 'expedientes', id: p.id, data: { pacienteId: p.id, odoInicial: deep(ex?.odontograma || {}), odoInicialFecha: nowISO() }, nuevo: !ex });
@@ -2297,7 +2387,7 @@ function sugerencias(odo) {
     rec = buscarTrat('reconstruccion', /RECONSTRUCC/), ext = buscarTrat('extraccion', /EXTRACC/, /TERCER|RETENID|QUIRURG/), extR = buscarTrat('extraccion_retenido', /TERCER|RETENID|QUIRURG/),
     imp = buscarTrat('implante', /IMPLANTE/, /CORONA/), corImp = buscarTrat('corona_implante', /CORONA.*IMPLANTE|IMPLANTE.*CORONA/), limp = buscarTrat('limpieza', /LIMPIEZA|PROFILAXIS/);
   const add = (f, hall, lista, pick, caras = [], seq) => out.push({ id: newId('sg'), dientes: f ? [f] : [], hallazgo: hall, opciones: lista, tratId: (pick || lista[0])?.id || '', caras, on: !!lista.length, seq });
-  const remov = {};
+  const remov = {}, boca = {};
   D_TODOS.forEach(f => {
     const t = dNorm(odo[f]); if (!dTieneAlgo(t)) return;
     const caries = Object.keys(t.caras).filter(k => t.caras[k] === 'caries');
@@ -2315,20 +2405,41 @@ function sugerencias(odo) {
       });
       return;
     }
-    if (t.estado === 'retenido') { add(f, 'Diente retenido', extR.length ? extR : ext); return; }
-    if (t.hall.includes('extraccion')) { add(f, 'Extracción indicada', ext.length ? ext : extR); return; }
-    if (t.estado === 'ausente') { add(f, 'Diente ausente', imp); add(f, 'Diente ausente · corona', corImp); return; }
-    if (t.hall.includes('pulpa')) {
-      const e = endo.filter(x => anterior(f) ? /ANTERIOR/.test(norm(x.nombre)) : /MOLAR|POSTERIOR|PREMOLAR/.test(norm(x.nombre)));
-      add(f, 'Nervio afectado', endo, e[0] || (anterior(f) ? endo[0] : endo[endo.length - 1]));
-      if (!t.prev.includes('corona')) add(f, 'Protección después de la endodoncia', cor);
-      return;
+    /* propuesta automática según el diagnóstico */
+    const H = g => hallSub(t, g), pasos = [];
+    const P = (k, txt) => pasos.push([k, txt]);
+    if (t.estado === 'retenido') P('extraccion', 'Diente retenido');
+    else if (t.estado === 'ausente') { P('implante', 'Diente ausente'); P('corona_implante', 'Diente ausente · corona'); }
+    else if (H('reabsorcion') === 'ext4' || ['radicular', 'vertical'].includes(H('fractura')) || H('movilidad') === '3' || H('periodonto') === 'p4') {
+      const m = H('reabsorcion') === 'ext4' ? 'Reabsorción clase 4' : H('fractura') ? 'Fractura ' + H('fractura') : 'Pérdida de soporte';
+      P('extraccion', m); P('implante', 'Reponer el diente'); P('corona_implante', 'Reponer el diente · corona');
+    } else {
+      const endo = ['irreversible', 'necrosis'].includes(H('pulpar')) || H('apical') || ['interna', 'sustitucion', 'ext3'].includes(H('reabsorcion')) || H('fractura') === 'complicada';
+      if (endo) { P('endodoncia', hallTxt(hallG(t, 'pulpar') || hallG(t, 'apical') || hallG(t, 'reabsorcion') || hallG(t, 'fractura'))); if (!t.prev.includes('corona')) P('corona', 'Protección después de la endodoncia'); }
+      else {
+        if (caries.length || H('caries') || ['ext1', 'ext2'].includes(H('reabsorcion')) || ['abrasion', 'abfraccion', 'erosion'].includes(H('nocariosa')) || H('pulpar') === 'reversible')
+          P('resina', caries.length ? 'Caries en ' + caries.length + (caries.length === 1 ? ' cara' : ' caras') : hallTxt(hallG(t, 'caries') || hallG(t, 'reabsorcion') || hallG(t, 'nocariosa') || hallG(t, 'pulpar')));
+        if (['esmalte', 'esmalte_dentina'].includes(H('fractura')) || Object.values(t.caras).includes('fractura')) P(anterior(f) ? 'reconstruccion' : 'corona', 'Fractura');
+        if (H('nocariosa') === 'atricion') P(anterior(f) ? 'reconstruccion' : 'corona', 'Desgaste por bruxismo');
+        if (H('anomalia')) P(anterior(f) ? 'carilla' : 'corona', hallTxt(hallG(t, 'anomalia')));
+      }
     }
-    if (caries.length) add(f, 'Caries en ' + caries.length + (caries.length === 1 ? ' cara' : ' caras'), res, caries.length > 1 ? res[res.length - 1] : res[0], caries);
-    if (t.hall.includes('fractura') || Object.values(t.caras).includes('fractura')) add(f, 'Fractura', anterior(f) ? (rec.length ? rec : res) : (cor.length ? cor : rec), null);
+    pasos.forEach(([k, txt], i) => {
+      const d = PLAN_T[k]; let lista = d.anim.map(a => buscarTrat(a)).flat(); if (!lista.length) lista = buscarTrat('__', d.re, d.ex);
+      let pick = null;
+      if (k === 'extraccion') pick = (t.estado === 'retenido' || f % 10 === 8 ? extR[0] : ext[0]) || null;
+      if (k === 'endodoncia') pick = lista.find(x => anterior(f) ? /ANTERIOR/.test(norm(x.nombre)) : /MOLAR|POSTERIOR|PREMOLAR/.test(norm(x.nombre))) || (anterior(f) ? lista[0] : lista[lista.length - 1]) || null;
+      if (k === 'resina' && caries.length > 1) pick = lista[lista.length - 1];
+      add(f, txt, lista, pick, k === 'resina' ? caries : [], i);
+    });
+    if (hallG(t, 'deposito') || H('periodonto') === 'gingivitis') boca.limpieza = true;
+    if (['p1', 'p2', 'p3', 'p4'].includes(H('periodonto'))) (boca.perio = boca.perio || new Set()).add(Math.floor(f / 10) <= 2 ? 'sup' : 'inf');
+    if (['pigmentacion', 'decoloracion'].includes(H('nocariosa')) || H('deposito') === 'pigmento') boca.blanq = true;
   });
   Object.entries(remov).forEach(([arco, g]) => { let lista = buscarTrat('protesis_removible'); if (!lista.length) lista = buscarTrat('__', PLAN_T.protesis_removible.re); out.push({ id: newId('sg'), dientes: g.dientes, hallazgo: `Prótesis removible ${arco === 'sup' ? 'superior' : 'inferior'}`, opciones: lista, tratId: lista[0]?.id || '', caras: [], on: !!lista.length, seq: g.seq }); });
-  if (out.length) add(null, 'Limpieza general', limp);
+  if (boca.perio) { const pe = buscarTrat('perio', /RASPADO|ALISADO|CURETAJE/); [...boca.perio].forEach(ar => out.push({ id: newId('sg'), dientes: D_TODOS.filter(d => (Math.floor(d / 10) <= 2 ? 'sup' : 'inf') === ar && hallSub(dNorm(odo[d]), 'periodonto').startsWith('p')), hallazgo: `Periodontitis · arcada ${ar === 'sup' ? 'superior' : 'inferior'}`, opciones: pe, tratId: pe[0]?.id || '', caras: [], on: !!pe.length })); }
+  if (boca.blanq) { const bl = buscarTrat('blanqueamiento', /BLANQUEAMIENTO/); add(null, 'Manchas o pigmentación', bl); }
+  if (out.length || boca.limpieza) add(null, boca.limpieza ? 'Placa, sarro o gingivitis' : 'Limpieza general', limp);
   return out;
 }
 function formSugerido() {
@@ -2393,9 +2504,10 @@ function formNota() {
 }
 
 /* =====================================================================
-   VISOR 3D (Three.js)
+   VISOR 3D (Three.js) · dientes anatómicos procedurales, corte y rayos X
    ===================================================================== */
-const D0 = { present: 1, nat: 1, caries: 0, cavity: 0, resin: 0, chip: 0, pulp: 0, canal: 0, implant: 0, cap: 0, tilt: 0, sink: 0 };
+const D0 = { present: 1, nat: 1, caries: 0, cariesRaiz: 0, cavity: 0, resin: 0, chip: 0, pulp: 0, necro: 0, calcPulp: 0, canal: 0, implant: 0, cap: 0, tilt: 0, sink: 0,
+  apical: 0, resorb: 0, resorbInt: 0, frRoot: 0, calc: 0, plaque: 0, recession: 0, gingiv: 0, wear: 0, abrasion: 0, stain: 0, fluor: 0, mov: 0 };
 const st = s => Object.assign({}, D0, s || {});
 function estado3D(t) {
   const s = st(); if (!t) return s; t = dNorm(t);
@@ -2406,38 +2518,53 @@ function estado3D(t) {
   if (t.estado === 'protesis') { s.nat = 0; s.cap = 1; }
   const nc = cv.filter(v => v === 'caries').length; if (nc) s.caries = Math.min(1, .4 + .15 * nc);
   const nr = cv.filter(v => v === 'resina' || v === 'sellador').length; if (nr) s.resin = Math.min(1, .45 + .15 * nr);
-  if (t.hall.includes('pulpa')) { s.pulp = 1; s.caries = Math.max(s.caries, .9); }
-  if (t.hall.includes('fractura') || cv.includes('fractura')) s.chip = 1;
-  if (t.prev.includes('endodoncia')) s.canal = 1;
+  if (cv.includes('fractura')) s.chip = Math.max(s.chip, .6);
+  t.hall.forEach(h => { const [g, sub] = h.split(':'); if (HALL[g]) HALL[g].s(s, sub); });
+  if (t.prev.includes('endodoncia')) { s.canal = 1; s.pulp = 0; s.necro = 0; }
   if (t.prev.includes('corona') && t.estado !== 'implante') s.cap = 1;
   return s;
 }
+/* datos que no se animan (dónde está la caries, tipo de lesión apical) */
+function extras3D(t) {
+  t = dNorm(t); const e = { cara: 'O', apicalTipo: 'granuloma' };
+  const c = Object.keys(t.caras).find(k => t.caras[k] === 'caries'); if (c) e.cara = c;
+  const ap = t.hall.find(h => h.startsWith('apical:')); if (ap) e.apicalTipo = ap.split(':')[1];
+  return e;
+}
+const LIMPIO = { caries: 0, cariesRaiz: 0, cavity: 0, chip: 0, pulp: 0, necro: 0, resorb: 0, resorbInt: 0, apical: 0, frRoot: 0, abrasion: 0, wear: 0, stain: 0, fluor: 0, calc: 0, plaque: 0 };
 const ETAPAS = {
-  resina: s => [{ t: 'Retirar la caries', d: 'Con anestesia local se retira el tejido dañado.', s: { caries: 0, cavity: 1 } }, { t: 'Resina', d: 'Se rellena con resina del color del diente y se pule.', s: { cavity: 0, resin: Math.max(s.resin, .9) } }],
-  reconstruccion: () => [{ t: 'Reconstrucción', d: 'Se reconstruye la parte perdida del diente con resina estética.', s: { chip: 0, resin: .7 } }],
+  resina: s => [{ t: 'Retirar el tejido dañado', d: 'Con anestesia local se retira la caries o la lesión.', s: { caries: 0, cariesRaiz: 0, cavity: 1, abrasion: 0, resorb: s.resorb <= .5 ? 0 : s.resorb } }, { t: 'Resina', d: 'Se rellena con resina del color del diente y se pule.', s: { cavity: 0, resin: Math.max(s.resin, .9) } }],
+  reconstruccion: () => [{ t: 'Reconstrucción', d: 'Se reconstruye la parte perdida del diente con resina estética.', s: { chip: 0, resin: .7, wear: 0 } }],
   sellador: s => [{ t: 'Sellador', d: 'Se sellan las fisuras de la muela para prevenir caries.', s: { resin: Math.max(s.resin, .5) } }],
-  endodoncia: () => [{ t: 'Endodoncia', d: 'Se retira el nervio dañado, se limpian los conductos y se sellan.', s: { caries: 0, pulp: 0, canal: 1, resin: .8 }, xray: true }],
-  corona: () => [{ t: 'Corona', d: 'Se coloca una corona que protege el diente y le devuelve su forma.', s: { cap: 1, caries: 0, cavity: 0, chip: 0 } }],
-  extraccion: () => [{ t: 'Extracción', d: 'Se retira el diente con anestesia local. La encía cicatriza en 1 a 2 semanas.', s: { sink: -1.4, present: 0 } }],
-  extraccion_retenido: () => [{ t: 'Extracción', d: 'Se retira la muela retenida con anestesia local.', s: { sink: -1.4, present: 0 }, xray: true }],
-  implante: () => [{ t: 'Implante', d: 'Se coloca un tornillo de titanio en el hueso. Se esperan 3 a 4 meses para que se integre.', s: { present: 0, nat: 0, implant: 1, sink: 0, tilt: 0, cap: 0, caries: 0, resin: 0, chip: 0, pulp: 0, canal: 0 }, xray: true }],
+  endodoncia: () => [{ t: 'Retirar el nervio', d: 'Se abre el diente y se retira el nervio dañado.', s: { caries: 0, cavity: 1 }, xray: true }, { t: 'Endodoncia', d: 'Se limpian y sellan los conductos. La lesión de la raíz sana en los meses siguientes.', s: { pulp: 0, necro: 0, calcPulp: 0, resorbInt: 0, canal: 1, cavity: 0, resin: .8, apical: 0 }, xray: true }],
+  corona: () => [{ t: 'Corona', d: 'Se coloca una corona que protege el diente y le devuelve su forma.', s: { ...LIMPIO, cap: 1 } }],
+  extraccion: () => [{ t: 'Extracción', d: 'Se retira el diente con anestesia local. La encía cicatriza en 1 a 2 semanas.', s: { sink: -1.6, present: 0, apical: 0 } }],
+  extraccion_retenido: () => [{ t: 'Extracción', d: 'Se retira la muela retenida con anestesia local.', s: { sink: -1.6, present: 0 }, xray: true }],
+  implante: () => [{ t: 'Implante', d: 'Se coloca un tornillo de titanio en el hueso. Se esperan 3 a 4 meses para que se integre.', s: { ...LIMPIO, present: 0, nat: 0, implant: 1, sink: 0, tilt: 0, cap: 0, resin: 0, canal: 0 }, xray: true }],
   corona_implante: () => [{ t: 'Corona sobre implante', d: 'Sobre el implante se fija una corona que funciona como un diente natural.', s: { nat: 0, implant: 1, present: 1, cap: 1, sink: 0 } }],
-  protesis: () => [{ t: 'Prótesis fija', d: 'Se coloca un diente artificial unido a los dientes vecinos (puente).', s: { nat: 0, present: 1, cap: 1, sink: 0, tilt: 0, caries: 0, cavity: 0, resin: 0, chip: 0, pulp: 0, canal: 0 } }],
-  protesis_removible: () => [{ t: 'Prótesis removible', d: 'Se coloca un aparato con dientes artificiales que el paciente puede retirar para limpiarlo.', s: { nat: 0, present: 1, cap: 1, sink: 0, tilt: 0, caries: 0, cavity: 0, resin: 0, chip: 0, pulp: 0, canal: 0 } }],
-  carilla: () => [{ t: 'Carilla', d: 'Se adhiere una lámina delgada de porcelana en la cara visible del diente.', s: { resin: 0, caries: 0, chip: 0, cap: .7 } }]
+  protesis: () => [{ t: 'Prótesis fija', d: 'Se coloca un diente artificial unido a los dientes vecinos (puente).', s: { ...LIMPIO, nat: 0, present: 1, cap: 1, sink: 0, tilt: 0, resin: 0, canal: 0 } }],
+  protesis_removible: () => [{ t: 'Prótesis removible', d: 'Se coloca un aparato con dientes artificiales que el paciente puede retirar para limpiarlo.', s: { ...LIMPIO, nat: 0, present: 1, cap: 1, sink: 0, tilt: 0, resin: 0, canal: 0 } }],
+  carilla: () => [{ t: 'Carilla', d: 'Se adhiere una lámina delgada de porcelana en la cara visible del diente.', s: { resin: 0, caries: 0, chip: 0, stain: 0, fluor: 0, wear: 0, cap: .7 } }],
+  limpieza: () => [{ t: 'Limpieza', d: 'Se retiran placa, sarro y manchas superficiales.', s: { calc: 0, plaque: 0, gingiv: 0 } }],
+  perio: s => [{ t: 'Raspado y alisado', d: 'Se limpia debajo de la encía para que se desinflame y deje de perder soporte.', s: { calc: 0, plaque: 0, gingiv: 0, recession: s.recession * .8 } }],
+  blanqueamiento: () => [{ t: 'Blanqueamiento', d: 'Se aclara el color de los dientes.', s: { stain: 0 } }]
 };
-/* Etapas de un diente: cómo está hoy + cada tratamiento pendiente del plan, en orden de cita */
+/* Tratamientos de boca completa o arcada que también cambian cada diente en el resultado final */
+const BOCA = { limpieza: s => ({ ...s, calc: 0, plaque: 0, gingiv: 0 }), perio: s => ({ ...s, calc: 0, plaque: 0, gingiv: 0, recession: s.recession * .8 }), blanqueamiento: s => ({ ...s, stain: 0 }) };
 function etapasDiente(fdi, odo, pl) {
-  const t = odo[fdi], hoy = estado3D(t), etapas = [{ t: 'Así está hoy', d: dxTexto(t), s: hoy, xray: hoy.pulp > 0 || hoy.tilt > 0 || hoy.canal > 0 || hoy.implant > 0 }];
+  const t = odo[fdi], hoy = estado3D(t), etapas = [{ t: 'Así está hoy', d: dxTexto(t), s: hoy, xray: hoy.pulp > 0 || hoy.necro > 0 || hoy.apical > 0 || hoy.resorbInt > 0 || hoy.tilt > .3 || hoy.canal > 0 || hoy.implant > 0 }];
   const its = (pl?.items || []).filter(it => !['realizado', 'cancelado'].includes(it.estado) && (it.dientes || []).includes(fdi))
-    .sort((a, b) => (a.citas?.[0] ?? 99) - (b.citas?.[0] ?? 99));
+    .sort((a, b) => (a.citas?.[0] ?? 99) - (b.citas?.[0] ?? 99) || (a.seq ?? 0) - (b.seq ?? 0));
   let cur = { ...hoy };
   its.forEach(it => {
     const tpl = ETAPAS[it.animacion], tr = get('tratamientos', it.tratamientoId), cita = it.citas?.[0] != null ? `Cita ${it.citas[0] + 1} · ` : '';
     const lista = tpl ? tpl(cur) : [{ t: it.nombre, d: '', s: {} }];
     lista.forEach((e, i) => { cur = { ...cur, ...e.s }; etapas.push({ t: cita + e.t, d: (i === lista.length - 1 && tr?.descripcionPaciente) ? tr.descripcionPaciente : e.d, s: { ...cur }, xray: e.xray, cost: i === lista.length - 1 ? precioItem(it) : 0, item: it.nombre }); });
   });
-  return { etapas, final: cur, items: its };
+  let final = { ...cur };
+  (pl?.items || []).filter(it => !['realizado', 'cancelado'].includes(it.estado) && BOCA[it.animacion] && (!(it.dientes || []).length || it.aplicaA !== 'diente') && (!(it.dientes || []).length || it.dientes.some(d => Math.floor(d / 10) === Math.floor(fdi / 10) || (it.aplicaA === 'arcada' && Math.floor(d / 10) % 2 === Math.floor(fdi / 10) % 2))))
+    .forEach(it => final = BOCA[it.animacion](final));
+  return { etapas, final, items: its };
 }
 let THREEp = null;
 function cargarThree() {
@@ -2446,77 +2573,159 @@ function cargarThree() {
   return THREEp;
 }
 const V = { ready: false };
+/* ---------- Geometría anatómica ---------- */
+function tipoDiente(fdi) { const d = fdi % 10; return d <= 2 ? 'incisivo' : d === 3 ? 'canino' : d <= 5 ? 'premolar' : 'molar'; }
+const PERFIL = {
+  incisivo: [[.30, 0], [.40, .1], [.48, .3], [.5, .55], [.5, .8], [.47, .96], [.36, 1], [0, 1]],
+  canino: [[.32, 0], [.42, .12], [.49, .36], [.5, .58], [.44, .78], [.3, .92], [.12, 1], [0, 1.01]],
+  premolar: [[.34, 0], [.43, .12], [.5, .36], [.51, .6], [.48, .78], [.4, .9], [.2, .93], [0, .9]],
+  molar: [[.36, 0], [.45, .12], [.5, .34], [.51, .6], [.49, .78], [.42, .9], [.22, .9], [0, .84]]
+};
+const DIM = { incisivo: { h: .98, dp: .42, root: 1.25 }, canino: { h: 1.04, dp: .58, root: 1.45 }, premolar: { h: .84, dp: .76, root: 1.25 }, molar: { h: .76, dp: .95, root: 1.12 } };
+function raices(tipo, fdi) {
+  const sup = Math.floor(fdi / 10) <= 2, d = fdi % 10;
+  if (tipo === 'molar') return sup ? [[-.2, .14], [.2, .14], [0, -.18]] : [[-.22, 0], [.22, 0]];
+  if (tipo === 'premolar' && sup && d === 4) return [[0, .14], [0, -.14]];
+  return [[0, 0]];
+}
+function geoCorona(T3, tipo, w, h, dp, mesial) {
+  const pts = PERFIL[tipo].map(([r, y]) => new T3.Vector2(r, y));
+  const g = new T3.LatheGeometry(pts, 40);
+  const pos = g.attributes.position, v = new T3.Vector3(), col = [];
+  const cC = new T3.Color(0xe7d6b4), cM = new T3.Color(0xf5f0e4), cI = new T3.Color(0xdfe7ea);
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i);
+    const r = Math.hypot(v.x, v.z), a = Math.atan2(v.z, v.x), yn = v.y;
+    let x = v.x * w, z = v.z * dp, y = yn * h;
+    if (tipo === 'incisivo' && yn > .45) { const k = (yn - .45) / .55; z *= 1 - .72 * k; y += .02 * h * Math.cos(x / w * Math.PI * 3) * k; }
+    if (tipo === 'canino' && yn > .6) { z *= 1 - .4 * (yn - .6) / .4; }
+    if (tipo === 'molar' && yn > .62) {
+      const cusp = [Math.PI / 4, 3 * Math.PI / 4, -Math.PI / 4, -3 * Math.PI / 4].reduce((s, c) => { let da = Math.atan2(Math.sin(a - c), Math.cos(a - c)); return s + Math.exp(-(da * da) / .16); }, 0);
+      y += .11 * h * cusp * Math.min(1, r / .45) - .07 * h * Math.pow(1 - Math.min(1, r / .5), 2);
+    }
+    if (tipo === 'premolar' && yn > .62) {
+      const cusp = [Math.PI / 2, -Math.PI / 2].reduce((s, c) => { let da = Math.atan2(Math.sin(a - c), Math.cos(a - c)); return s + Math.exp(-(da * da) / .3) * (c > 0 ? 1 : .75); }, 0);
+      y += .12 * h * cusp * Math.min(1, r / .45) - .06 * h * Math.pow(1 - Math.min(1, r / .5), 2);
+    }
+    /* contorno mesial un poco más recto que el distal */
+    x += mesial * .03 * w * Math.max(0, Math.sin(yn * Math.PI));
+    pos.setXYZ(i, x, y, z);
+    const t = Math.min(1, Math.max(0, yn));
+    const c = t < .35 ? cC.clone().lerp(cM, t / .35) : cM.clone().lerp(cI, Math.max(0, (t - .7) / .3));
+    col.push(c.r, c.g, c.b);
+  }
+  g.setAttribute('color', new T3.Float32BufferAttribute(col, 3));
+  g.computeVertexNormals();
+  return g;
+}
+function matEsmalte(T3) { return new T3.MeshPhysicalMaterial({ color: 0xffffff, vertexColors: true, roughness: .26, metalness: 0, clearcoat: .55, clearcoatRoughness: .22, envMapIntensity: .7, side: T3.DoubleSide, transparent: true }); }
 function visorCrear() {
   const T3 = window.THREE;
   V.renderer = new T3.WebGLRenderer({ antialias: true, alpha: true });
   V.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  V.renderer.localClippingEnabled = true;
   V.scene = new T3.Scene();
-  V.camera = new T3.PerspectiveCamera(38, 1, .1, 100);
-  V.dist = 12; V.rotY = 0; V.rotX = .28;
-  V.scene.add(new T3.HemisphereLight(0xffffff, 0x334455, .8));
-  const key = new T3.DirectionalLight(0xffffff, .85); key.position.set(2, 4, 8); V.scene.add(key);
-  const rim = new T3.DirectionalLight(0x9fd3ff, .4); rim.position.set(-4, -2, -6); V.scene.add(rim);
+  V.camera = new T3.PerspectiveCamera(36, 1, .1, 100);
+  V.dist = 12; V.rotY = 0; V.rotX = .22;
+  /* luz de estudio y entorno para reflejos del esmalte */
+  const hemi = new T3.HemisphereLight(0xfff8f0, 0x3a2a2a, .75); V.scene.add(hemi);
+  const key = new T3.DirectionalLight(0xffffff, .85); key.position.set(2.5, 4, 8); V.scene.add(key);
+  const fill = new T3.DirectionalLight(0xffe6dc, .35); fill.position.set(-5, 1, 4); V.scene.add(fill);
+  const rim = new T3.DirectionalLight(0x9fd3ff, .35); rim.position.set(-3, -2, -6); V.scene.add(rim);
+  V.luces = [[hemi, .75], [key, .85], [fill, .35], [rim, .35]];
+  try {
+    const pm = new T3.PMREMGenerator(V.renderer), es = new T3.Scene();
+    const sg = new T3.SphereGeometry(10, 32, 16), cols = [];
+    for (let i = 0; i < sg.attributes.position.count; i++) { const y = sg.attributes.position.getY(i) / 10; const c = new T3.Color(0x2b3b45).lerp(new T3.Color(0xfff4ea), (y + 1) / 2); cols.push(c.r, c.g, c.b); }
+    sg.setAttribute('color', new T3.Float32BufferAttribute(cols, 3));
+    es.add(new T3.Mesh(sg, new T3.MeshBasicMaterial({ vertexColors: true, side: T3.BackSide })));
+    const lt = new T3.Mesh(new T3.PlaneGeometry(8, 4), new T3.MeshBasicMaterial({ color: 0xffffff })); lt.position.set(0, 6, 4); lt.lookAt(0, 0, 0); es.add(lt);
+    V.scene.environment = pm.fromScene(es, .02).texture;
+  } catch (e) {}
   V.mouth = new T3.Group(); V.scene.add(V.mouth);
-  V.gumMat = new T3.MeshStandardMaterial({ color: 0xd8707c, roughness: .6, transparent: true });
-  V.C_PULP = new T3.Color(0xe9a0a0); V.C_INF = new T3.Color(0x9b0d0d); V.C_GUT = new T3.Color(0xe07b2c);
+  V.gumMat = new T3.MeshPhysicalMaterial({ color: 0xd06a76, roughness: .45, clearcoat: .35, clearcoatRoughness: .4, transparent: true, envMapIntensity: .35 });
   V.teeth = {}; V.pick = [];
-  const UW = [0, .86, .68, .78, .7, .68, 1.0, .92, .84], LW = [0, .54, .6, .7, .7, .72, 1.08, 1.0, .94], GAP = .12;
-  const arch = sc => { const P = [[-2.45, -2.3], [-2.3, -.6], [-1.75, 1.0], [-.9, 2.05], [0, 2.35], [.9, 2.05], [1.75, 1.0], [2.3, -.6], [2.45, -2.3]]; return new T3.CatmullRomCurve3(P.map(p => new T3.Vector3(p[0] * sc, 0, p[1] * sc + (1 - sc) * .4))); };
-  const makeTooth = (fdi, upper, w) => {
-    const d = fdi % 10, sgn = upper ? 1 : -1;
-    const dm = d <= 2 ? { h: upper ? (d === 1 ? 1.0 : .9) : .85, dp: .36 } : d === 3 ? { h: 1.05, dp: .55 } : d <= 5 ? { h: .82, dp: .72 } : { h: .74, dp: .94 };
-    const h = dm.h, dp = dm.dp, g = new T3.Group(), body = new T3.Group(); g.add(body);
-    const sph = new T3.SphereGeometry(.5, 28, 18);
-    const crownMat = new T3.MeshStandardMaterial({ color: 0xf3eee0, roughness: .38, transparent: true });
-    const crown = new T3.Mesh(sph, crownMat); crown.scale.set(w, h, dp); crown.position.y = sgn * h * .5; body.add(crown);
-    const rootMat = new T3.MeshStandardMaterial({ color: 0xe8dcc0, roughness: .6, transparent: true, opacity: .7, depthWrite: false });
-    const root = new T3.Mesh(new T3.ConeGeometry(w * .3, 1.4, 14), rootMat); root.position.y = sgn * (h + .45); if (!upper) root.rotation.x = Math.PI; body.add(root);
-    const pulpMat = new T3.MeshBasicMaterial({ color: 0xe9a0a0 });
-    const pulp = new T3.Mesh(upper ? new T3.CylinderGeometry(.025, .07, 1.5, 10) : new T3.CylinderGeometry(.07, .025, 1.5, 10), pulpMat); pulp.position.y = sgn * (h * .4 + .7); body.add(pulp);
-    const spot = new T3.SphereGeometry(1, 16, 12);
-    const caries = new T3.Mesh(spot, new T3.MeshStandardMaterial({ color: 0x3a2210, roughness: .9 }));
-    const cavity = new T3.Mesh(spot, new T3.MeshStandardMaterial({ color: 0x7a6a5c, roughness: .9 }));
-    const resin = new T3.Mesh(spot, new T3.MeshStandardMaterial({ color: 0xf1e4c4, roughness: .3 }));
-    [caries, cavity, resin].forEach(m => { m.position.set(0, sgn * h * .5, dp * .43); body.add(m); });
-    const capMat = new T3.MeshStandardMaterial({ color: 0xfffcf2, roughness: .18, metalness: .05, transparent: true });
-    const cap = new T3.Mesh(sph, capMat); cap.position.y = sgn * h * .5; body.add(cap);
-    const metal = new T3.MeshStandardMaterial({ color: 0x9aa4ad, metalness: .85, roughness: .3 });
+  const UW = [0, .86, .68, .78, .7, .68, 1.0, .92, .84], LW = [0, .54, .6, .7, .7, .72, 1.08, 1.0, .94];
+  const arch = (sc, espejo) => { const P = [[-2.45, -2.3], [-2.3, -.6], [-1.75, 1.0], [-.9, 2.05], [0, 2.35], [.9, 2.05], [1.75, 1.0], [2.3, -.6], [2.45, -2.3]]; return new T3.CatmullRomCurve3(P.map(p => new T3.Vector3(p[0] * sc * (espejo ? -1 : 1), 0, p[1] * sc + (1 - sc) * .4))); };
+  const makeTooth = (fdi, w, mesial) => {
+    const tipo = tipoDiente(fdi), D = DIM[tipo], h = D.h, dp = D.dp, rl = D.root;
+    const g = new T3.Group(), body = new T3.Group(); g.add(body);
+    const crownMat = matEsmalte(T3);
+    const crownGeo = geoCorona(T3, tipo, w, h, dp, mesial);
+    const crown = new T3.Mesh(crownGeo, crownMat); body.add(crown);
+    /* dentina y raíces */
+    const dentMat = new T3.MeshStandardMaterial({ color: 0xf0d9a8, roughness: .6, side: T3.DoubleSide, transparent: true });
+    const dent = new T3.Mesh(crownGeo, dentMat); dent.scale.set(.8, .82, .78); dent.position.y = .02; body.add(dent);
+    const rootMat = new T3.MeshStandardMaterial({ color: 0xe6d3a6, roughness: .55, side: T3.DoubleSide, transparent: true });
+    const pulpMat = new T3.MeshStandardMaterial({ color: 0xe48a8a, roughness: .5, emissive: 0x220000, transparent: true });
+    const roots = new T3.Group(), canals = new T3.Group(); body.add(roots); body.add(canals);
+    const rs = raices(tipo, fdi), multi = rs.length > 1;
+    rs.forEach(([ox, oz]) => {
+      const len = rl * (multi ? .92 : 1), rt = w * (multi ? .15 : .24), rg = new T3.CylinderGeometry(rt, .03, len, 14, 6);
+      const rp = rg.attributes.position; for (let i = 0; i < rp.count; i++) { const y = rp.getY(i), k = (y + len / 2) / len; rp.setX(i, rp.getX(i) * (.8 + .2 * k) + ox * w * .25 * (1 - k)); rp.setZ(i, rp.getZ(i) * (dp / w) * 1.15 + oz * .15 * (1 - k)); } rg.computeVertexNormals();
+      const r = new T3.Mesh(rg, rootMat); r.position.set(ox * w, -len / 2 + .04, oz * dp); roots.add(r);
+      const cg = new T3.CylinderGeometry(.035, .012, len * .94, 8); const c = new T3.Mesh(cg, pulpMat); c.userData.canal = 1; c.position.set(ox * w * 1.05, -len / 2 + .02, oz * dp * 1.05); canals.add(c);
+    });
+    const chamber = new T3.Mesh(new T3.SphereGeometry(1, 20, 14), pulpMat); chamber.scale.set(w * .17, h * .2, dp * .16); chamber.position.y = h * .26; canals.add(chamber);
+    if (tipo === 'molar' || tipo === 'premolar') { [[-.18, .14], [.18, .14], [-.18, -.14], [.18, -.14]].slice(0, tipo === 'molar' ? 4 : 2).forEach(([x, z]) => { const hn = new T3.Mesh(new T3.SphereGeometry(1, 10, 8), pulpMat); hn.scale.set(.05, .11, .05); hn.position.set(x * w, h * .4, z * dp); canals.add(hn); }); }
+    /* hallazgos */
+    const lesion = (c, rough = 1) => new T3.MeshStandardMaterial({ color: c, roughness: rough, transparent: true });
+    const patch = new T3.Group(); body.add(patch);
+    const halo = new T3.Mesh(new T3.SphereGeometry(1, 18, 12), lesion(0x9b7a4a)); const core = new T3.Mesh(new T3.SphereGeometry(1, 18, 12), lesion(0x2d1a0c));
+    const cavity = new T3.Mesh(new T3.SphereGeometry(1, 18, 12), lesion(0x6a5a4c)); const resin = new T3.Mesh(new T3.SphereGeometry(1, 18, 12), new T3.MeshPhysicalMaterial({ color: 0xefe2c2, roughness: .3, clearcoat: .5, transparent: true }));
+    [halo, core, cavity, resin].forEach(m => patch.add(m));
+    const resorb = new T3.Mesh(new T3.SphereGeometry(1, 16, 12), lesion(0xb2163a, .7)); body.add(resorb);
+    const resorbInt = new T3.Mesh(new T3.SphereGeometry(1, 16, 12), lesion(0xc2185b, .6)); body.add(resorbInt);
+    const apical = new T3.Mesh(new T3.SphereGeometry(1, 20, 14), new T3.MeshStandardMaterial({ color: 0x7a1f1f, roughness: .7, transparent: true, opacity: .85 })); apical.position.set(rs[0][0] * w, -rl + .02, rs[0][1] * dp); body.add(apical);
+    const frRoot = new T3.Mesh(new T3.BoxGeometry(.012, rl * .8, dp * .5), lesion(0x1a1208)); frRoot.position.y = -rl * .45; body.add(frRoot);
+    const calc = new T3.Mesh(new T3.TorusGeometry(1, .22, 8, 28), lesion(0xd2b96e, .95)); calc.rotation.x = Math.PI / 2; calc.scale.set(w * .5, dp * .5, .5); calc.position.y = .05; body.add(calc);
+    const plaque = new T3.Mesh(new T3.TorusGeometry(1, .14, 8, 28), new T3.MeshStandardMaterial({ color: 0xf3e6a8, roughness: 1, transparent: true, opacity: .65 })); plaque.rotation.x = Math.PI / 2; plaque.scale.set(w * .52, dp * .52, .5); plaque.position.y = .14; body.add(plaque);
+    const abr = new T3.Mesh(new T3.BoxGeometry(w * .55, .07, .06), lesion(0xc5a35a, .5)); abr.position.set(0, .1, dp * .47); body.add(abr);
+    const capMat = new T3.MeshPhysicalMaterial({ color: 0xfffdf6, roughness: .14, clearcoat: .8, clearcoatRoughness: .1, transparent: true, side: T3.DoubleSide });
+    const cap = new T3.Mesh(crownGeo, capMat); body.add(cap);
+    const metal = new T3.MeshStandardMaterial({ color: 0xa8b2ba, metalness: .9, roughness: .28 });
     const imp = new T3.Group(); body.add(imp);
-    const screw = new T3.Mesh(new T3.CylinderGeometry(.12, .17, 1.0, 16), metal); screw.position.y = -sgn * .5; if (!upper) screw.rotation.x = Math.PI; imp.add(screw);
-    for (let j = 0; j < 5; j++) { const th = new T3.Mesh(new T3.TorusGeometry(.165 - j * .008, .03, 8, 20), metal); th.rotation.x = Math.PI / 2; th.position.y = -sgn * (.12 + j * .18); imp.add(th); }
-    const abut = new T3.Mesh(new T3.CylinderGeometry(.11, .14, .35, 14), metal); abut.position.y = -sgn * 1.12; imp.add(abut);
-    const marker = new T3.Mesh(new T3.SphereGeometry(.12, 16, 12), new T3.MeshBasicMaterial({ color: 0xffffff })); marker.position.set(0, sgn * h * .5, dp / 2 + .38); g.add(marker);
-    [crown, cap, marker, screw, root].forEach(m => { m.userData.fdi = fdi; V.pick.push(m); });
-    return { fdi, upper, sgn, w, h, dp, g, body, crown, crownMat, root, rootMat, pulp, pulpMat, caries, cavity, resin, cap, capMat, imp, marker, p: st(), from: st(), to: st(), t: 1, dur: 1.2 };
+    const screw = new T3.Mesh(new T3.CylinderGeometry(.15, .1, 1.05, 18), metal); screw.position.y = -.55; imp.add(screw);
+    for (let j = 0; j < 6; j++) { const th = new T3.Mesh(new T3.TorusGeometry(.16 - j * .01, .028, 8, 22), metal); th.rotation.x = Math.PI / 2; th.position.y = -.12 - j * .16; imp.add(th); }
+    const abut = new T3.Mesh(new T3.CylinderGeometry(.1, .14, .34, 16), metal); abut.position.y = .17; imp.add(abut);
+    /* encía alrededor del cuello (festón) */
+    const collar = new T3.Mesh(new T3.TorusGeometry(1, .3, 10, 30), V.gumMat.clone()); collar.rotation.x = Math.PI / 2; collar.scale.set(w * .52, dp * .55, .55); collar.position.y = -.06; g.add(collar);
+    const marker = new T3.Mesh(new T3.SphereGeometry(.1, 16, 12), new T3.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .95 })); marker.position.set(0, h * .55, dp / 2 + .32); g.add(marker);
+    [crown, cap, marker, screw, collar].forEach(m => { m.userData.fdi = fdi; V.pick.push(m); });
+    roots.children.forEach(m => { m.userData.fdi = fdi; V.pick.push(m); });
+    const mats = [crownMat, dentMat, rootMat, pulpMat, capMat, collar.material, ...[halo, core, cavity, resin, resorb, resorbInt, apical, frRoot, calc, plaque, abr].map(m => m.material), metal];
+    return { fdi, tipo, w, h, dp, rl, mesial, g, body, crown, crownMat, dent, dentMat, roots, rootMat, canals, pulpMat, patch, halo, core, cavity, resin, resorb, resorbInt, apical, frRoot, calc, plaque, abr, cap, capMat, imp, collar, marker, mats, ex: { cara: 'O', apicalTipo: 'granuloma' }, p: st(), from: st(), to: st(), t: 1, dur: 1.2 };
   };
   [true, false].forEach(upper => {
-    const sgn = upper ? 1 : -1, sc = upper ? 1 : .93, curve = arch(sc), jaw = new T3.Group(); jaw.position.y = sgn * GAP; V.mouth.add(jaw);
+    const sc = upper ? 1 : .93, curve = arch(sc, upper), jaw = new T3.Group();
+    jaw.position.y = upper ? .92 : -.92; if (upper) jaw.rotation.z = Math.PI; V.mouth.add(jaw);
     const order = upper ? D_SUP : D_INF, W = upper ? UW : LW, ws = order.map(f => W[f % 10]);
     const total = ws.reduce((a, b) => a + b, 0), L = curve.getLength(), k = L * .985 / total, off = L * .0075; let cum = 0;
     order.forEach((fdi, i) => {
       const span = ws[i] * k, u = (off + cum + span / 2) / L; cum += span;
       const pos = curve.getPointAt(u), tan = curve.getTangentAt(u);
-      const T = makeTooth(fdi, upper, ws[i] * Math.min(k, 1.1) * .97);
-      T.g.position.copy(pos); T.g.rotation.y = Math.atan2(-tan.z, tan.x); jaw.add(T.g); V.teeth[fdi] = T;
+      const T = makeTooth(fdi, ws[i] * Math.min(k, 1.1) * .97, i < 8 ? 1 : -1);
+      T.g.position.copy(pos); T.g.position.y = .9 - T.h + ({ incisivo: .07, canino: .04 }[T.tipo] || 0); T.g.rotation.y = Math.atan2(-tan.z, tan.x); jaw.add(T.g); V.teeth[fdi] = T; T.upper = upper;
     });
-    const gp = curve.getPoints(80).map(p => new T3.Vector3(p.x, sgn * 1.05, p.z));
-    jaw.add(new T3.Mesh(new T3.TubeGeometry(new T3.CatmullRomCurve3(gp), 140, .44, 16, false), V.gumMat));
-    [gp[0], gp[gp.length - 1]].forEach(p => { const c = new T3.Mesh(new T3.SphereGeometry(.44, 16, 12), V.gumMat); c.position.copy(p); jaw.add(c); });
+    /* reborde de encía y hueso */
+    const gp = curve.getPoints(90);
+    const tubo = (y, r) => { const c = new T3.CatmullRomCurve3(gp.map(p => new T3.Vector3(p.x, y, p.z))); const m = new T3.Mesh(new T3.TubeGeometry(c, 160, r, 18, false), V.gumMat); jaw.add(m); [gp[0], gp[gp.length - 1]].forEach(p => { const e = new T3.Mesh(new T3.SphereGeometry(r, 16, 12), V.gumMat); e.position.set(p.x, y, p.z); jaw.add(e); }); return m; };
+    tubo(-.42, .34); tubo(-1.0, .62);
   });
-  /* controles: arrastrar gira, rueda o pellizco acerca, tocar selecciona */
+  /* controles */
   const el = V.renderer.domElement; el.style.touchAction = 'none'; el.style.display = 'block'; el.style.width = '100%'; el.style.height = '100%';
   const ptrs = new Map(); let moved = 0, pinch0 = 0, dist0 = 12;
   el.addEventListener('pointerdown', e => { el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); moved = 0; if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); dist0 = V.dist; } });
   el.addEventListener('pointermove', e => {
     const pr = ptrs.get(e.pointerId); if (!pr) return;
-    if (ptrs.size === 2) { pr.x = e.clientX; pr.y = e.clientY; const [a, b] = [...ptrs.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); if (pinch0) V.dist = Math.min(18, Math.max(5.5, dist0 * pinch0 / d)); moved += 10; return; }
+    if (ptrs.size === 2) { pr.x = e.clientX; pr.y = e.clientY; const [a, b] = [...ptrs.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); if (pinch0) V.dist = Math.min(18, Math.max(4, dist0 * pinch0 / d)); moved += 10; return; }
     const dx = e.clientX - pr.x, dy = e.clientY - pr.y; pr.x = e.clientX; pr.y = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
-    V.rotY = Math.max(-1.6, Math.min(1.6, V.rotY + dx * .01)); V.rotX = Math.max(-.9, Math.min(1.1, V.rotX + dy * .008));
+    V.rotY = Math.max(-2.2, Math.min(2.2, V.rotY + dx * .01)); V.rotX = Math.max(-1.1, Math.min(1.2, V.rotX + dy * .008));
   });
   const up = e => { const was = ptrs.size; ptrs.delete(e.pointerId); if (was === 1 && moved < 6) visorTocar(e); if (ptrs.size < 2) pinch0 = 0; };
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', e => ptrs.delete(e.pointerId));
-  el.addEventListener('wheel', e => { e.preventDefault(); V.dist = Math.min(18, Math.max(5.5, V.dist * (1 + Math.sign(e.deltaY) * .08))); }, { passive: false });
-  V.ray = new T3.Raycaster(); V.clock = new T3.Clock();
+  el.addEventListener('wheel', e => { e.preventDefault(); V.dist = Math.min(18, Math.max(4, V.dist * (1 + Math.sign(e.deltaY) * .08))); }, { passive: false });
+  V.ray = new T3.Raycaster(); V.clock = new T3.Clock(); V.plane = new T3.Plane(); V.look = new T3.Vector3();
   V.ready = true;
 }
 function visorTocar(e) {
@@ -2525,22 +2734,73 @@ function visorTocar(e) {
   V.ray.setFromCamera(m, V.camera);
   const visible = o => { for (let x = o; x; x = x.parent) if (!x.visible) return false; return true; };
   const hit = V.ray.intersectObjects(V.pick, false).find(h => visible(h.object));
-  if (hit) { S.ui.vSel = hit.object.userData.fdi; S.ui.vEtapa = 0; visorAnimarEtapa(0); render(); }
+  if (hit) { S.ui.vSel = hit.object.userData.fdi; S.ui.vEtapa = 0; visorEnfocar(S.ui.vSel); visorAnimarEtapa(0); render(); }
+}
+/* gira la boca para que el diente quede de frente y lo acerca */
+function visorEnfocar(fdi) {
+  const T = V.teeth[fdi]; if (!T) return;
+  const th = T.g.rotation.y, bx = T.upper ? -Math.sin(th) : Math.sin(th), bz = Math.cos(th);
+  V.rotY = Math.max(-2.2, Math.min(2.2, Math.atan2(-bx, bz))); V.rotX = T.upper ? -.25 : .35; V.dist = 7.2;
 }
 const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const C3 = {};
+function col3(h) { return C3[h] || (C3[h] = new THREE.Color(h)); }
 function visorAplicar(T) {
-  const s = T.p, x = V.xray, vis = s.present > .02;
-  T.body.rotation.z = s.tilt * .65 * (T.upper ? 1 : -1);
-  T.body.position.y = T.sgn * s.sink * .9;
-  T.crown.visible = vis; T.crownMat.opacity = (x ? .22 : 1) * Math.min(1, s.present); T.crownMat.depthWrite = !x && s.present > .98;
-  T.crown.scale.set(T.w, T.h * (1 - .22 * s.chip), T.dp); T.crown.position.y = T.sgn * T.h * (.5 + .11 * s.chip);
-  T.root.visible = s.nat > .02 && s.present > .02; T.rootMat.opacity = (x ? .95 : .7) * Math.min(1, s.present); T.rootMat.color.set(x ? 0xfff6e0 : 0xe8dcc0);
-  T.pulp.visible = T.root.visible && (x || s.pulp > .3);
-  T.pulpMat.color.copy(V.C_PULP).lerp(V.C_INF, Math.min(1, s.pulp)).lerp(V.C_GUT, Math.min(1, s.canal));
-  const hideSpots = s.cap > .5 || !vis;
-  [['caries', s.caries], ['cavity', s.cavity], ['resin', s.resin]].forEach(([k, v]) => { const m = T[k]; m.visible = !hideSpots && v > .02; const r = .19 * T.w * Math.max(v, .001); m.scale.set(r, r, r * .6); });
-  T.cap.visible = s.cap > .02; T.capMat.opacity = (x ? .3 : 1) * Math.min(1, s.cap); const cs = 1.06 * (.9 + .1 * s.cap); T.cap.scale.set(T.w * cs, T.h * cs, T.dp * cs);
-  T.imp.visible = s.implant > .02; T.imp.position.y = T.sgn * (T.h + .85 + (1 - s.implant) * 1.6);
+  const s = T.p, x = V.xray, corte = V.corte && S.ui.vSel === T.fdi, vis = s.present > .02, nat = s.nat > .02;
+  const interior = x || corte;
+  T.body.rotation.z = s.tilt * .65 + Math.sin(performance.now() / 120) * .03 * s.mov * (S.ui.vSel === T.fdi ? 1 : 0);
+  T.body.position.y = s.sink * .9;
+  /* esmalte */
+  const wearK = 1 - .2 * s.wear - .22 * s.chip;
+  T.crown.visible = vis; T.crown.scale.set(1, wearK, 1);
+  const base = col3('#ffffff').clone().lerp(col3('#dcc79c'), .6 * (V.tono ?? .45));
+  if (s.fluor > 0) base.lerp(col3('#fbf8f0'), s.fluor * .8);
+  if (s.stain > 0) base.lerp(col3('#c7a26a'), s.stain * .55);
+  if (s.necro > 0 && !s.canal) base.lerp(col3('#b9b1a3'), s.necro * .35);
+  T.crownMat.color.copy(x ? col3('#e6eef2') : base);
+  T.crownMat.roughness = .26 + .35 * s.fluor + .2 * s.stain + .25 * (1 - (V.reflejos ?? .5));
+  T.crownMat.clearcoat = .1 + .7 * (V.reflejos ?? .5); T.crownMat.envMapIntensity = .15 + .9 * (V.reflejos ?? .5);
+  T.crownMat.opacity = (x ? .32 : 1) * Math.min(1, s.present); T.crownMat.depthWrite = !x && s.present > .98;
+  T.dent.visible = vis && nat && interior; T.dent.scale.set(.8, .82 * wearK, .78);
+  T.dentMat.color.copy(x ? col3('#9fb0b8') : col3('#f0d9a8')); T.dentMat.opacity = x ? .55 : 1;
+  /* raíces y pulpa */
+  T.roots.visible = nat && (vis || s.sink < -.05) && (interior || s.recession > .05 || s.sink < -.05 || s.tilt > .3);
+  T.rootMat.opacity = x ? .6 : 1; T.rootMat.color.copy(x ? col3('#c9d4d9') : col3('#e6d3a6'));
+  T.canals.visible = nat && vis && (interior || s.pulp > .5 || s.necro > .5 || s.canal > .5 || s.chip > .95);
+  const pc = col3('#e48a8a').clone().lerp(col3('#b3121b'), Math.min(1, s.pulp)).lerp(col3('#4a3b33'), Math.min(1, s.necro)).lerp(col3('#d9c9a6'), s.calcPulp * .7).lerp(col3('#e98a3a'), Math.min(1, s.canal));
+  T.pulpMat.color.copy(x ? (s.canal > .5 ? col3('#ffffff') : col3('#22292d')) : pc);
+  T.pulpMat.emissive.copy(s.pulp > .3 && !x ? col3('#3a0000') : col3('#000000'));
+  T.canals.children.forEach(c => { if (c.userData.canal) c.scale.set(1 + s.resorbInt * .4, 1, 1 + s.resorbInt * .4); });
+  /* caries, cavidad y resina en la cara correspondiente */
+  const cara = T.ex.cara, hh = T.h * wearK;
+  const P = s.cariesRaiz > .02 ? [0, -.1, T.dp * .43, 0, 0, 1] : ({ O: [0, hh * .93, 0, 0, 1, 0], V: [0, hh * .52, T.dp * .5, 0, 0, 1], L: [0, hh * .52, -T.dp * .5, 0, 0, -1], M: [T.mesial * T.w * .5, hh * .55, 0, T.mesial, 0, 0], D: [-T.mesial * T.w * .5, hh * .55, 0, -T.mesial, 0, 0] })[cara] || [0, hh * .93, 0, 0, 1, 0];
+  T.patch.position.set(P[0], P[1], P[2]); T.patch.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(P[3], P[4], P[5]));
+  const hide = s.cap > .5 || !vis, rr = T.w * .2;
+  const sz = (m, v, k, z = .45) => { m.visible = !hide && v > .02; const r = rr * k * Math.max(v, .001); m.scale.set(r, r * .85, r * z); };
+  sz(T.halo, s.caries, 1.25, .3); sz(T.core, s.caries, .85, .55); sz(T.cavity, s.cavity, 1.05); sz(T.resin, s.resin, 1.1, .35);
+  T.halo.material.opacity = .7; T.core.material.color.copy(x ? col3('#1d2428') : col3('#2d1a0c'));
+  /* reabsorciones */
+  T.resorb.visible = nat && vis && s.resorb > .02; { const k = s.resorb; T.resorb.scale.set(.06 + .1 * k, .08 + .45 * k, .05 + .06 * k); T.resorb.position.set(0, -.02 - .45 * k, T.dp * .36); }
+  T.resorbInt.visible = nat && vis && interior && s.resorbInt > .02; T.resorbInt.scale.setScalar(.06 + .07 * s.resorbInt); T.resorbInt.position.set(0, -T.rl * .32, 0);
+  /* lesión periapical */
+  T.apical.visible = nat && vis && interior && s.apical > .02; T.apical.scale.setScalar(.1 + .2 * s.apical);
+  T.apical.material.color.copy(col3({ absceso: '#b8322a', granuloma: '#8a4b2a', quiste: '#6f8f9e' }[T.ex.apicalTipo] || '#8a4b2a')); T.apical.material.opacity = x ? .9 : .8;
+  T.frRoot.visible = nat && vis && interior && s.frRoot > .5;
+  /* depósitos y desgaste cervical */
+  T.calc.visible = vis && nat && s.calc > .02; T.calc.scale.set(T.w * .5, T.dp * .52, .5 * s.calc + .05);
+  T.plaque.visible = vis && nat && s.plaque > .02; T.plaque.material.opacity = .65 * s.plaque;
+  T.abr.visible = vis && nat && s.abrasion > .02; T.abr.scale.set(1, .5 + s.abrasion, .5 + s.abrasion);
+  /* corona o carilla */
+  T.cap.visible = s.cap > .02; T.capMat.opacity = (x ? .3 : 1) * Math.min(1, s.cap) * (s.present > .02 ? 1 : 0); const cs = s.cap < .9 ? 1.02 : 1.05 * (.92 + .08 * s.cap); T.cap.scale.set(cs, cs, cs);
+  T.capMat.color.copy(x ? col3('#f4f7f8') : col3(s.cap < .9 ? '#fffefa' : '#fffdf6'));
+  /* implante */
+  T.imp.visible = s.implant > .02; T.imp.position.y = (1 - s.implant) * 1.8;
+  /* encía: inflamación y recesión */
+  T.collar.material.color.copy(col3('#d06a76').clone().lerp(col3('#c0262f'), s.gingiv * .8));
+  T.collar.scale.set(T.w * (.52 + .05 * s.gingiv), T.dp * (.55 + .05 * s.gingiv), .55 + .2 * s.gingiv);
+  T.collar.position.y = -.06 - .38 * s.recession; T.collar.material.opacity = x ? .1 : 1; T.collar.material.depthWrite = !x;
+  /* corte del diente seleccionado */
+  T.mats.forEach(m => { m.clippingPlanes = corte ? [V.plane] : null; });
 }
 function visorEstados(map, animar) {
   Object.values(V.teeth).forEach(T => { const s = st(map[T.fdi]); if (animar) { T.from = { ...T.p }; T.to = s; T.t = 0; } else { T.p = { ...s }; T.from = { ...s }; T.to = s; T.t = 1; visorAplicar(T); } });
@@ -2551,29 +2811,35 @@ function visorLoop() {
   const dt = Math.min(V.clock.getDelta(), .05);
   Object.values(V.teeth).forEach(T => {
     if (T.t < 1) { T.t = Math.min(1, T.t + dt / T.dur); const k = ease(T.t); for (const key in T.to) T.p[key] = T.from[key] + (T.to[key] - T.from[key]) * k; visorAplicar(T); }
+    else if (T.p.mov > 0 && S.ui.vSel === T.fdi) visorAplicar(T);
     if (T.marker.visible) { const sc = 1 + Math.sin(performance.now() / 300) * .12; T.marker.scale.set(sc, sc, sc); }
   });
-  V.mouth.rotation.y += (V.rotY - V.mouth.rotation.y) * .15; V.mouth.rotation.x += (V.rotX - V.mouth.rotation.x) * .15;
+  V.mouth.rotation.y += (V.rotY - V.mouth.rotation.y) * .12; V.mouth.rotation.x += (V.rotX - V.mouth.rotation.x) * .12;
   V.camera.position.set(0, .4, V.dist); V.camera.lookAt(0, 0, 0);
+  if (V.corte && S.ui.vSel && V.teeth[S.ui.vSel]) {
+    const T = V.teeth[S.ui.vSel]; T.g.updateMatrixWorld(true);
+    const c = new THREE.Vector3(0, T.h * .3, 0).applyMatrix4(T.g.matrixWorld), b = new THREE.Vector3(0, 0, 1).transformDirection(T.g.matrixWorld);
+    V.plane.setFromNormalAndCoplanarPoint(b.negate(), c);
+  }
   V.renderer.render(V.scene, V.camera);
   requestAnimationFrame(visorLoop);
 }
 function visorTam() { const c = V.renderer.domElement.parentElement; if (!c) return; const w = c.clientWidth, h = c.clientHeight; if (!w || !h) return; V.renderer.setSize(w, h, false); V.camera.aspect = w / h; V.camera.updateProjectionMatrix(); }
 function visorXray(on) {
-  V.xray = on; V.gumMat.opacity = on ? .12 : 1; V.gumMat.depthWrite = !on;
+  V.xray = on; V.gumMat.opacity = on ? .1 : 1; V.gumMat.depthWrite = !on;
   Object.values(V.teeth).forEach(visorAplicar);
 }
-/* Qué estados mostrar según el modo */
 function visorDatos(pid) {
   const ex = expedienteDe(pid), odo = ex.odontograma || {}, pl = planActivo(pid), modo = S.ui.vModo || 'hoy';
   const base = modo === 'inicio' ? (ex.odoInicial || odo) : odo;
-  const map = {}, info = {};
+  const map = {}, info = {}, extra = {};
   D_TODOS.forEach(f => {
     const e = etapasDiente(f, odo, pl);
     map[f] = modo === 'final' ? e.final : estado3D(base[f]);
+    extra[f] = extras3D(base[f]);
     info[f] = { color: dColor(base[f]), pend: e.items.length };
   });
-  return { map, info, pl, odo };
+  return { map, info, extra, pl, odo };
 }
 async function montarVisor() {
   const box = document.getElementById('visor3d'); if (!box || S.view !== 'expediente' || S.ui.expTab !== 'visor') return;
@@ -2588,18 +2854,24 @@ async function montarVisor() {
     visorTam();
     if (!V.ro) { V.ro = new ResizeObserver(() => visorTam()); }
     V.ro.disconnect(); V.ro.observe(box2);
-    const D = visorDatos(S.ui.pacId), sig = JSON.stringify([S.ui.pacId, S.ui.vModo, D.map, S.ui.vSel, S.ui.vEtapa]);
+    const D = visorDatos(S.ui.pacId);
+    Object.values(V.teeth).forEach(T => T.ex = D.extra[T.fdi]);
+    V.corte = !!(S.ui.vCorte && S.ui.vSel);
+    const sig = JSON.stringify([S.ui.pacId, S.ui.vModo, D.map, D.extra, S.ui.vSel, S.ui.vEtapa, V.corte]);
     const cambio = V.sig !== sig; V.sig = sig;
     if (cambio && !S.ui.vAnimando) {
       if (S.ui.vSel && S.ui.vEtapa > 0) { const e = etapasDiente(S.ui.vSel, D.odo, D.pl).etapas; const mp = { ...D.map }; mp[S.ui.vSel] = e[Math.min(S.ui.vEtapa, e.length - 1)].s; visorEstados(mp, false); }
       else visorEstados(D.map, V.pac === S.ui.pacId && V.modo !== S.ui.vModo);
     }
+    if (V.pac !== S.ui.pacId) { V.rotY = 0; V.rotX = .22; V.dist = 12; }
     V.pac = S.ui.pacId; V.modo = S.ui.vModo;
+    aplicarConfVisor();
     const xr = !!S.ui.vXray; if (V.xray !== xr) visorXray(xr);
     Object.values(V.teeth).forEach(T => {
-      const inf = D.info[T.fdi], showM = S.ui.vModo !== 'final' && (inf.color || inf.pend);
+      const inf = D.info[T.fdi], showM = S.ui.vModo !== 'final' && (inf.color || inf.pend) && !(V.corte && T.fdi === S.ui.vSel);
       T.marker.visible = !!showM; if (showM) T.marker.material.color.set(inf.color || '#5cc3d6');
-      T.crownMat.emissive && T.crownMat.emissive.set(T.fdi === S.ui.vSel ? 0x1d4f5c : 0x000000);
+      T.crownMat.emissive.set(T.fdi === S.ui.vSel && !V.corte ? 0x12343c : 0x000000);
+      visorAplicar(T);
     });
     if (!V.loop) { V.clock.getDelta(); visorLoop(); }
   } catch (e) { if (msg) { msg.hidden = false; msg.textContent = errMsg(e); } }
@@ -2607,16 +2879,16 @@ async function montarVisor() {
 function visorAnimarEtapa(i) {
   if (!V.ready || !S.ui.vSel) return;
   const D = visorDatos(S.ui.pacId), e = etapasDiente(S.ui.vSel, D.odo, D.pl).etapas, E = e[Math.min(i, e.length - 1)];
-  Object.values(V.teeth).forEach(X => { if (X.fdi === S.ui.vSel) return; const m = st(D.map[X.fdi]); if (Object.keys(m).some(k => Math.abs((X.p[k] || 0) - m[k]) > .001)) { X.from = { ...X.p }; X.to = m; X.t = 0; } });
+  Object.values(V.teeth).forEach(X => { X.ex = D.extra[X.fdi]; if (X.fdi === S.ui.vSel) return; const m = st(D.map[X.fdi]); if (Object.keys(m).some(k => Math.abs((X.p[k] || 0) - m[k]) > .001)) { X.from = { ...X.p }; X.to = m; X.t = 0; } });
   const T = V.teeth[S.ui.vSel]; T.from = { ...T.p }; T.to = st(E.s); T.t = 0;
-  if (E.xray && !S.ui.vXray) { S.ui.vXray = true; visorXray(true); }
-  V.sig = JSON.stringify([S.ui.pacId, S.ui.vModo, D.map, S.ui.vSel, i]);
+  if (E.xray && !S.ui.vXray && !S.ui.vCorte) { S.ui.vXray = true; visorXray(true); }
+  V.sig = JSON.stringify([S.ui.pacId, S.ui.vModo, D.map, D.extra, S.ui.vSel, i, !!(S.ui.vCorte && S.ui.vSel)]);
 }
 function tabVisor(p) {
   const D = visorDatos(p.id), modo = S.ui.vModo || 'hoy', sel = S.ui.vSel;
   const ex = expedienteDe(p.id), pl = D.pl, T = pl ? totalesPlan(pl) : null;
-  const conTx = D_TODOS.filter(f => D.info[f].pend);
-  const leyenda = [[T_CARA.caries.c, 'Caries'], [T_DIENTE.pulpa.c, 'Nervio afectado'], [T_CARA.fractura.c, 'Fractura'], [T_DIENTE.retenido.c, 'Retenido'], [T_DIENTE.ausente.c, 'Ausente'], ['#5cc3d6', 'Con tratamiento']];
+  const conTx = D_TODOS.filter(f => D.info[f].pend || D.info[f].color);
+  const leyenda = [[T_CARA.caries.c, 'Caries'], [HALL.pulpar.c, 'Nervio'], [HALL.reabsorcion.c, 'Reabsorción'], [T_CARA.fractura.c, 'Fractura'], [HALL.periodonto.c, 'Encía'], [T_DIENTE.retenido.c, 'Retenido'], ['#5cc3d6', 'Con tratamiento']];
   let det = '';
   if (sel) {
     const e = etapasDiente(sel, D.odo, pl), et = Math.min(S.ui.vEtapa || 0, e.etapas.length - 1), tot = e.items.reduce((a, it) => a + precioItem(it), 0);
@@ -2628,23 +2900,32 @@ function tabVisor(p) {
     </div></div>`;
   }
   return `<div class="visor-grid"><div class="visor-col">
-      <div id="visor3d" class="visor ${S.ui.vXray ? 'xr' : ''}">
+      <div id="visor3d" class="visor ${S.ui.vXray ? 'xr' : ''} ${confVisor().fondo === 'claro' ? 'claro' : ''}">
         <div class="vov vseg">${[['inicio', 'Cómo llegó'], ['hoy', 'Hoy'], ['final', 'Resultado final']].map(([k, l]) => `<button data-act="v-modo" data-m="${k}" class="${modo === k ? 'on' : ''}" ${k === 'inicio' && !ex.odoInicial ? 'disabled title="Se guarda al registrar el primer odontograma"' : ''}>${l}</button>`).join('')}</div>
-        <div class="vov vxr"><button data-act="v-xray" class="${S.ui.vXray ? 'on' : ''}">Rayos X</button></div>
+        <div class="vov vxr"><button data-act="v-corte" class="${S.ui.vCorte ? 'on' : ''}" title="Corta el diente seleccionado para ver esmalte, dentina y nervio">Corte</button><button data-act="v-xray" class="${S.ui.vXray ? 'on' : ''}">Rayos X</button></div>
         <div class="vov vleg">${leyenda.map(([c, l]) => `<span><span class="dot" style="background:${c}"></span>${l}</span>`).join('')}</div>
-        <div class="vov vhint">Arrastra para girar · pellizca o usa la rueda para acercar · toca un diente</div>
+        <div class="vov vhint">${sel ? 'Toca otro diente o usa Corte para ver su interior' : 'Arrastra para girar · pellizca o usa la rueda para acercar · toca un diente'}</div>
         <div class="vmsg" id="visorMsg">Cargando visor 3D…</div>
       </div>
-      <p class="mute" style="margin:0;font-size:12.5px">Modelo ilustrativo. Los dientes son formas simplificadas; el modelo anatómico realista se integra cuando tengamos el archivo 3D con licencia.</p>
+      <p class="mute" style="margin:0;font-size:12.5px">Representación ilustrativa generada con el diagnóstico del odontograma; no sustituye a la radiografía ni a la exploración clínica.</p>
     </div>
     <div class="visor-col">
       ${det}
-      <div class="panel"><div class="panel-h"><h3>Dientes por atender</h3>${pl ? `<span class="pill ${PLAN_EST[pl.estado].c}">Plan v${pl.version}</span>` : ''}</div>
-        ${conTx.length ? `<div class="rows">${conTx.map(f => { const e = etapasDiente(f, D.odo, pl); return `<button class="row" data-act="v-sel" data-fdi="${f}"><div style="min-width:0"><div class="t1"><span class="dot" style="background:${dColor(D.odo[f]) || '#5cc3d6'}"></span>${f} · ${esc(nombreDiente(f))}</div><div class="t2">${e.items.map(i => esc(i.nombre)).join(' + ')}</div></div><div class="r num"><b>${money(e.items.reduce((a, i) => a + precioItem(i), 0))}</b></div></button>`; }).join('')}</div>` : `<div class="empty">${pl ? 'No hay tratamientos pendientes por diente.' : 'Aún no hay plan de tratamiento.'}</div>`}
+      <div class="panel"><div class="panel-h"><h3>Dientes con hallazgos</h3>${pl ? `<span class="pill ${PLAN_EST[pl.estado].c}">Plan v${pl.version}</span>` : ''}</div>
+        ${conTx.length ? `<div class="rows">${conTx.map(f => { const e = etapasDiente(f, D.odo, pl); return `<button class="row" data-act="v-sel" data-fdi="${f}"><div style="min-width:0"><div class="t1"><span class="dot" style="background:${dColor(D.odo[f]) || '#5cc3d6'}"></span>${f} · ${esc(nombreDiente(f))}</div><div class="t2">${esc(e.items.length ? e.items.map(i => i.nombre).join(' + ') : dxTexto(D.odo[f]))}</div></div><div class="r num">${e.items.length ? `<b>${money(e.items.reduce((a, i) => a + precioItem(i), 0))}</b>` : ''}</div></button>`; }).join('')}</div>` : `<div class="empty">${pl ? 'No hay hallazgos registrados.' : 'Aún no hay odontograma ni plan.'}</div>`}
         ${T ? `<div class="panel-b"><div class="tot"><span>Total del plan</span><b class="num">${money(T.total)}</b></div><div class="tot"><span>Realizado</span><span class="num">${money(T.realizado)} · ${T.pctAvance}%</span></div></div>` : ''}
       </div>
       ${pl && (pl.citas || []).length ? `<div class="panel"><div class="panel-h"><h3>Citas propuestas</h3></div><div class="panel-b">${pl.citas.map((c, i) => { const ss = sesionesDeCita(pl, i); const hecha = ss.length && ss.every(({ it, k }) => (it.hechas || [])[k]); return `<div class="cita-row"><span class="n">Cita ${i + 1}</span><span class="d">${c.fecha ? fechaCorta(c.fecha) + ' · ' : ''}${ss.map(({ it }) => esc(it.nombre) + ((it.dientes || []).length ? ' (' + it.dientes.join(', ') + ')' : '')).join(', ')}</span><span class="c num">${hecha ? '<span class="pill ok">Hecha</span>' : money(ss.reduce((a, { it }) => a + precioSesion(it), 0))}</span></div>`; }).join('')}</div></div>` : ''}
     </div></div>`;
+}
+
+const VISOR_DEF = { brillo: 80, tono: 45, reflejos: 45, fondo: 'oscuro' };
+const confVisor = () => ({ ...VISOR_DEF, ...(get('config', 'visor') || {}), ...(S.ui.visorTmp || {}) });
+function aplicarConfVisor() {
+  if (!V.ready) return; const c = confVisor(), k = Math.max(.3, Number(c.brillo) / 100);
+  V.luces.forEach(([l, b]) => l.intensity = b * k);
+  V.tono = Number(c.tono) / 100; V.reflejos = Number(c.reflejos) / 100;
+  const box = document.getElementById('visor3d'); if (box) box.classList.toggle('claro', c.fondo === 'claro');
 }
 async function visorPlay() {
   if (!S.ui.vSel) return;
@@ -3090,10 +3371,20 @@ function leerImagen(file, { max = 512, svgMax = 300000 } = {}) {
 }
 function vAjustes() {
   const m = { ...marca(), ...(S.ui.marcaTmp || {}) }, a = confAgenda(), gc = list('gcal');
-  const tabs = [['apariencia', 'Apariencia'], ['agenda', 'Agenda y Google Calendar'], ['caja', 'Caja y comisiones']];
+  const tabs = [['apariencia', 'Apariencia'], ['agenda', 'Agenda y Google Calendar'], ['caja', 'Caja y comisiones'], ['visor', 'Visor 3D']];
   S.ui.ajTab = S.ui.ajTab || 'apariencia';
   const head = `<div class="vhead"><div><h2>Ajustes</h2><p>Personaliza la plataforma y conecta la agenda con Google Calendar.</p></div></div>
     <nav class="tabs">${tabs.map(([k, l]) => `<button data-act="aj-tab" data-tab="${k}" class="${S.ui.ajTab === k ? 'on' : ''}">${l}</button>`).join('')}</nav>`;
+  if (S.ui.ajTab === 'visor') {
+    const c = confVisor(), rg = (k, l, min, max, ayuda) => `<label class="f">${l} <span class="num" id="vv_${k}">${c[k]}%</span><input type="range" name="${k}" id="vr_${k}" min="${min}" max="${max}" step="1" value="${esc(c[k])}"><span class="mute" style="font-weight:500;font-size:12px">${ayuda}</span></label>`;
+    return head + `<form class="panel" id="visorForm" style="max-width:640px"><div class="panel-h"><h3>Apariencia del modelo 3D</h3></div><div class="panel-b" style="display:grid;gap:16px">
+      ${rg('brillo', 'Brillo de la luz', 40, 140, 'Menos brillo hace que los dientes se vean menos blancos.')}
+      ${rg('tono', 'Tono del esmalte', 0, 100, '0 = blanco puro · 100 = marfil natural.')}
+      ${rg('reflejos', 'Reflejos', 0, 100, 'Qué tanto brilla la superficie del esmalte.')}
+      <label class="f">Fondo del visor<select name="fondo" id="vrFondo">${opt('oscuro', 'Oscuro', c.fondo)}${opt('claro', 'Claro', c.fondo)}</select></label>
+      <div class="quick"><button class="btn primary" type="submit">Guardar</button><button class="btn ghost" type="button" data-act="visor-def">Valores recomendados</button></div>
+      <p class="mute" style="margin:0;font-size:12.5px">Se aplica a todo el equipo y al portal del paciente.</p></div></form>`;
+  }
   if (S.ui.ajTab === 'caja') {
     const cc = confCaja().comisiones, campos = [['tarjeta_debito', 'Tarjeta de débito'], ['tarjeta_credito', 'Tarjeta de crédito'], ...MSI.map(m => ['msi' + m, `${m} meses sin intereses`])];
     return head + `<form class="panel" id="cajaForm" style="max-width:640px"><div class="panel-h"><h3>Comisiones de la terminal</h3><span class="mute" style="font-size:13px">Porcentaje que cobra tu banco o pasarela (Mercado Pago, Clip, etc.). La absorbe la clínica.</span></div><div class="panel-b grid2">
@@ -3584,6 +3875,9 @@ const ACT = {
   'mk-color': el => { const f = $('#marcaForm'); f.elements.color.value = el.dataset.c; S.ui.marcaTmp = marcaDesdeForm(f); aplicarMarca(S.ui.marcaTmp); $$('.swatch', f).forEach(x => x.classList.toggle('on', x === el)); },
   'mk-quitar': el => { S.ui.marcaTmp = { ...marcaDesdeForm($('#marcaForm')), [el.dataset.k]: '' }; aplicarMarca(S.ui.marcaTmp); render(); },
   'mk-restaurar': async () => { if (!await confirmar('Restaurar apariencia', 'Se vuelve al nombre, colores y letra originales, y se quitan el logo y la imagen de carga.', { ok: 'Restaurar' })) return; S.ui.marcaTmp = null; await guardarLote([{ col: 'config', id: 'marca', data: { ...MARCA_DEF } }], 'Restauró la apariencia original'); toast('Apariencia restaurada.'); },
+  'odo-sub': el => { const O = S.ui.odo; O.sub = O.sub || {}; O.sub[el.dataset.g] = el.dataset.k; render(); },
+  'visor-def': () => { const f = $('#visorForm'); Object.entries(VISOR_DEF).forEach(([k, v]) => { if (f.elements[k]) f.elements[k].value = v; const o = $('#vv_' + k); if (o) o.textContent = v + '%'; }); toast('Valores recomendados cargados. Presiona Guardar.'); },
+  'v-corte': () => { if (!S.ui.vSel) { toast('Primero toca un diente para cortarlo.'); return; } S.ui.vCorte = !S.ui.vCorte; if (S.ui.vCorte) { S.ui.vXray = false; visorEnfocar(S.ui.vSel); } render(); },
   'odo-plan-quitar': el => { const O = S.ui.odo, f = +el.dataset.fdi, t = dNorm(O.data[f]); t.plan.splice(+el.dataset.i, 1); if (dTieneAlgo(t)) O.data[f] = t; else delete O.data[f]; O.dirty = true; render(); },
   'odo-plan-subir': el => { const O = S.ui.odo, f = +el.dataset.fdi, t = dNorm(O.data[f]), i = +el.dataset.i; [t.plan[i - 1], t.plan[i]] = [t.plan[i], t.plan[i - 1]]; O.data[f] = t; O.dirty = true; render(); },
   'plan-item-nuevo': () => { const pl = planActivo(S.ui.pacId); if (pl && !editable(pl)) { toast(`El plan v${pl.version} ya fue aceptado. Para agregar tratamientos crea una nueva versión desde la pestaña Plan.`); return; } formItem(); },
@@ -3594,9 +3888,9 @@ const ACT = {
   'plan-hecho': el => formHecho(el.dataset.item, +el.dataset.k), 'nota-nueva': formNota,
   'v-modo': el => { S.ui.vModo = el.dataset.m; S.ui.vSel = null; S.ui.vEtapa = 0; render(); },
   'v-xray': () => { S.ui.vXray = !S.ui.vXray; render(); },
-  'v-sel': el => { S.ui.vSel = +el.dataset.fdi; S.ui.vEtapa = 0; if (S.ui.vModo === 'final') S.ui.vModo = 'hoy'; visorAnimarEtapa(0); render(); },
+  'v-sel': el => { S.ui.vSel = +el.dataset.fdi; S.ui.vEtapa = 0; if (S.ui.vModo === 'final') S.ui.vModo = 'hoy'; if (V.ready) visorEnfocar(S.ui.vSel); visorAnimarEtapa(0); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
   'v-etapa': el => { S.ui.vEtapa = +el.dataset.i; visorAnimarEtapa(S.ui.vEtapa); render(); },
-  'v-play': () => visorPlay(), 'v-cerrar': () => { S.ui.vSel = null; S.ui.vEtapa = 0; render(); }
+  'v-play': () => visorPlay(), 'v-cerrar': () => { S.ui.vSel = null; S.ui.vEtapa = 0; S.ui.vCorte = false; if (V.ready) { V.rotY = 0; V.rotX = .22; V.dist = 12; } render(); }
 };
 function verPerfil() {
   modal({ title: 'Mi cuenta', body: `<div class="ch" style="display:flex;gap:12px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div><b>${esc(S.me.nombre)}</b><div class="mute">${esc(S.me.email)} · ${ROLES[S.me.rol]}</div></div></div>`,
@@ -3627,6 +3921,7 @@ document.addEventListener('change', async e => {
 });
 document.addEventListener('change', e => { const k = e.target.dataset?.changeIng; if (k) { S.ui.ing[k] = e.target.value; render(); } });
 document.addEventListener('change', e => { const k = e.target.dataset?.changeAg; if (k) { agUI()[k] = e.target.value; if (k === 'sede') agUI().dents = []; render(); } });
+document.addEventListener('input', e => { const f = e.target.closest && e.target.closest('#visorForm'); if (!f) return; const k = e.target.name; if (['brillo', 'tono', 'reflejos'].includes(k)) { const o = $('#vv_' + k); if (o) o.textContent = e.target.value + '%'; } });
 document.addEventListener('input', e => { const f = e.target.closest && e.target.closest('#marcaForm'); if (!f || e.target.type === 'file') return; S.ui.marcaTmp = marcaDesdeForm(f); aplicarMarca(S.ui.marcaTmp); const pv = $('.splash-prev b'); if (pv) pv.textContent = S.ui.marcaTmp.nombre; });
 document.addEventListener('change', async e => {
   if (!['mkLogo', 'mkCarga'].includes(e.target.id)) return;
@@ -3636,6 +3931,7 @@ document.addEventListener('change', async e => {
 });
 document.addEventListener('submit', async e => {
   if (e.target.id === 'abrirCaja') { e.preventDefault(); const f = e.target; if (cajaAbierta()) return; try { await guardarLote([{ col: 'cajas', nuevo: true, data: { usuarioId: S.me.id, sedeId: f.elements.sede.value, fondo: r2(f.elements.fondo.value), estado: 'abierta', apertura: { fecha: nowISO(), nota: fv(f, 'nota') } } }], `Abrió caja en ${get('sedes', f.elements.sede.value)?.nombre || ''} con fondo de ${money(f.elements.fondo.value)}`); toast('Caja abierta.'); } catch (err) { toast(errMsg(err)); } return; }
+  if (e.target.id === 'visorForm') { e.preventDefault(); const f = e.target; const d = { brillo: +f.elements.brillo.value, tono: +f.elements.tono.value, reflejos: +f.elements.reflejos.value, fondo: f.elements.fondo.value }; try { await guardarLote([{ col: 'config', id: 'visor', data: d }], 'Ajustó la apariencia del visor 3D'); S.ui.visorTmp = null; toast('Ajustes del visor guardados.'); } catch (err) { toast(errMsg(err)); } return; }
   if (e.target.id === 'cajaForm') { e.preventDefault(); const f = e.target, com = {}; ['tarjeta_debito', 'tarjeta_credito', ...MSI.map(m => 'msi' + m)].forEach(k => com[k] = Number(f.elements[k].value) || 0); try { await guardarLote([{ col: 'config', id: 'caja', data: { comisiones: com } }], 'Actualizó las comisiones de la terminal'); toast('Comisiones guardadas.'); } catch (err) { toast(errMsg(err)); } return; }
   if (e.target.id === 'marcaForm') { e.preventDefault(); const m = marcaDesdeForm(e.target); try { await guardarLote([{ col: 'config', id: 'marca', data: m }], 'Actualizó la apariencia de la plataforma'); S.ui.marcaTmp = null; toast('Apariencia guardada para todo el equipo.'); } catch (err) { toast(errMsg(err)); } return; }
   if (e.target.id === 'agForm') { e.preventDefault(); const f = e.target; const url = fv(f, 'url'); if (url && !/^https:\/\/script\.google\.com\//.test(url)) { toast('La dirección debe empezar con https://script.google.com/'); return; }
@@ -3644,7 +3940,7 @@ document.addEventListener('submit', async e => {
   try { await guardar('config', 'clinica', { nombre: fv(f, 'nombre'), responsable: fv(f, 'responsable'), domicilio: fv(f, 'domicilio'), telefono: fv(f, 'telefono'), correo: fv(f, 'correo') }, 'Actualizó los datos de la clínica'); toast('Datos de la clínica guardados.'); }
   catch (err) { toast(errMsg(err)); }
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (!$('#confirmRoot').hidden) return; if (!$('#modalRoot').hidden) closeModal(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (!$('#confirmRoot').hidden || !$('#firmaRoot').hidden) return; if (!$('#modalRoot').hidden) closeModal(); } });
 
 /* ============================ ARRANQUE ============================ */
 (async function start() {
