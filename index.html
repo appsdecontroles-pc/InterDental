@@ -332,6 +332,11 @@ input[type=color]{width:44px;height:32px;border:1px solid var(--line);border-rad
 .splash-prev{padding:22px;border:1px dashed var(--line);border-radius:12px;background:var(--bg)}
 .splash-prev img{max-width:110px;max-height:110px}
 @media (prefers-reduced-motion:no-preference){.splash{animation:up .3s ease-out}}
+/* Fase 4 */
+tr.rowpago td{background:var(--ok-soft)}
+.recibo{display:grid;gap:6px;border:1px dashed var(--line);border-radius:12px;padding:16px;background:var(--bg)}
+.recibo>b{font-size:17px}.recibo>span{color:var(--mute);font-size:13px}
+.recibo hr{border:0;border-top:1px dashed var(--line);margin:6px 0}
 /* Excel */
 .colpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 14px}
 .colpick .check{font-size:13.5px}
@@ -412,7 +417,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1234567890:web:abc123"
 };
 */
-const VERSION_APP = '3.0 · Fase 3';
+const VERSION_APP = '4.0 · Fase 4';
 
 /* ============================ UTILIDADES ============================ */
 const $ = (s, el = document) => el.querySelector(s);
@@ -441,7 +446,7 @@ const UNIDADES = ['pieza','par','cartucho','caja','jeringa','g','ml','sobre','pu
 const COLORES = ['#0e6b70','#b5527a','#4f6bd8','#c27c1a','#6a4fc2','#2d8a52','#c4483c','#3c8dad'];
 
 /* ============================ ESTADO ============================ */
-const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora','expedientes','planes','notas','citas','bloqueos','gcal'];
+const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora','expedientes','planes','notas','citas','bloqueos','gcal','cargos','movimientos','cajas','planesPago'];
 const S = { mode: FIREBASE_CONFIG ? 'firebase' : 'demo', data: {}, me: null, view: 'inicio', ui: { pacQ: '', pacF: 'activos', catTab: 'tratamientos', catQ: '', catCat: '', bitU: '' }, unsubs: [] };
 COLS.forEach(c => S.data[c] = {});
 const list = c => Object.entries(S.data[c] || {}).map(([id, v]) => ({ id, ...v }));
@@ -453,7 +458,7 @@ const nombreUsuario = id => get('usuarios', id)?.nombre || '—';
 
 /* ============================ CAPA DE DATOS ============================ */
 const fb = {};
-const DEMO_KEY = 'appDentista.demo.v3';
+const DEMO_KEY = 'appDentista.demo.v4';
 function demoPersist() { try { localStorage.setItem(DEMO_KEY, JSON.stringify(S.data)); } catch (e) {} }
 function demoLoad() { try { const r = localStorage.getItem(DEMO_KEY); if (r) { const d = JSON.parse(r); COLS.forEach(c => d[c] = d[c] || {}); S.data = d; return true; } } catch (e) {} return false; }
 
@@ -516,6 +521,7 @@ function subscribe() {
   watch('citas', F.query(F.collection(fb.db, 'citas'), F.where('fecha', '>=', desde)));
   watch('bloqueos', F.query(F.collection(fb.db, 'bloqueos'), F.where('fechaFin', '>=', sumarDias(hoyISO(), -60))));
   watch('gcal');
+  ['cargos', 'movimientos', 'cajas', 'planesPago'].forEach(c => watch(c));
   if (esAdmin()) {
     watch('cuotas');
     watch('bitacora', F.query(F.collection(fb.db, 'bitacora'), F.orderBy('fecha', 'desc'), F.limit(300)));
@@ -698,6 +704,22 @@ function seedDemo() {
   ci('ci_7', 'p6', 'u_jorge', 's_ext1', man, '17:00', 60, { motivo: 'Extracción en hospital' });
   D.bloqueos.bq_1 = { dentistaId: 'u_luis', fechaIni: man, fechaFin: man, todoDia: false, horaIni: '13:00', horaFin: '19:00', motivo: 'Congreso de implantología', estado: 'activo', origen: 'app', gcal: { sync: 'ok' }, ...sys };
   D.config.agenda = { bloqueMin: 10, zona: 'America/Mazatlan', appsScriptUrl: '', ...sys };
+  /* Caja y cuentas de ejemplo */
+  pl1.items.forEach(it => (it.hechas || []).forEach((h, k) => { if (!h) return; const cg = { pacienteId: 'p1', pacienteNombre: 'María Fernanda López García', planId: 'pl_demo1', itemId: it.id, k, tratamientoId: it.tratamientoId, sesiones: it.sesiones, concepto: `${it.nombre}${it.dientes.length ? ' (' + it.dientes.join(', ') + ')' : ''}${it.sesiones > 1 ? ` · sesión ${k + 1} de ${it.sesiones}` : ''}`, monto: Math.round(it.precio / it.sesiones * 100) / 100, dentistaId: it.dentistaId, fecha: h.fecha, sedeId: 's_centro', origen: 'tratamiento', ...sys, creado: h.fecha + 'T12:00:00' }; D.cargos[`cg_${it.id}_${k}`] = cg; }));
+  D.planesPago.pl_demo1 = { pacienteId: 'p1', planId: 'pl_demo1', modalidad: 'por_cita', meses: 6, anticipo: 5000, fecha: hace(16), totalPlan: 33500, ...sys };
+  D.cajas.cj_ant = { usuarioId: 'u_karla', sedeId: 's_centro', fondo: 1000, estado: 'cerrada', apertura: { fecha: hace(1) + 'T09:00:00' }, cierre: { fecha: hace(1) + 'T19:10:00', efectivoContado: 4180, diferencia: -20, nota: 'Faltaron 20 pesos de cambio', totales: { fondo: 1000, pagos: { efectivo: 3500, tarjeta_credito: 2400 }, totalPagos: 5900, gastos: 300, retiros: 0, comision: 67, n: 3, efectivoEsperado: 4200 } }, ...sys };
+  D.cajas.cj_hoy = { usuarioId: 'u_karla', sedeId: 's_centro', fondo: 1000, estado: 'abierta', apertura: { fecha: hoy + 'T08:55:00', nota: '' }, ...sys };
+  const mv = (id, d) => D.movimientos[id] = { usuarioId: 'u_karla', sedeId: 's_centro', ...d, ...sys };
+  mv('mv_1', { tipo: 'pago', pacienteId: 'p1', pacienteNombre: 'María Fernanda López García', monto: 5000, metodo: 'transferencia', comisionPct: 0, referencia: 'Anticipo', cajaId: 'cj_ant', fecha: hace(16) + 'T10:30:00' });
+  mv('mv_2', { tipo: 'pago', pacienteId: 'p2', pacienteNombre: 'José Antonio Ramírez Soto', monto: 400, metodo: 'efectivo', comisionPct: 0, cajaId: 'cj_hoy', fecha: hoy + 'T10:15:00' });
+  mv('mv_3', { tipo: 'gasto', monto: 180, categoria: 'Limpieza', concepto: 'Toallas y gel', cajaId: 'cj_hoy', fecha: hoy + 'T11:20:00' });
+  D.cargos.cg_m1 = { pacienteId: 'p2', pacienteNombre: 'José Antonio Ramírez Soto', tratamientoId: 't_DX-01', sesiones: 1, concepto: 'Consulta de valoración y diagnóstico', monto: 400, dentistaId: 'u_luis', fecha: hoy, sedeId: 's_centro', origen: 'manual', ...sys };
+  D.cuotas.u_ana = { ...D.cuotas.u_ana, esquema: 'socio', salario: null };
+  D.cuotas.u_luis = { ...D.cuotas.u_luis, esquema: 'socio', salario: null };
+  D.cuotas.u_sofia = { ...D.cuotas.u_sofia, esquema: 'colaborador', salario: { monto: 9000, periodo: 'quincenal' }, base: { tipo: 'pct', valor: 15 } };
+  D.cuotas.u_jorge = { ...D.cuotas.u_jorge, esquema: 'colaborador', salario: { monto: 7000, periodo: 'quincenal' }, base: { tipo: 'pct', valor: 20 } };
+  D.cuotas.u_paola = { ...D.cuotas.u_paola, esquema: 'colaborador', salario: { monto: 8000, periodo: 'quincenal' }, base: { tipo: 'pct', valor: 25 } };
+  D.cuotas.u_karla = { esquema: 'colaborador', salario: { monto: 6000, periodo: 'quincenal' }, base: { tipo: 'pct', valor: '' }, porTratamiento: {}, ...sys };
   D.bitacora[newId('b')] = { fecha: t, uid: 'u_admin', usuario: 'Administrador principal', coleccion: 'config', docId: 'clinica', accion: 'Alta', resumen: 'Se cargaron los datos de ejemplo' };
   S.data = D; demoPersist();
 }
@@ -711,6 +733,8 @@ const I = {
   team: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg>',
   pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
   doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>',
+  cash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg>',
   cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h3v3H8z"/></svg>',
   gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
@@ -831,6 +855,8 @@ async function salir() {
 const VIEWS = [
   { id: 'inicio', label: 'Inicio', icon: 'home' },
   { id: 'agenda', label: 'Agenda', icon: 'cal' },
+  { id: 'caja', label: 'Caja', icon: 'cash', roles: ['admin', 'recepcion'] },
+  { id: 'ingresos', label: 'Ingresos', icon: 'chart', roles: ['admin', 'dentista'] },
   { id: 'pacientes', label: 'Pacientes', icon: 'users' },
   { id: 'catalogo', label: 'Catálogo', icon: 'list' },
   { id: 'equipo', label: 'Equipo', icon: 'team' },
@@ -852,7 +878,7 @@ function sinConsentimiento() { const v = clinica().aviso?.version || 1; return l
 
 function render() {
   if (!S.me || $('#app').hidden) return;
-  const vis = VIEWS.filter(v => !v.admin || esAdmin());
+  const vis = VIEWS.filter(v => (!v.admin || esAdmin()) && (!v.roles || v.roles.includes(S.me.rol)));
   if (!vis.find(v => v.id === S.view) && S.view !== 'expediente') S.view = 'inicio';
   const navV = S.view === 'expediente' ? 'pacientes' : S.view;
   const pend = sinConsentimiento().length;
@@ -862,7 +888,7 @@ function render() {
   const mk = marca(), sig = JSON.stringify(mk); if (S.marcaSig !== sig) { S.marcaSig = sig; aplicarMarca(mk); }
   $('#sideClinic').textContent = c.nombre; $('#topClinic').textContent = mk.nombre;
   $('#meBox').innerHTML = `<div style="display:flex;gap:10px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div style="min-width:0"><b>${esc(S.me.nombre)}</b><span>${ROLES[S.me.rol]}</span></div></div><button class="btn sm" data-act="salir">${S.mode === 'demo' ? 'Cambiar de usuario' : 'Cerrar sesión'}</button>`;
-  const VW = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora, expediente: vExpediente, agenda: vAgenda, ajustes: vAjustes }[S.view];
+  const VW = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora, expediente: vExpediente, agenda: vAgenda, ajustes: vAjustes, caja: vCaja, ingresos: vIngresos }[S.view];
   const view = $('#view');
   const ae = document.activeElement, keep = ae && view.contains(ae) && ae.id ? { id: ae.id, s: ae.selectionStart } : null;
   view.innerHTML = VW();
@@ -893,6 +919,7 @@ function vInicio() {
     <div class="stat"><b>${ds.length}</b><span>Dentistas en el equipo</span></div>
     <div class="stat"><b>${trs.length}</b><span>Tratamientos en catálogo</span></div>
   </div>
+  ${panelCajaInicio()}
   ${panelCitasHoy()}
   <div class="two">
     <div class="panel"><div class="panel-h"><h3>Requieren consentimiento</h3><span class="mute" style="font-size:13px">Firma del aviso de privacidad pendiente o desactualizada</span></div>
@@ -901,7 +928,7 @@ function vInicio() {
     <div style="display:grid;gap:18px">
       ${S.me.rol !== 'recepcion' ? `<div class="panel"><div class="panel-h"><h3>Mis pacientes</h3><span class="pill acc">${mios.length}</span></div>
         ${mios.length ? `<div class="rows">${mios.slice(0, 5).map(p => filaPaciente(p, true)).join('')}</div>` : `<div class="empty">Aún no tienes pacientes asignados como dentista responsable.</div>`}</div>` : ''}
-      <div class="panel"><div class="panel-h"><h3>Plan del proyecto</h3></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li class="${i === 2 ? 'now' : ''}"><span class="n">${i + 1}</span><div><b>${f[0]}${i < 2 ? ' <span class="pill ok">Lista</span>' : i === 2 ? ' <span class="pill acc">Actual</span>' : ''}</b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
+      <div class="panel"><div class="panel-h"><h3>Plan del proyecto</h3></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li class="${i === 3 ? 'now' : ''}"><span class="n">${i + 1}</span><div><b>${f[0]}${i < 3 ? ' <span class="pill ok">Lista</span>' : i === 3 ? ' <span class="pill acc">Actual</span>' : ''}</b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
     </div>
   </div>`;
 }
@@ -1208,8 +1235,8 @@ function vEquipo() {
     const c = get('cuotas', u.id), at = u.rol === 'dentista' || u.atiende;
     return `<div class="card"><div class="ch"><span class="avatar" style="background:${esc(u.color || '#0e6b70')}">${esc(iniciales(u.nombre))}</span><div style="min-width:0"><b>${esc(u.nombre)}</b><div class="mute" style="font-size:12.5px;overflow-wrap:anywhere">${esc(u.email)}</div></div></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill ${u.rol === 'admin' ? 'acc' : ''}">${ROLES[u.rol]}</span>${u.rol === 'admin' && u.atiende ? '<span class="pill">Atiende pacientes</span>' : ''}${u.activo === false ? '<span class="pill bad">Sin acceso</span>' : ''}</div>
-      <div class="meta">${u.especialidad ? `<span>${esc(u.especialidad)}</span>` : ''}${sedeN(u.sedes) ? `<span>Sedes: ${esc(sedeN(u.sedes))}</span>` : ''}${adm && at ? `<span>Cuota base: <b>${c?.base ? (c.base.tipo === 'pct' ? c.base.valor + '%' : money(c.base.valor)) : 'sin definir'}</b>${c && Object.keys(c.porTratamiento || {}).length ? ` · ${Object.keys(c.porTratamiento).length} especiales` : ''}</span>` : ''}</div>
-      ${adm ? `<div class="acts"><button class="btn sm" data-act="us-editar" data-id="${u.id}">Editar</button>${at ? `<button class="btn sm" data-act="cuotas" data-id="${u.id}">Cuotas</button>` : ''}</div>` : ''}</div>`;
+      <div class="meta">${u.especialidad ? `<span>${esc(u.especialidad)}</span>` : ''}${sedeN(u.sedes) ? `<span>Sedes: ${esc(sedeN(u.sedes))}</span>` : ''}${adm && c?.esquema ? `<span>${esc(ESQUEMAS[c.esquema].split(' (')[0])}${c.salario?.monto ? ' · salario ' + money(c.salario.monto) + ' ' + esc(c.salario.periodo) : ''}</span>` : ''}${adm && at ? `<span>Comisión base: <b>${c?.base && c.base.valor !== '' ? (c.base.tipo === 'pct' ? c.base.valor + '%' : money(c.base.valor)) : 'sin definir'}</b>${c && Object.keys(c.porTratamiento || {}).length ? ` · ${Object.keys(c.porTratamiento).length} especiales` : ''}</span>` : ''}</div>
+      ${adm ? `<div class="acts"><button class="btn sm" data-act="us-editar" data-id="${u.id}">Editar</button><button class="btn sm" data-act="cuotas" data-id="${u.id}">Pago y comisión</button></div>` : ''}</div>`;
   }).join('')}</div>`;
 }
 function formUsuario(id) {
@@ -1254,14 +1281,24 @@ function formCuotas(uid, soloLectura = false) {
     return;
   }
   const rowT = t => { const o = c.porTratamiento?.[t.id]; return `<tr data-tid="${t.id}" data-precio="${Number(t.precio) || 0}"><td>${esc(t.nombre)}<div class="mute mono" style="font-size:12px">${esc(t.clave)} · ${money(t.precio)}</div></td>
-    <td><select data-k="tipo" id="ct_${t.id}" aria-label="Tipo de cuota">${opt('', 'Usar base', o?.tipo || '')}${opt('pct', '% del precio', o?.tipo)}${opt('fijo', 'Monto fijo', o?.tipo)}</select></td>
+    <td><select data-k="tipo" id="ct_${t.id}" aria-label="Tipo de cuota">${opt('', 'Usar base', o?.tipo || '')}${opt('pct', '% de lo cobrado', o?.tipo)}${opt('fijo', 'Monto fijo', o?.tipo)}</select></td>
     <td style="width:120px"><input type="number" data-k="valor" id="cv_${t.id}" min="0" step="any" value="${esc(o?.valor ?? '')}" aria-label="Valor" ${o ? '' : 'disabled'}></td><td class="r num" data-out style="white-space:nowrap"></td></tr>`; };
-  modal({ title: 'Cuotas · ' + esc(u.nombre), wide: true, submit: 'Guardar cuotas', body: `
-    <p style="margin:0" class="mute">Lo que recibe el dentista por cada tratamiento que realiza. Se usará para calcular sus ingresos en la fase 4.</p>
-    <div class="grid3" style="align-items:end"><label class="f">Cuota base<select name="bTipo" id="cbTipo">${opt('pct', '% del precio', c.base?.tipo)}${opt('fijo', 'Monto fijo por tratamiento', c.base?.tipo)}</select></label>
-      <label class="f">Valor<input type="number" name="bValor" id="cbValor" min="0" step="any" value="${esc(c.base?.valor ?? '')}" placeholder="Ej. 40"></label><span class="mute" style="font-size:12.5px;padding-bottom:10px">Se aplica a todo tratamiento sin cuota especial.</span></div>
-    <div class="tablewrap"><table><thead><tr><th>Tratamiento</th><th>Cuota</th><th>Valor</th><th class="r">Recibe</th></tr></thead><tbody id="ctBody">${trs.map(rowT).join('')}</tbody></table></div>`,
+  const atiende = u.rol === 'dentista' || u.atiende;
+  modal({ title: 'Pago y comisión · ' + esc(u.nombre), wide: true, submit: 'Guardar', body: `
+    <div class="grid3" style="align-items:end">
+      <label class="f">Esquema<select name="esq" id="cqEsq">${Object.entries(ESQUEMAS).map(([k, l]) => opt(k, l, c.esquema || (atiende ? 'colaborador' : 'colaborador'))).join('')}</select></label>
+      <label class="f" data-sal>Salario fijo<input type="number" name="sal" id="cqSal" min="0" step="0.01" value="${esc(c.salario?.monto ?? '')}" placeholder="0"></label>
+      <label class="f" data-sal>Periodo<select name="per" id="cqPer">${['quincenal', 'mensual', 'semanal'].map(x => opt(x, x[0].toUpperCase() + x.slice(1), c.salario?.periodo || 'quincenal')).join('')}</select></label>
+    </div>
+    <p style="margin:0" class="mute" id="cqAyuda"></p>
+    <div ${atiende ? '' : 'hidden'} style="display:grid;gap:12px">
+    <div class="grid3" style="align-items:end"><label class="f">Comisión base<select name="bTipo" id="cbTipo">${opt('pct', '% de lo cobrado', c.base?.tipo)}${opt('fijo', 'Monto fijo por tratamiento', c.base?.tipo)}</select></label>
+      <label class="f">Valor<input type="number" name="bValor" id="cbValor" min="0" max="100" step="any" value="${esc(c.base?.valor ?? '')}" placeholder="De 0 a 100"></label><span class="mute" style="font-size:12.5px;padding-bottom:10px">Se aplica a todo tratamiento sin regla especial.</span></div>
+    <div class="tablewrap"><table><thead><tr><th>Tratamiento</th><th>Regla</th><th>Valor</th><th class="r">Por tratamiento cobrado</th></tr></thead><tbody id="ctBody">${trs.map(rowT).join('')}</tbody></table></div></div>
+    ${atiende ? '' : '<p class="mute" style="margin:0">Esta persona no atiende pacientes: solo se registra su salario.</p>'}`,
     onOpen: f => {
+      const esq = () => { const so = f.elements.esq.value === 'socio'; $$('[data-sal]', f).forEach(x => x.hidden = so); $('#cqAyuda').textContent = so ? 'Socio: recibe solo el porcentaje de lo que se cobra de sus tratamientos.' : 'Colaborador: salario fijo más una comisión de 0 a 100% sobre lo que se cobra de sus tratamientos.'; };
+      f.elements.esq.addEventListener('change', esq); esq();
       const upd = () => { const base = { tipo: f.elements.bTipo.value, valor: f.elements.bValor.value };
         $$('#ctBody tr', f).forEach(tr => { const tipo = $('[data-k=tipo]', tr).value, val = $('[data-k=valor]', tr); val.disabled = !tipo; const r = tipo ? { tipo, valor: val.value } : base; const m = calc({ precio: Number(tr.dataset.precio) }, r); $('[data-out]', tr).innerHTML = m == null ? '<span class="mute">—</span>' : `<b>${money(m)}</b>${tipo ? '' : ' <span class="mute">base</span>'}`; }); };
       f.addEventListener('input', upd); f.addEventListener('change', upd); upd();
@@ -1271,8 +1308,9 @@ function formCuotas(uid, soloLectura = false) {
       if (f.elements.bTipo.value === 'pct' && Number(bv) > 100) return formErr(f, 'La cuota base no puede ser mayor a 100%.');
       const porTratamiento = {};
       for (const tr of $$('#ctBody tr', f)) { const tipo = $('[data-k=tipo]', tr).value, v = $('[data-k=valor]', tr).value; if (!tipo) continue; if (v === '') return formErr(f, 'Falta el valor en una cuota especial.'); if (tipo === 'pct' && Number(v) > 100) return formErr(f, 'Un porcentaje no puede ser mayor a 100%.'); porTratamiento[tr.dataset.tid] = { tipo, valor: Number(v) }; }
-      await guardar('cuotas', uid, { base: { tipo: f.elements.bTipo.value, valor: bv === '' ? '' : Number(bv) }, porTratamiento }, `Actualizó cuotas de ${u.nombre}`, { reemplazar: true });
-      toast('Cuotas guardadas.');
+      const esq = f.elements.esq.value, sal = Number(f.elements.sal.value) || 0;
+      await guardar('cuotas', uid, { esquema: esq, salario: esq === 'socio' ? null : { monto: sal, periodo: f.elements.per.value }, base: { tipo: f.elements.bTipo.value, valor: bv === '' ? '' : Number(bv) }, porTratamiento }, `Actualizó el esquema de pago de ${u.nombre} (${ESQUEMAS[esq].split(' (')[0]})`, { reemplazar: true });
+      toast('Esquema de pago guardado.');
     } });
 }
 
@@ -1781,11 +1819,11 @@ function vExpediente() {
   const p = get('pacientes', S.ui.pacId);
   if (!p) return `<div class="panel"><div class="empty">No se encontró el paciente. <button class="btn" data-act="nav" data-view="pacientes">Volver a pacientes</button></div></div>`;
   const clin = esClinico();
-  const tabs = [['resumen', 'Resumen'], ...(clin ? [['historia', 'Historia clínica'], ['odontograma', 'Odontograma']] : []), ['plan', 'Plan y presupuesto'], ...(clin ? [['notas', 'Notas de evolución'], ['visor', 'Visor 3D']] : [])];
+  const tabs = [['resumen', 'Resumen'], ...(clin ? [['historia', 'Historia clínica'], ['odontograma', 'Odontograma']] : []), ['plan', 'Plan y presupuesto'], ['cuenta', 'Cuenta'], ...(clin ? [['notas', 'Notas de evolución'], ['visor', 'Visor 3D']] : [])];
   if (!tabs.find(t => t[0] === S.ui.expTab)) S.ui.expTab = 'resumen';
   const e = edad(p.fechaNac), ex = expedienteDe(p.id), al = clin ? alertasClinicas(ex.historia) : [];
   const pa = planActivo(p.id);
-  const body = { resumen: tabResumen, historia: tabHistoria, odontograma: tabOdontograma, plan: tabPlan, notas: tabNotas, visor: tabVisor }[S.ui.expTab](p);
+  const body = { resumen: tabResumen, historia: tabHistoria, odontograma: tabOdontograma, plan: tabPlan, cuenta: tabCuenta, notas: tabNotas, visor: tabVisor }[S.ui.expTab](p);
   return `<div class="exp-head">
       <button class="btn sm ghost" data-act="nav" data-view="pacientes">← Pacientes</button>
       <div class="exp-title"><h2>${esc(nombreCompleto(p))}</h2>
@@ -2198,7 +2236,7 @@ function formAceptar() {
       const ex = get('expedientes', p.id);
       if (!ex?.odoInicial) ops.push({ col: 'expedientes', id: p.id, data: { pacienteId: p.id, odoInicial: deep(ex?.odontograma || {}), odoInicialFecha: nowISO() }, nuevo: !ex });
       await guardarLote(ops, `Registró la aceptación del plan v${pl.version} de ${nombreCompleto(p)} (${money(T.total)})`);
-      toast('Plan aceptado.');
+      toast('Plan aceptado. Define ahora cómo lo va a pagar.'); setTimeout(() => formPlanPagos(p.id), 0);
     } });
 }
 async function nuevaVersion() {
@@ -2232,7 +2270,7 @@ function formHecho(itemId, k) {
       ni.estado = completas ? 'realizado' : 'en_proceso';
       const vivos = n.items.filter(x => x.estado !== 'cancelado');
       n.estado = vivos.every(x => x.estado === 'realizado') ? 'terminado' : 'en_tratamiento';
-      const ops = [{ col: 'planes', id: pl.id, data: (({ id, creado, creadoPor, actualizado, actualizadoPor, ...d }) => d)(n) }];
+      const ops = [{ col: 'planes', id: pl.id, data: (({ id, creado, creadoPor, actualizado, actualizadoPor, ...d }) => d)(n) }, cargoOp(p.id, pl, ni, k, fecha, dent)];
       if (completas && EFECTO[ni.animacion] && (ni.dientes || []).length) {
         const ex = get('expedientes', p.id), odo = deep(ex?.odontograma || {});
         ni.dientes.forEach(d => { const t = dNorm(odo[d]); aplicarEfecto(t, ni); if (dTieneAlgo(t)) odo[d] = t; else delete odo[d]; });
@@ -2920,8 +2958,8 @@ function formCancelarCita(id) {
     } });
 }
 /* Registra tratamientos realizados: actualiza plan, odontograma y notas (una sola operación) */
-function opsHechos(pid, pl, sel, fecha, dent, texto) {
-  const p = get('pacientes', pid), n = deep(pl), ops = [], lineas = [];
+function opsHechos(pid, pl, sel, fecha, dent, texto, sedeId) {
+  const p = get('pacientes', pid), n = deep(pl), ops = [], lineas = [], cargos = [];
   let odo = null; const ex = get('expedientes', pid);
   sel.forEach(({ itemId, k }) => {
     const ni = n.items.find(x => x.id === itemId); if (!ni) return;
@@ -2931,6 +2969,7 @@ function opsHechos(pid, pl, sel, fecha, dent, texto) {
     ni.estado = completas ? 'realizado' : 'en_proceso';
     if (completas && EFECTO[ni.animacion] && (ni.dientes || []).length) { odo = odo || deep(ex?.odontograma || {}); ni.dientes.forEach(d => { const t = dNorm(odo[d]); aplicarEfecto(t, ni); if (dTieneAlgo(t)) odo[d] = t; else delete odo[d]; }); }
     lineas.push(`${ni.nombre}${(ni.dientes || []).length ? ' · diente ' + ni.dientes.join(', ') : ''}${(ni.sesiones || 1) > 1 ? ` · sesión ${k + 1} de ${ni.sesiones}` : ''}`);
+    cargos.push(cargoOp(pid, pl, ni, k, fecha, dent, sedeId));
   });
   const vivos = n.items.filter(x => x.estado !== 'cancelado');
   n.estado = vivos.length && vivos.every(x => x.estado === 'realizado') ? 'terminado' : 'en_tratamiento';
@@ -2938,6 +2977,7 @@ function opsHechos(pid, pl, sel, fecha, dent, texto) {
   ops.push({ col: 'planes', id: pl.id, data: d });
   if (odo) { ops.push({ col: 'expedientes', id: pid, data: { pacienteId: pid, odontograma: odo }, nuevo: !ex }); if (S.ui.odo?.pacId === pid && !S.ui.odo.dirty) S.ui.odo = null; }
   if (lineas.length || texto) ops.push({ col: 'notas', data: { pacienteId: pid, fecha: fecha + 'T' + new Date().toTimeString().slice(0, 8), autorId: S.me.id, autor: S.me.nombre, dentistaId: dent, tipo: lineas.length ? 'tratamiento' : 'nota', planId: pl.id, texto: [...lineas, texto].filter(Boolean).join('\n') }, nuevo: true });
+  ops.push(...cargos);
   return { ops, terminado: n.estado === 'terminado', p };
 }
 function formAtendida(id) {
@@ -2952,7 +2992,7 @@ function formAtendida(id) {
       const texto = fv(f, 'nota');
       const ops = [{ col: 'citas', id, data: { estado: 'atendida', atendida: { fecha: nowISO(), por: S.me.id }, gcal: { ...(c.gcal || {}), sync: 'pendiente' } } }];
       let fin = false;
-      if (pl && (sel.length || texto)) { const r = opsHechos(c.pacienteId, pl, sel, c.fecha, c.dentistaId, texto); ops.push(...r.ops); fin = r.terminado; }
+      if (pl && (sel.length || texto)) { const r = opsHechos(c.pacienteId, pl, sel, c.fecha, c.dentistaId, texto, c.sedeId); ops.push(...r.ops); fin = r.terminado; }
       else if (texto) ops.push({ col: 'notas', data: { pacienteId: c.pacienteId, fecha: nowISO(), autorId: S.me.id, autor: S.me.nombre, tipo: 'nota', texto }, nuevo: true });
       await guardarLote(ops, `Registró la cita de ${c.pacienteNombre} (${c.fecha}) como atendida${sel.length ? ` con ${sel.length} tratamiento(s)` : ''}`);
       avisarSync(); toast(fin ? 'Cita atendida. ¡El plan quedó terminado!' : 'Cita atendida y registrada en el expediente.');
@@ -3050,10 +3090,17 @@ function leerImagen(file, { max = 512, svgMax = 300000 } = {}) {
 }
 function vAjustes() {
   const m = { ...marca(), ...(S.ui.marcaTmp || {}) }, a = confAgenda(), gc = list('gcal');
-  const tabs = [['apariencia', 'Apariencia'], ['agenda', 'Agenda y Google Calendar']];
+  const tabs = [['apariencia', 'Apariencia'], ['agenda', 'Agenda y Google Calendar'], ['caja', 'Caja y comisiones']];
   S.ui.ajTab = S.ui.ajTab || 'apariencia';
   const head = `<div class="vhead"><div><h2>Ajustes</h2><p>Personaliza la plataforma y conecta la agenda con Google Calendar.</p></div></div>
     <nav class="tabs">${tabs.map(([k, l]) => `<button data-act="aj-tab" data-tab="${k}" class="${S.ui.ajTab === k ? 'on' : ''}">${l}</button>`).join('')}</nav>`;
+  if (S.ui.ajTab === 'caja') {
+    const cc = confCaja().comisiones, campos = [['tarjeta_debito', 'Tarjeta de débito'], ['tarjeta_credito', 'Tarjeta de crédito'], ...MSI.map(m => ['msi' + m, `${m} meses sin intereses`])];
+    return head + `<form class="panel" id="cajaForm" style="max-width:640px"><div class="panel-h"><h3>Comisiones de la terminal</h3><span class="mute" style="font-size:13px">Porcentaje que cobra tu banco o pasarela (Mercado Pago, Clip, etc.). La absorbe la clínica.</span></div><div class="panel-b grid2">
+      ${campos.map(([k, l]) => `<label class="f">${l} (%)<input type="number" name="${k}" id="cc_${k}" min="0" max="50" step="0.01" value="${esc(cc[k])}"></label>`).join('')}
+      <p class="mute span2" style="margin:0;font-size:12.5px">Los valores iniciales son de referencia. Revisa las tarifas de tu terminal.</p>
+      <div class="span2"><button class="btn primary" type="submit">Guardar comisiones</button></div></div></form>`;
+  }
   if (S.ui.ajTab === 'agenda') {
     return head + `<div class="two"><form class="panel" id="agForm"><div class="panel-h"><h3>Agenda</h3></div><div class="panel-b grid2">
       <label class="f">Bloques de la agenda<select name="bloque" id="ajBloque">${[5, 10, 15, 20, 30].map(x => opt(x, x + ' minutos', a.bloqueMin)).join('')}</select></label>
@@ -3094,6 +3141,392 @@ function mostrarSplash() {
   const L = $('#login'); L.hidden = false;
   L.innerHTML = `<div class="splash">${m.carga || m.logo ? `<img src="${esc(m.carga || m.logo)}" alt="">` : `<div class="brand-mark big">${markHTML(m)}</div>`}<b>${esc(m.nombre)}</b><span class="mute">Cargando…</span></div>`;
 }
+/* =====================================================================
+   FASE 4 · CAJA, ESTADO DE CUENTA, PLAN DE PAGOS E INGRESOS
+   ===================================================================== */
+const METODOS = { efectivo: 'Efectivo', tarjeta_debito: 'Tarjeta de débito', tarjeta_credito: 'Tarjeta de crédito', msi: 'Meses sin intereses', transferencia: 'Transferencia' };
+const GASTO_CATS = ['Material dental', 'Limpieza', 'Papelería', 'Servicios (luz, agua, internet)', 'Alimentos', 'Mensajería', 'Mantenimiento', 'Otro'];
+const MSI = [3, 6, 9, 12];
+const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
+const confCaja = () => { const c = get('config', 'caja') || {}; return { comisiones: { tarjeta_debito: 1.5, tarjeta_credito: 2.8, msi3: 4.5, msi6: 7, msi9: 9.5, msi12: 12, ...(c.comisiones || {}) } }; };
+const comisionPct = (metodo, meses) => { const c = confCaja().comisiones; return metodo === 'msi' ? (c['msi' + meses] || 0) : (c[metodo] || 0); };
+const cajaAbierta = (uid = S.me.id) => list('cajas').find(c => c.usuarioId === uid && c.estado === 'abierta');
+const movsCaja = cid => list('movimientos').filter(m => m.cajaId === cid).sort((a, b) => (a.fecha || '').localeCompare(b.fecha || ''));
+const hoyTxt = () => new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+const horaDe = iso => iso ? new Date(iso).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : '';
+const fechaDe = iso => (iso || '').slice(0, 10);
+const puedeCaja = () => S.me.rol === 'recepcion' || S.me.rol === 'admin';
+
+function resumenCaja(c) {
+  const ms = movsCaja(c.id).filter(m => !m.anulado), r = { fondo: Number(c.fondo) || 0, pagos: {}, totalPagos: 0, gastos: 0, retiros: 0, comision: 0, n: 0 };
+  ms.forEach(m => {
+    if (m.tipo === 'pago') { r.pagos[m.metodo] = r2((r.pagos[m.metodo] || 0) + m.monto); r.totalPagos = r2(r.totalPagos + m.monto); r.comision = r2(r.comision + m.monto * (m.comisionPct || 0) / 100); r.n++; }
+    else if (m.tipo === 'gasto') r.gastos = r2(r.gastos + m.monto);
+    else if (m.tipo === 'retiro') r.retiros = r2(r.retiros + m.monto);
+  });
+  r.efectivoEsperado = r2(r.fondo + (r.pagos.efectivo || 0) - r.gastos - r.retiros);
+  return r;
+}
+
+/* ---------------- Cargos y estado de cuenta ---------------- */
+function cargoOp(pid, pl, it, k, fecha, dent, sedeId) {
+  const p = get('pacientes', pid);
+  return { col: 'cargos', id: `cg_${it.id}_${k}`, nuevo: true, data: { pacienteId: pid, pacienteNombre: nombreCompleto(p), planId: pl.id, itemId: it.id, k, tratamientoId: it.tratamientoId, sesiones: it.sesiones || 1,
+    concepto: `${it.nombre}${(it.dientes || []).length ? ' (' + it.dientes.join(', ') + ')' : ''}${(it.sesiones || 1) > 1 ? ` · sesión ${k + 1} de ${it.sesiones}` : ''}`, monto: r2(precioSesion(it)), dentistaId: dent || it.dentistaId, fecha, sedeId: sedeId || p?.sedePref || '', origen: 'tratamiento' } };
+}
+/* Aplica los pagos a los cargos del más antiguo al más reciente */
+function cuentaPaciente(pid) {
+  const ord = (a, b) => (a.fecha || '').localeCompare(b.fecha || '') || (a.creado || '').localeCompare(b.creado || '');
+  const cargos = list('cargos').filter(c => c.pacienteId === pid && !c.anulado).sort(ord);
+  const pagos = list('movimientos').filter(m => m.tipo === 'pago' && m.pacienteId === pid && !m.anulado).sort(ord);
+  const rest = cargos.map(c => ({ c, falta: r2(c.monto) })), aloc = [];
+  pagos.forEach(p => {
+    let x = r2(p.monto);
+    for (const r of rest) { if (x <= 0) break; if (r.falta <= 0) continue; const m = r2(Math.min(x, r.falta)); r.falta = r2(r.falta - m); x = r2(x - m); aloc.push({ pago: p, cargo: r.c, monto: m, fecha: fechaDe(p.fecha) > r.c.fecha ? fechaDe(p.fecha) : r.c.fecha }); }
+  });
+  const totalCargos = r2(cargos.reduce((a, c) => a + c.monto, 0)), totalPagos = r2(pagos.reduce((a, p) => a + p.monto, 0));
+  return { cargos, pagos, rest, aloc, totalCargos, totalPagos, saldo: r2(totalCargos - totalPagos) };
+}
+function cargosFaltantes(pid) {
+  const out = [];
+  planesDe(pid).forEach(pl => (pl.items || []).forEach(it => (it.hechas || []).forEach((h, k) => { if (h && !get('cargos', `cg_${it.id}_${k}`)) out.push({ pl, it, k, h }); })));
+  return out;
+}
+const saldoTxt = s => s > 0 ? `<span class="pill bad">Debe ${money(s)}</span>` : s < 0 ? `<span class="pill ok">Saldo a favor ${money(-s)}</span>` : '<span class="pill ok">Al corriente</span>';
+
+/* ---------------- Plan de pagos ---------------- */
+const MODALIDAD = { por_cita: 'Abono en cada cita', avance: 'Pago según avances (al terminar cada tratamiento)', msi: 'Meses sin intereses', contado: 'Pago de contado al inicio' };
+function calendarioPagos(pl, pp) {
+  if (!pl || !pp) return [];
+  const T = totalesPlan(pl), out = [], ant = r2(pp.anticipo || 0);
+  if (ant) out.push({ fecha: pp.fecha || hoyISO(), concepto: 'Anticipo', monto: ant });
+  const resto = r2(T.total - ant);
+  if (pp.modalidad === 'contado') out.push({ fecha: pp.fecha || hoyISO(), concepto: 'Pago total del plan', monto: resto });
+  else if (pp.modalidad === 'msi') { const n = pp.meses || 3, m = r2(resto / n), f0 = pp.fecha || hoyISO(); out.push({ fecha: f0, concepto: `Cargo a tarjeta en ${n} meses sin intereses (${n} × ${money(m)} los cobra el banco)`, monto: resto }); }
+  else if (pp.modalidad === 'por_cita') {
+    let acum = 0; const tot = (pl.citas || []).map((c, i) => r2(sesionesDeCita(pl, i).reduce((a, { it }) => a + precioSesion(it), 0)));
+    const totC = tot.reduce((a, b) => a + b, 0) || 1;
+    (pl.citas || []).forEach((c, i) => { if (!tot[i]) return; const m = r2(tot[i] - ant * tot[i] / totC); acum += m; out.push({ fecha: c.fecha || '', concepto: `Cita ${i + 1}`, monto: m }); });
+  } else (pl.items || []).filter(it => it.estado !== 'cancelado').forEach(it => out.push({ fecha: (pl.citas?.[it.citas?.[it.citas.length - 1]]?.fecha) || '', concepto: `Al terminar: ${it.nombre}${(it.dientes || []).length ? ' (' + it.dientes.join(', ') + ')' : ''}`, monto: r2(precioItem(it) - ant * precioItem(it) / (T.total || 1)) }));
+  return out;
+}
+function formPlanPagos(pid) {
+  const pl = planActivo(pid); if (!pl) { toast('El paciente no tiene plan de tratamiento.'); return; }
+  const pp = get('planesPago', pl.id) || { modalidad: 'por_cita', meses: 6, anticipo: 0, fecha: hoyISO() }, T = totalesPlan(pl);
+  modal({ title: 'Plan de pagos', wide: true, submit: 'Guardar plan de pagos', body: `
+    <p style="margin:0">Plan de tratamiento v${pl.version} · total <b>${money(T.total)}</b> · ${(pl.citas || []).length} citas.</p>
+    <div class="grid3">
+      <label class="f span2">¿Cómo va a pagar?<select name="mod" id="ppMod">${Object.entries(MODALIDAD).map(([k, l]) => opt(k, l, pp.modalidad)).join('')}</select></label>
+      <label class="f">Meses<select name="meses" id="ppMeses">${MSI.map(m => opt(m, m + ' meses', pp.meses)).join('')}</select></label>
+      <label class="f">Anticipo (opcional)<input type="number" name="ant" id="ppAnt" min="0" step="0.01" value="${esc(pp.anticipo || 0)}"></label>
+      <label class="f">Fecha de inicio<input type="date" name="fecha" id="ppFecha" value="${esc(pp.fecha || hoyISO())}"></label>
+    </div>
+    <div id="ppCal"></div>`,
+    onOpen: f => {
+      const upd = () => {
+        const x = { modalidad: f.elements.mod.value, meses: +f.elements.meses.value, anticipo: Number(f.elements.ant.value) || 0, fecha: f.elements.fecha.value };
+        f.elements.meses.closest('label').hidden = x.modalidad !== 'msi';
+        const cal = calendarioPagos(pl, x), com = x.modalidad === 'msi' ? comisionPct('msi', x.meses) : 0;
+        $('#ppCal').innerHTML = `<div class="tablewrap"><table><thead><tr><th>Fecha esperada</th><th>Concepto</th><th class="r">Monto</th></tr></thead><tbody>${cal.map(c => `<tr><td style="text-transform:capitalize">${c.fecha ? fechaCortaD(c.fecha) : '—'}</td><td>${esc(c.concepto)}</td><td class="r num"><b>${money(c.monto)}</b></td></tr>`).join('')}</tbody></table></div>
+          ${x.modalidad === 'msi' ? `<div class="infowarn">Pago por mensualidad para el paciente: <b>${money(r2((T.total - x.anticipo) / x.meses))}</b>. La comisión de la terminal (${com}% ≈ ${money((T.total - x.anticipo) * com / 100)}) la absorbe la clínica.</div>` : ''}`;
+      };
+      f.addEventListener('change', upd); f.addEventListener('input', upd); upd();
+    },
+    onSubmit: async f => {
+      const x = { pacienteId: pid, planId: pl.id, modalidad: f.elements.mod.value, meses: +f.elements.meses.value, anticipo: Number(f.elements.ant.value) || 0, fecha: f.elements.fecha.value, totalPlan: T.total };
+      if (x.anticipo > T.total) return formErr(f, 'El anticipo no puede ser mayor al total del plan.');
+      await guardarLote([{ col: 'planesPago', id: pl.id, data: x, nuevo: !get('planesPago', pl.id) }], `Definió el plan de pagos de ${nombreCompleto(get('pacientes', pid))}: ${MODALIDAD[x.modalidad]}`);
+      toast('Plan de pagos guardado.');
+    } });
+}
+
+/* ---------------- Pestaña Cuenta del expediente ---------------- */
+function tabCuenta(p) {
+  const C = cuentaPaciente(p.id), pl = planActivo(p.id), pp = pl ? get('planesPago', pl.id) : null, falt = cargosFaltantes(p.id);
+  const T = pl ? totalesPlan(pl) : null, cal = calendarioPagos(pl, pp);
+  const filas = [...C.cargos.map(c => ({ f: c.fecha, t: 'cargo', x: c })), ...C.pagos.map(m => ({ f: fechaDe(m.fecha), t: 'pago', x: m }))].sort((a, b) => a.f.localeCompare(b.f) || (a.t === 'cargo' ? -1 : 1));
+  let corr = 0;
+  const rows = filas.map(r => { corr = r2(corr + (r.t === 'cargo' ? r.x.monto : -r.x.monto)); return { ...r, saldo: corr }; }).reverse();
+  const pendientes = C.rest.filter(r => r.falta > 0);
+  return `<div class="stats">
+      <div class="stat ${C.saldo > 0 ? 'warn' : ''}"><b class="num">${money(Math.abs(C.saldo))}</b><span>${C.saldo > 0 ? 'Adeudo actual' : C.saldo < 0 ? 'Saldo a favor' : 'Saldo'}</span></div>
+      <div class="stat"><b class="num">${money(C.totalPagos)}</b><span>Pagado</span></div>
+      <div class="stat"><b class="num">${money(C.totalCargos)}</b><span>Tratamientos realizados</span></div>
+      <div class="stat"><b class="num">${T ? money(r2(T.total - C.totalPagos)) : '—'}</b><span>Por pagar del plan completo</span></div>
+    </div>
+    ${falt.length && esAdmin() ? `<div class="infowarn" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span>${falt.length} tratamiento(s) realizado(s) antes de activar la caja no tienen cargo.</span><button class="btn sm" data-act="cargos-generar">Generar cargos</button></div>` : ''}
+    <div class="two">
+      <div class="panel"><div class="panel-h"><h3>Movimientos</h3><span class="sp"></span>${botonCobro(p.id)}<button class="btn sm" data-act="cargo-manual">Agregar cargo</button></div>
+        ${rows.length ? `<div class="tablewrap"><table><thead><tr><th>Fecha</th><th>Concepto</th><th class="r">Cargo</th><th class="r">Pago</th><th class="r">Saldo</th></tr></thead><tbody>${rows.map(r => r.t === 'cargo'
+          ? `<tr><td class="num" style="white-space:nowrap">${fechaCorta(r.f)}</td><td>${esc(r.x.concepto)}<div class="mute" style="font-size:12px">${esc(nombreUsuario(r.x.dentistaId))}</div></td><td class="r num">${money(r.x.monto)}</td><td></td><td class="r num">${money(r.saldo)}</td></tr>`
+          : `<tr class="rowpago"><td class="num" style="white-space:nowrap">${fechaCorta(r.f)}</td><td>Pago · ${esc(METODOS[r.x.metodo] || r.x.metodo)}${r.x.metodo === 'msi' ? ` ${r.x.meses} meses` : ''}${r.x.referencia ? ' · ' + esc(r.x.referencia) : ''}<div class="mute" style="font-size:12px">Registró ${esc(nombreUsuario(r.x.usuarioId))}${r.x.cajaId ? '' : ' · sede externa'}</div></td><td></td><td class="r num">${money(r.x.monto)}</td><td class="r num">${money(r.saldo)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Sin movimientos. Los cargos se generan al marcar tratamientos como realizados.</div>'}
+      </div>
+      <div style="display:grid;gap:18px">
+        <div class="panel"><div class="panel-h"><h3>Plan de pagos</h3><span class="sp"></span>${pl ? `<button class="btn sm" data-act="plan-pagos">${pp ? 'Cambiar' : 'Definir'}</button>` : ''}</div><div class="panel-b">
+          ${!pl ? '<p class="mute" style="margin:0">Sin plan de tratamiento.</p>' : !pp ? '<p class="mute" style="margin:0">Aún no se define cómo pagará el plan.</p>' : `<p style="margin:0 0 8px"><b>${esc(MODALIDAD[pp.modalidad])}</b>${pp.modalidad === 'msi' ? ` · ${pp.meses} meses` : ''}${pp.anticipo ? ` · anticipo ${money(pp.anticipo)}` : ''}</p>
+            <div class="tablewrap"><table><tbody>${cal.slice(0, 12).map(c => `<tr><td style="text-transform:capitalize;white-space:nowrap">${c.fecha ? fechaCortaD(c.fecha) : '—'}</td><td>${esc(c.concepto)}</td><td class="r num">${money(c.monto)}</td></tr>`).join('')}</tbody></table></div>`}
+        </div></div>
+        <div class="panel"><div class="panel-h"><h3>Pendiente de pago</h3></div>${pendientes.length ? `<div class="tablewrap"><table><tbody>${pendientes.map(r => `<tr><td class="num">${fechaCorta(r.c.fecha)}</td><td>${esc(r.c.concepto)}</td><td class="r num"><b>${money(r.falta)}</b></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Nada pendiente.</div>'}</div>
+      </div>
+    </div>`;
+}
+function botonCobro(pid) {
+  if (puedeCaja()) return cajaAbierta() ? `<button class="btn sm primary" data-act="cobrar" data-pid="${pid}">Cobrar</button>` : '<button class="btn sm" data-act="nav" data-view="caja">Abrir caja para cobrar</button>';
+  if (S.me.rol === 'dentista' || S.me.atiende) return `<button class="btn sm primary" data-act="cobrar-externa" data-pid="${pid}">Registrar cobro en sede externa</button>`;
+  return '';
+}
+function formCargoManual(pid) {
+  const p = get('pacientes', pid), trs = list('tratamientos').filter(t => t.activo !== false).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  modal({ title: 'Agregar cargo · ' + esc(nombreCompleto(p)), submit: 'Agregar cargo', body: `<p class="mute" style="margin:0">Para servicios que no están en el plan (consulta, radiografía, urgencia). Los tratamientos del plan generan su cargo solos al marcarse realizados.</p>
+    <div class="grid2"><label class="f span2">Servicio<select name="tr" id="cmTr">${opt('', 'Otro concepto', '')}${trs.map(t => opt(t.id, `${t.nombre} · ${money(t.precio)}`, '')).join('')}</select></label>
+    <label class="f span2">Concepto<input type="text" name="con" id="cmCon" placeholder="Ej. Consulta de urgencia"></label>
+    <label class="f">Monto<input type="number" name="monto" id="cmMonto" min="0.01" step="0.01" required></label>
+    <label class="f">Dentista<select name="dent" id="cmDent">${dentistas().map(d => opt(d.id, d.nombre, p.dentistaResp || S.me.id)).join('')}</select></label>
+    <label class="f">Fecha<input type="date" name="fecha" id="cmF" value="${hoyISO()}" max="${hoyISO()}"></label></div>`,
+    onOpen: f => { f.elements.tr.onchange = () => { const t = get('tratamientos', f.elements.tr.value); if (t) { f.elements.monto.value = t.precio; f.elements.con.value = t.nombre; } }; },
+    onSubmit: async f => {
+      const t = get('tratamientos', f.elements.tr.value), con = fv(f, 'con') || t?.nombre; if (!con) return formErr(f, 'Escribe el concepto.');
+      await guardarLote([{ col: 'cargos', nuevo: true, data: { pacienteId: pid, pacienteNombre: nombreCompleto(p), tratamientoId: t?.id || '', sesiones: 1, concepto: con, monto: r2(f.elements.monto.value), dentistaId: f.elements.dent.value, fecha: f.elements.fecha.value, sedeId: cajaAbierta()?.sedeId || p.sedePref || '', origen: 'manual' } }], `Agregó cargo "${con}" (${money(f.elements.monto.value)}) a ${nombreCompleto(p)}`);
+      toast('Cargo agregado.');
+    } });
+}
+
+/* ---------------- Cobro ---------------- */
+function formCobro(pid, { externa = false } = {}) {
+  const caja = externa ? null : cajaAbierta();
+  if (!externa && !caja) { toast('Primero abre tu caja.'); go('caja'); return; }
+  const pacs = list('pacientes').filter(p => p.estado !== 'baja').sort((a, b) => nombreCompleto(a).localeCompare(nombreCompleto(b)));
+  const sedesExt = list('sedes').filter(s => s.tipo === 'externa' && s.activo !== false);
+  const trs = list('tratamientos').filter(t => t.activo !== false).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  modal({ title: externa ? 'Cobro en sede externa' : 'Cobrar', wide: true, submit: 'Registrar pago', body: `
+    <div class="grid2">
+      <label class="f span2">Paciente <span class="req">*</span>${pid ? `<input type="text" readonly value="${esc(nombreCompleto(get('pacientes', pid)))}"><input type="hidden" name="pac" value="${pid}">` : `<input type="text" name="pacTxt" id="cbPac" list="cbPacs" autocomplete="off" placeholder="Escribe nombre o teléfono" required><datalist id="cbPacs">${pacs.map(p => `<option value="${esc(nombreCompleto(p))} · ${esc(p.telefono || '')}">`).join('')}</datalist><input type="hidden" name="pac" value="">`}</label>
+      ${externa ? `<label class="f span2">Sede externa <span class="req">*</span><select name="sede" id="cbSede" required>${opt('', 'Elige la sede', '')}${sedesExt.map(s => opt(s.id, s.nombre, '')).join('')}</select></label>` : ''}
+    </div>
+    <div id="cbCuenta"></div>
+    <details id="cbServ"><summary class="mute" style="cursor:pointer;font-weight:700">Cobrar un servicio que no está en el plan</summary><div class="grid3" style="margin-top:8px">
+      <label class="f span2">Servicio<select name="sv" id="cbSv">${opt('', 'Ninguno', '')}${trs.map(t => opt(t.id, `${t.nombre} · ${money(t.precio)}`, '')).join('')}</select></label>
+      <label class="f">Precio<input type="number" name="svPrecio" id="cbSvP" min="0" step="0.01"></label>
+      <label class="f">Lo realizó<select name="svDent" id="cbSvD">${dentistas().map(d => opt(d.id, d.nombre, S.me.rol === 'dentista' ? S.me.id : '')).join('')}</select></label></div></details>
+    <div class="grid3">
+      <label class="f">Monto que paga <span class="req">*</span><input type="number" name="monto" id="cbMonto" min="0.01" step="0.01" required></label>
+      <label class="f">Forma de pago<select name="met" id="cbMet">${Object.entries(METODOS).map(([k, l]) => opt(k, l, 'efectivo')).join('')}</select></label>
+      <label class="f" id="cbMesesL" hidden>Meses<select name="meses" id="cbMeses">${MSI.map(m => opt(m, m + ' meses', 6)).join('')}</select></label>
+      <label class="f">Referencia<input type="text" name="ref" id="cbRef" placeholder="Últimos 4 dígitos o folio"></label>
+      <label class="f span2">Nota<input type="text" name="nota" id="cbNota"></label>
+    </div>
+    <div id="cbRes"></div>`,
+    onOpen: f => {
+      const pacId = () => f.elements.pac.value;
+      const pinta = () => {
+        const id = pacId(), box = $('#cbCuenta'); if (!id) { box.innerHTML = ''; return; }
+        const C = cuentaPaciente(id), pend = C.rest.filter(r => r.falta > 0), hoyP = pend.filter(r => r.c.fecha === hoyISO());
+        const pl = planActivo(id), pp = pl ? get('planesPago', pl.id) : null;
+        box.innerHTML = `<div class="panel"><div class="panel-b" style="display:grid;gap:8px"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b>Estado de cuenta</b>${saldoTxt(C.saldo)}${pp ? `<span class="pill">${esc(MODALIDAD[pp.modalidad])}</span>` : ''}</div>
+          ${pend.length ? `<div class="tablewrap"><table><tbody>${pend.map(r => `<tr><td class="num">${fechaCorta(r.c.fecha)}</td><td>${esc(r.c.concepto)}</td><td class="r num">${money(r.falta)}</td></tr>`).join('')}</tbody></table></div>` : '<span class="mute" style="font-size:13px">Sin adeudos de tratamientos realizados.</span>'}
+          <div class="quick">${C.saldo > 0 ? `<button type="button" class="btn sm" data-monto="${C.saldo}">Pagar todo (${money(C.saldo)})</button>` : ''}${hoyP.length ? `<button type="button" class="btn sm" data-monto="${r2(hoyP.reduce((a, r) => a + r.falta, 0))}">Lo de hoy (${money(hoyP.reduce((a, r) => a + r.falta, 0))})</button>` : ''}${pl ? `<span class="mute" style="font-size:12.5px">Pendiente del plan completo: ${money(r2(totalesPlan(pl).total - C.totalPagos))}</span>` : ''}</div></div></div>`;
+        $$('[data-monto]', box).forEach(b => b.onclick = () => { f.elements.monto.value = b.dataset.monto; res(); });
+      };
+      const res = () => {
+        const id = pacId(); if (!id) { $('#cbRes').innerHTML = ''; return; }
+        const C = cuentaPaciente(id), sv = get('tratamientos', f.elements.sv.value), extra = sv ? Number(f.elements.svPrecio.value) || 0 : 0, m = Number(f.elements.monto.value) || 0;
+        const nuevo = r2(C.saldo + extra - m), met = f.elements.met.value, com = comisionPct(met, +f.elements.meses.value);
+        $('#cbRes').innerHTML = m ? `<div class="info">Después de este pago: ${nuevo > 0 ? `queda un adeudo de <b>${money(nuevo)}</b>` : nuevo < 0 ? `queda saldo a favor de <b>${money(-nuevo)}</b>` : '<b>queda al corriente</b>'}.${com ? ` Comisión de la terminal ${com}% ≈ ${money(m * com / 100)} (la absorbe la clínica).` : ''}${met === 'msi' ? ` Mensualidad para el paciente: ${money(m / +f.elements.meses.value)}.` : ''}</div>` : '';
+      };
+      const pac = f.elements.pacTxt;
+      if (pac) pac.addEventListener('input', () => { const v = pac.value.trim(); const p = pacs.find(x => `${nombreCompleto(x)} · ${x.telefono || ''}` === v) || pacs.find(x => norm(nombreCompleto(x)) === norm(v)); f.elements.pac.value = p ? p.id : ''; pinta(); res(); });
+      f.elements.met.addEventListener('change', () => { $('#cbMesesL').hidden = f.elements.met.value !== 'msi'; res(); });
+      f.elements.sv.addEventListener('change', () => { const t = get('tratamientos', f.elements.sv.value); f.elements.svPrecio.value = t ? t.precio : ''; res(); });
+      f.addEventListener('input', res); f.addEventListener('change', res);
+      pinta(); res();
+    },
+    onSubmit: async f => {
+      const id = f.elements.pac.value; if (!id) return formErr(f, 'Elige un paciente de la lista.');
+      const p = get('pacientes', id), monto = r2(f.elements.monto.value); if (monto <= 0) return formErr(f, 'Escribe el monto que paga.');
+      const sedeId = externa ? f.elements.sede.value : caja.sedeId; if (!sedeId) return formErr(f, 'Elige la sede externa.');
+      const met = f.elements.met.value, meses = met === 'msi' ? +f.elements.meses.value : null, ops = [];
+      const sv = get('tratamientos', f.elements.sv.value);
+      if (sv) { const pr = r2(f.elements.svPrecio.value); if (pr <= 0) return formErr(f, 'Escribe el precio del servicio.'); ops.push({ col: 'cargos', nuevo: true, data: { pacienteId: id, pacienteNombre: nombreCompleto(p), tratamientoId: sv.id, sesiones: 1, concepto: sv.nombre, monto: pr, dentistaId: f.elements.svDent.value, fecha: hoyISO(), sedeId, origen: 'manual' } }); }
+      const mid = newId('mv');
+      ops.push({ col: 'movimientos', id: mid, nuevo: true, data: { tipo: 'pago', pacienteId: id, pacienteNombre: nombreCompleto(p), monto, metodo: met, meses, comisionPct: comisionPct(met, meses), referencia: fv(f, 'ref'), nota: fv(f, 'nota'), cajaId: caja?.id || null, sedeId, usuarioId: S.me.id, fecha: nowISO() } });
+      await guardarLote(ops, `Cobró ${money(monto)} (${METODOS[met]}) a ${nombreCompleto(p)}${externa ? ' en sede externa' : ''}`);
+      setTimeout(() => verRecibo(mid), 0);
+    } });
+}
+function verRecibo(mid) {
+  const m = get('movimientos', mid); if (!m) return;
+  const p = get('pacientes', m.pacienteId), C = cuentaPaciente(m.pacienteId), s = get('sedes', m.sedeId), w = waLink(p?.telefono);
+  const txt = `${marca().nombre}\nRecibo de pago\n${fechaHora(m.fecha)}\nPaciente: ${m.pacienteNombre}\nMonto: ${money(m.monto)} (${METODOS[m.metodo]}${m.meses ? ' ' + m.meses + ' meses' : ''})\n${C.saldo > 0 ? 'Saldo pendiente: ' + money(C.saldo) : C.saldo < 0 ? 'Saldo a favor: ' + money(-C.saldo) : 'Cuenta al corriente'}\n¡Gracias por su pago!`;
+  modal({ title: 'Pago registrado', body: `<div class="recibo"><b>${esc(marca().nombre)}</b><span>${esc(s?.nombre || '')}</span><hr><dl class="kv" style="margin:0"><dt>Fecha</dt><dd>${fechaHora(m.fecha)}</dd><dt>Paciente</dt><dd>${esc(m.pacienteNombre)}</dd><dt>Monto</dt><dd class="num"><b>${money(m.monto)}</b></dd><dt>Forma de pago</dt><dd>${esc(METODOS[m.metodo])}${m.meses ? ' · ' + m.meses + ' meses' : ''}${m.referencia ? ' · ' + esc(m.referencia) : ''}</dd><dt>Atendió</dt><dd>${esc(nombreUsuario(m.usuarioId))}</dd><dt>Estado de cuenta</dt><dd>${saldoTxt(C.saldo)}</dd></dl></div>
+    <div class="quick">${w ? `<a class="btn sm" href="${w}?text=${encodeURIComponent(txt)}" target="_blank" rel="noopener">Enviar recibo por WhatsApp</a>` : ''}<button type="button" class="btn sm" id="rcExp">Ver cuenta del paciente</button></div>`,
+    onOpen: () => { $('#rcExp').onclick = () => abrirExpediente(m.pacienteId, 'cuenta'); } });
+}
+
+/* ---------------- Vista Caja ---------------- */
+function vCaja() {
+  const c = cajaAbierta(), adm = esAdmin();
+  const sedesP = list('sedes').filter(s => s.tipo !== 'externa' && s.activo !== false);
+  const otras = adm ? list('cajas').filter(x => x.estado === 'abierta' && x.usuarioId !== S.me.id) : [];
+  const cortes = list('cajas').filter(x => x.estado === 'cerrada' && (adm || x.usuarioId === S.me.id)).sort((a, b) => (b.cierre?.fecha || '').localeCompare(a.cierre?.fecha || '')).slice(0, 15);
+  const head = `<div class="vhead"><div><h2>Caja</h2><p>${c ? `Abierta desde las ${horaDe(c.apertura?.fecha)} en ${esc(get('sedes', c.sedeId)?.nombre || '')}` : 'Abre tu caja para empezar a cobrar. Al terminar el día haz el corte.'}</p></div>
+    ${c ? `<div class="acts"><button class="btn" data-act="caja-mov" data-t="gasto">Registrar gasto</button><button class="btn" data-act="caja-mov" data-t="retiro">Retiro</button><button class="btn" data-act="caja-corte">Hacer corte</button><button class="btn primary" data-act="cobrar">Cobrar</button></div>` : ''}</div>`;
+  let body = '';
+  if (!c) {
+    body = puedeCaja() ? `<form class="panel" id="abrirCaja" style="max-width:560px"><div class="panel-h"><h3>Apertura de caja</h3></div><div class="panel-b grid2">
+      <label class="f">Sede<select name="sede" id="acSede" required>${sedesP.map(s => opt(s.id, s.nombre, S.me.sedes?.[0])).join('')}</select></label>
+      <label class="f">Efectivo inicial (fondo)<input type="number" name="fondo" id="acFondo" min="0" step="0.01" value="0" required></label>
+      <label class="f span2">Nota<input type="text" name="nota" id="acNota" placeholder="Opcional"></label>
+      <div class="span2"><button class="btn primary" type="submit">Abrir caja</button></div></div></form>` : '<div class="panel"><div class="empty">Solo recepción y administración manejan caja. Los cobros en sedes externas se registran desde la cuenta del paciente.</div></div>';
+  } else {
+    const R = resumenCaja(c), ms = movsCaja(c.id).reverse();
+    body = `<div class="stats">
+      <div class="stat"><b class="num">${money(R.totalPagos)}</b><span>Cobrado · ${R.n} pagos</span></div>
+      <div class="stat"><b class="num">${money(R.efectivoEsperado)}</b><span>Efectivo que debe haber</span></div>
+      <div class="stat"><b class="num">${money(r2(R.gastos + R.retiros))}</b><span>Gastos y retiros</span></div>
+      <div class="stat"><b class="num">${money(R.fondo)}</b><span>Fondo inicial</span></div></div>
+    <div class="two"><div class="panel"><div class="panel-h"><h3>Movimientos de hoy</h3></div>${ms.length ? `<div class="tablewrap"><table><thead><tr><th>Hora</th><th>Concepto</th><th>Forma</th><th class="r">Monto</th><th></th></tr></thead><tbody>${ms.map(m => filaMov(m)).join('')}</tbody></table></div>` : '<div class="empty">Sin movimientos todavía.</div>'}</div>
+      <div class="panel"><div class="panel-h"><h3>Por forma de pago</h3></div><div class="panel-b"><dl class="kv" style="margin:0">${Object.entries(METODOS).map(([k, l]) => `<dt>${l}</dt><dd class="num">${money(R.pagos[k] || 0)}</dd>`).join('')}<dt>Comisiones terminal</dt><dd class="num mute">−${money(R.comision)}</dd></dl></div></div></div>`;
+  }
+  const otrasH = otras.length ? `<div class="panel"><div class="panel-h"><h3>Otras cajas abiertas</h3></div><div class="rows">${otras.map(x => { const R = resumenCaja(x); return `<div class="row" style="cursor:default"><div><div class="t1">${esc(nombreUsuario(x.usuarioId))}</div><div class="t2"><span>${esc(get('sedes', x.sedeId)?.nombre || '')}</span><span>Desde ${horaDe(x.apertura?.fecha)} · ${fechaCorta(x.apertura?.fecha)}</span></div></div><div class="r num"><b>${money(R.totalPagos)}</b></div></div>`; }).join('')}</div></div>` : '';
+  const cortesH = `<div class="panel"><div class="panel-h"><h3>${adm ? 'Cortes recientes' : 'Mis cortes'}</h3></div>${cortes.length ? `<div class="tablewrap"><table><thead><tr><th>Fecha</th>${adm ? '<th>Cajero</th>' : ''}<th>Sede</th><th class="r">Cobrado</th><th class="r">Efectivo esperado</th><th class="r">Contado</th><th class="r">Diferencia</th></tr></thead><tbody>${cortes.map(x => { const d = x.cierre?.diferencia || 0; return `<tr class="click" data-act="corte-ver" data-id="${x.id}"><td class="num" style="white-space:nowrap">${fechaHora(x.cierre?.fecha)}</td>${adm ? `<td>${esc(nombreUsuario(x.usuarioId))}</td>` : ''}<td>${esc(get('sedes', x.sedeId)?.nombre || '')}</td><td class="r num">${money(x.cierre?.totales?.totalPagos)}</td><td class="r num">${money(x.cierre?.totales?.efectivoEsperado)}</td><td class="r num">${money(x.cierre?.efectivoContado)}</td><td class="r num"><span class="pill ${Math.abs(d) < .5 ? 'ok' : 'bad'}">${d > 0 ? '+' : ''}${money(d)}</span></td></tr>`; }).join('')}</tbody></table></div>` : '<div class="empty">Sin cortes.</div>'}</div>`;
+  return head + body + otrasH + cortesH;
+}
+function filaMov(m) {
+  const tip = { pago: 'Pago', gasto: 'Gasto', retiro: 'Retiro' }[m.tipo];
+  return `<tr class="${m.anulado ? 'rowdone' : ''}"><td class="num">${horaDe(m.fecha)}</td><td><b>${tip}</b> · ${esc(m.tipo === 'pago' ? m.pacienteNombre : (m.categoria ? m.categoria + ': ' : '') + (m.concepto || ''))}${m.anulado ? ` <span class="pill bad">Anulado</span><div class="mute" style="font-size:12px">${esc(m.anulado.motivo || '')}</div>` : ''}</td><td>${m.tipo === 'pago' ? esc(METODOS[m.metodo]) + (m.meses ? ' ' + m.meses + 'm' : '') : 'Efectivo'}</td><td class="r num">${m.tipo === 'pago' ? '' : '−'}${money(m.monto)}</td>
+    <td class="r">${m.tipo === 'pago' && !m.anulado ? `<button class="btn sm ghost" data-act="recibo" data-id="${m.id}">Recibo</button>` : ''}${esAdmin() && !m.anulado ? `<button class="btn sm ghost danger" data-act="mov-anular" data-id="${m.id}">Anular</button>` : ''}</td></tr>`;
+}
+function formMovCaja(tipo) {
+  const c = cajaAbierta(); if (!c) return;
+  modal({ title: tipo === 'gasto' ? 'Registrar gasto' : 'Retiro de efectivo', submit: 'Registrar', body: `<div class="grid2">
+    ${tipo === 'gasto' ? `<label class="f">Categoría<select name="cat" id="mvCat">${GASTO_CATS.map(x => opt(x, x, '')).join('')}</select></label>` : ''}
+    <label class="f">Monto<input type="number" name="monto" id="mvMonto" min="0.01" step="0.01" required></label>
+    <label class="f span2">${tipo === 'gasto' ? 'Concepto' : 'Motivo o quién retira'}<input type="text" name="con" id="mvCon" required placeholder="${tipo === 'gasto' ? 'Ej. guantes de emergencia' : 'Ej. depósito al banco, retiro del administrador'}"></label></div>
+    <p class="mute" style="margin:0;font-size:12.5px">Sale del efectivo de la caja y se descuenta en el corte.</p>`,
+    onSubmit: async f => {
+      const monto = r2(f.elements.monto.value), R = resumenCaja(c);
+      if (monto > R.efectivoEsperado && !f.dataset.ok) { f.dataset.ok = 1; return formErr(f, `En caja debería haber ${money(R.efectivoEsperado)} en efectivo. Si aun así es correcto, presiona Registrar otra vez.`); }
+      await guardarLote([{ col: 'movimientos', nuevo: true, data: { tipo, monto, categoria: tipo === 'gasto' ? f.elements.cat.value : '', concepto: fv(f, 'con'), cajaId: c.id, sedeId: c.sedeId, usuarioId: S.me.id, fecha: nowISO() } }], `Registró ${tipo === 'gasto' ? 'gasto' : 'retiro'} de ${money(monto)}: ${fv(f, 'con')}`);
+      toast(tipo === 'gasto' ? 'Gasto registrado.' : 'Retiro registrado.');
+    } });
+}
+function formCorte() {
+  const c = cajaAbierta(); if (!c) return; const R = resumenCaja(c);
+  const tarj = r2((R.pagos.tarjeta_debito || 0) + (R.pagos.tarjeta_credito || 0) + (R.pagos.msi || 0));
+  modal({ title: 'Corte de caja', wide: true, submit: 'Cerrar caja', body: `
+    <div class="tablewrap"><table><tbody>
+      <tr><td>Fondo inicial</td><td class="r num">${money(R.fondo)}</td></tr>
+      ${Object.entries(METODOS).map(([k, l]) => `<tr><td>Cobros en ${l.toLowerCase()}</td><td class="r num">${money(R.pagos[k] || 0)}</td></tr>`).join('')}
+      <tr><td>Gastos</td><td class="r num">−${money(R.gastos)}</td></tr><tr><td>Retiros</td><td class="r num">−${money(R.retiros)}</td></tr>
+      <tr><td><b>Efectivo que debe haber</b></td><td class="r num"><b>${money(R.efectivoEsperado)}</b></td></tr>
+      <tr><td><b>Total de tarjetas y MSI</b></td><td class="r num"><b>${money(tarj)}</b></td></tr>
+    </tbody></table></div>
+    <div class="grid2"><label class="f">Efectivo contado <span class="req">*</span><input type="number" name="ef" id="ctEf" min="0" step="0.01" required></label>
+      <label class="f">Total del cierre de la terminal<input type="number" name="tj" id="ctTj" min="0" step="0.01" placeholder="${tarj}"></label>
+      <label class="f span2">Nota del corte<input type="text" name="nota" id="ctNota"></label></div>
+    <div id="ctDif"></div>`,
+    onOpen: f => { const upd = () => { const ef = f.elements.ef.value, d = r2(Number(ef) - R.efectivoEsperado), tj = f.elements.tj.value, dt = tj === '' ? 0 : r2(Number(tj) - tarj);
+      $('#ctDif').innerHTML = ef === '' ? '' : `<div class="${Math.abs(d) < .5 && Math.abs(dt) < .5 ? 'info' : 'infowarn'}">Efectivo: ${Math.abs(d) < .5 ? 'cuadra' : d > 0 ? `sobran <b>${money(d)}</b>` : `faltan <b>${money(-d)}</b>`}${tj !== '' ? ` · Terminal: ${Math.abs(dt) < .5 ? 'cuadra' : dt > 0 ? `sobran ${money(dt)}` : `faltan ${money(-dt)}`}` : ''}</div>`; }; f.addEventListener('input', upd); },
+    onSubmit: async f => {
+      const ef = r2(f.elements.ef.value), d = r2(ef - R.efectivoEsperado), tj = f.elements.tj.value === '' ? null : r2(f.elements.tj.value);
+      if (Math.abs(d) >= .5 && !fv(f, 'nota')) return formErr(f, 'Hay diferencia en el efectivo: escribe una nota que la explique.');
+      await guardarLote([{ col: 'cajas', id: c.id, data: { estado: 'cerrada', cierre: { fecha: nowISO(), efectivoContado: ef, diferencia: d, terminalContado: tj, diferenciaTerminal: tj == null ? null : r2(tj - tarj), nota: fv(f, 'nota'), totales: R } } }], `Hizo corte de caja: cobrado ${money(R.totalPagos)}, diferencia ${money(d)}`);
+      toast(Math.abs(d) < .5 ? 'Caja cerrada. El efectivo cuadra.' : `Caja cerrada con diferencia de ${money(d)}.`);
+    } });
+}
+function verCorte(id) {
+  const c = get('cajas', id), R = c.cierre?.totales || resumenCaja(c), ms = movsCaja(id);
+  modal({ title: 'Corte · ' + esc(nombreUsuario(c.usuarioId)), wide: true, body: `<dl class="kv" style="margin:0"><dt>Sede</dt><dd>${esc(get('sedes', c.sedeId)?.nombre || '')}</dd><dt>Apertura</dt><dd>${fechaHora(c.apertura?.fecha)} · fondo ${money(c.fondo)}</dd><dt>Corte</dt><dd>${fechaHora(c.cierre?.fecha)}</dd>
+    <dt>Cobrado</dt><dd class="num">${money(R.totalPagos)}</dd><dt>Gastos y retiros</dt><dd class="num">${money(r2(R.gastos + R.retiros))}</dd><dt>Efectivo esperado</dt><dd class="num">${money(R.efectivoEsperado)}</dd><dt>Efectivo contado</dt><dd class="num">${money(c.cierre?.efectivoContado)} <span class="pill ${Math.abs(c.cierre?.diferencia || 0) < .5 ? 'ok' : 'bad'}">${money(c.cierre?.diferencia || 0)}</span></dd>${c.cierre?.nota ? `<dt>Nota</dt><dd>${esc(c.cierre.nota)}</dd>` : ''}</dl>
+    <div class="tablewrap"><table><tbody>${ms.map(m => filaMov(m)).join('')}</tbody></table></div>` });
+}
+async function anularMov(id) {
+  const m = get('movimientos', id);
+  modal({ title: 'Anular movimiento', submit: 'Anular', body: `<p style="margin:0">${esc({ pago: 'Pago', gasto: 'Gasto', retiro: 'Retiro' }[m.tipo])} de ${money(m.monto)} · ${fechaHora(m.fecha)}${m.pacienteNombre ? ' · ' + esc(m.pacienteNombre) : ''}</p><label class="f">Motivo <span class="req">*</span><input type="text" name="mot" id="anMot" required placeholder="Ej. se registró dos veces"></label><p class="mute" style="margin:0;font-size:12.5px">El movimiento no se borra: queda marcado como anulado.</p>`,
+    onSubmit: async f => { await guardarLote([{ col: 'movimientos', id, data: { anulado: { fecha: nowISO(), por: S.me.id, motivo: fv(f, 'mot') } } }], `Anuló ${m.tipo} de ${money(m.monto)}${m.pacienteNombre ? ' de ' + m.pacienteNombre : ''}: ${fv(f, 'mot')}`); toast('Movimiento anulado.'); } });
+}
+
+/* ---------------- Esquemas de pago e ingresos ---------------- */
+const ESQUEMAS = { socio: 'Socio (porcentaje de lo cobrado)', colaborador: 'Colaborador (salario fijo + comisión)' };
+function reglaComision(uid, trId) { const q = get('cuotas', uid); if (!q) return null; return q.porTratamiento?.[trId] || q.base || null; }
+/* parte del dentista de un monto cobrado sobre un cargo */
+function parteDentista(uid, cargo, monto) {
+  const r = reglaComision(uid, cargo.tratamientoId); if (!r || r.valor === '' || r.valor == null) return 0;
+  if (r.tipo === 'pct') return r2(monto * Number(r.valor) / 100);
+  return r2(Number(r.valor) / (cargo.sesiones || 1) * (cargo.monto ? monto / cargo.monto : 0));
+}
+function reporte(desde, hasta) {
+  const en = f => f >= desde && f <= hasta;
+  const pids = [...new Set([...list('cargos').map(c => c.pacienteId), ...list('movimientos').filter(m => m.pacienteId).map(m => m.pacienteId)])];
+  const porDent = {}, D = id => porDent[id] = porDent[id] || { produccion: 0, cobrado: 0, parte: 0, aloc: [] };
+  let porCobrar = 0;
+  pids.forEach(pid => {
+    const C = cuentaPaciente(pid);
+    C.cargos.forEach(c => { if (en(c.fecha)) D(c.dentistaId).produccion = r2(D(c.dentistaId).produccion + c.monto); });
+    C.aloc.forEach(a => { if (!en(a.fecha)) return; const d = D(a.cargo.dentistaId); d.cobrado = r2(d.cobrado + a.monto); const pt = parteDentista(a.cargo.dentistaId, a.cargo, a.monto); d.parte = r2(d.parte + pt); d.aloc.push({ ...a, parte: pt }); });
+    if (C.saldo > 0) porCobrar = r2(porCobrar + C.saldo);
+  });
+  const movs = list('movimientos').filter(m => !m.anulado && en(fechaDe(m.fecha)));
+  const pagos = movs.filter(m => m.tipo === 'pago'), porMet = {}, porSede = {}, porUsr = {};
+  pagos.forEach(m => { porMet[m.metodo] = r2((porMet[m.metodo] || 0) + m.monto); porSede[m.sedeId] = r2((porSede[m.sedeId] || 0) + m.monto); porUsr[m.usuarioId] = r2((porUsr[m.usuarioId] || 0) + m.monto); });
+  const cobrado = r2(pagos.reduce((a, m) => a + m.monto, 0)), comBanco = r2(pagos.reduce((a, m) => a + m.monto * (m.comisionPct || 0) / 100, 0));
+  const gastos = r2(movs.filter(m => m.tipo === 'gasto').reduce((a, m) => a + m.monto, 0)), retiros = r2(movs.filter(m => m.tipo === 'retiro').reduce((a, m) => a + m.monto, 0));
+  return { porDent, porMet, porSede, porUsr, cobrado, comBanco, gastos, retiros, pagos, movs, porCobrar };
+}
+function rangoPeriodo(I) {
+  const h = hoyISO();
+  if (I.per === 'hoy') return [h, h];
+  if (I.per === 'semana') { const l = lunesDe(h); return [l, sumarDias(l, 6)]; }
+  if (I.per === 'mes') return [h.slice(0, 8) + '01', h];
+  if (I.per === 'quincena') { const d = +h.slice(8); return d <= 15 ? [h.slice(0, 8) + '01', h] : [h.slice(0, 8) + '16', h]; }
+  return [I.desde || h, I.hasta || h];
+}
+function vIngresos() {
+  S.ui.ing = S.ui.ing || { per: 'mes', usr: '', desde: hoyISO(), hasta: hoyISO() };
+  const I = S.ui.ing, adm = esAdmin(), [desde, hasta] = rangoPeriodo(I), R = reporte(desde, hasta);
+  const yo = !adm;
+  const equipo = list('usuarios').filter(u => u.activo !== false && u.rol !== 'sistema');
+  const filtroUsr = adm ? I.usr : S.me.id;
+  const per = `<div class="seg">${[['hoy', 'Hoy'], ['semana', 'Semana'], ['quincena', 'Quincena'], ['mes', 'Mes'], ['rango', 'Rango']].map(([k, l]) => `<button data-act="ing-per" data-p="${k}" class="${I.per === k ? 'on' : ''}">${l}</button>`).join('')}</div>${I.per === 'rango' ? `<input type="date" id="ingD" data-change-ing="desde" value="${I.desde}" class="cita-fecha" aria-label="Desde"><input type="date" id="ingH" data-change-ing="hasta" value="${I.hasta}" class="cita-fecha" aria-label="Hasta">` : ''}`;
+  const head = `<div class="vhead"><div><h2>${yo ? 'Mis ingresos' : 'Ingresos'}</h2><p>${fechaCorta(desde)}${hasta !== desde ? ' al ' + fechaCorta(hasta) : ''}. Lo cobrado se asigna a cada dentista aplicando los pagos a sus tratamientos realizados.</p></div></div>
+    <div class="panel"><div class="panel-h">${per}${adm ? `<select id="ingU" data-change-ing="usr" style="max-width:240px" aria-label="Persona">${opt('', 'Toda la clínica', I.usr)}${equipo.map(u => opt(u.id, u.nombre, I.usr)).join('')}</select>` : ''}</div></div>`;
+  const filaD = (u) => { const d = R.porDent[u.id] || { produccion: 0, cobrado: 0, parte: 0 }, q = get('cuotas', u.id) || {}, esq = q.esquema || 'colaborador';
+    return `<tr class="click" data-act="ing-dent" data-id="${u.id}"><td><span class="dot" style="background:${esc(u.color || '#0e6b70')}"></span> <b>${esc(u.nombre)}</b><div class="mute" style="font-size:12px">${esc(ESQUEMAS[esq].split(' (')[0])}${q.base?.valor !== '' && q.base?.valor != null ? ` · ${q.base.tipo === 'pct' ? q.base.valor + '%' : money(q.base.valor) + ' fijo'}` : ' · sin comisión definida'}</div></td><td class="r num">${money(d.produccion)}</td><td class="r num">${money(d.cobrado)}</td><td class="r num"><b>${money(d.parte)}</b></td><td class="r num">${esq === 'colaborador' && q.salario?.monto ? money(q.salario.monto) + ' ' + (q.salario.periodo || 'mensual') : '—'}</td></tr>`; };
+  if (yo) {
+    const u = S.me, d = R.porDent[u.id] || { produccion: 0, cobrado: 0, parte: 0, aloc: [] }, q = get('cuotas', u.id) || {};
+    return head + `<div class="stats"><div class="stat"><b class="num">${money(d.produccion)}</b><span>Tratamientos realizados</span></div><div class="stat"><b class="num">${money(d.cobrado)}</b><span>Cobrado de mis tratamientos</span></div><div class="stat"><b class="num">${money(d.parte)}</b><span>${q.esquema === 'socio' ? 'Mi participación' : 'Mi comisión'}</span></div><div class="stat"><b class="num">${q.esquema !== 'socio' && q.salario?.monto ? money(q.salario.monto) : '—'}</b><span>Salario fijo ${q.salario?.periodo || ''}</span></div></div>
+      ${tablaAloc(d.aloc)}`;
+  }
+  if (filtroUsr) {
+    const u = get('usuarios', filtroUsr), d = R.porDent[u.id], mv = R.movs.filter(m => m.usuarioId === u.id);
+    return head + `<div class="stats"><div class="stat"><b class="num">${money(d?.produccion || 0)}</b><span>Producción</span></div><div class="stat"><b class="num">${money(d?.cobrado || 0)}</b><span>Cobrado de sus tratamientos</span></div><div class="stat"><b class="num">${money(d?.parte || 0)}</b><span>Su parte</span></div><div class="stat"><b class="num">${money(R.porUsr[u.id] || 0)}</b><span>Cobros que registró</span></div></div>
+      ${d ? tablaAloc(d.aloc) : ''}
+      <div class="panel"><div class="panel-h"><h3>Movimientos que registró</h3></div>${mv.length ? `<div class="tablewrap"><table><tbody>${mv.sort((a, b) => b.fecha.localeCompare(a.fecha)).map(filaMov).join('')}</tbody></table></div>` : '<div class="empty">Sin movimientos.</div>'}</div>`;
+  }
+  const dents = dentistas();
+  return head + `<div class="stats">
+      <div class="stat"><b class="num">${money(R.cobrado)}</b><span>Cobrado</span></div>
+      <div class="stat"><b class="num">${money(R.comBanco)}</b><span>Comisiones de terminal</span></div>
+      <div class="stat"><b class="num">${money(r2(R.gastos + R.retiros))}</b><span>Gastos y retiros de caja</span></div>
+      <div class="stat warn"><b class="num">${money(R.porCobrar)}</b><span>Adeudos de pacientes (hoy)</span></div></div>
+    <div class="panel"><div class="panel-h"><h3>Por dentista</h3><span class="mute" style="font-size:13px">Toca un renglón para ver el detalle</span></div><div class="tablewrap"><table><thead><tr><th>Dentista</th><th class="r">Producción</th><th class="r">Cobrado</th><th class="r">Su parte</th><th class="r">Salario fijo</th></tr></thead><tbody>${dents.map(filaD).join('')}
+      <tr><td><b>Total</b></td><td class="r num"><b>${money(dents.reduce((a, u) => a + (R.porDent[u.id]?.produccion || 0), 0))}</b></td><td class="r num"><b>${money(dents.reduce((a, u) => a + (R.porDent[u.id]?.cobrado || 0), 0))}</b></td><td class="r num"><b>${money(dents.reduce((a, u) => a + (R.porDent[u.id]?.parte || 0), 0))}</b></td><td></td></tr></tbody></table></div></div>
+    <div class="two">
+      <div class="panel"><div class="panel-h"><h3>Por forma de pago</h3></div><div class="panel-b"><dl class="kv" style="margin:0">${Object.entries(METODOS).map(([k, l]) => `<dt>${l}</dt><dd class="num">${money(R.porMet[k] || 0)}</dd>`).join('')}</dl></div></div>
+      <div class="panel"><div class="panel-h"><h3>Por sede y por quien registró</h3></div><div class="panel-b"><dl class="kv" style="margin:0">${Object.entries(R.porSede).map(([k, v]) => `<dt>${esc(get('sedes', k)?.nombre || 'Sin sede')}${get('sedes', k)?.tipo === 'externa' ? ' (externa)' : ''}</dt><dd class="num">${money(v)}</dd>`).join('') || '<dt>Sin cobros</dt><dd></dd>'}</dl><hr style="border:0;border-top:1px solid var(--line);margin:12px 0"><dl class="kv" style="margin:0">${Object.entries(R.porUsr).map(([k, v]) => `<dt>${esc(nombreUsuario(k))}</dt><dd class="num">${money(v)}</dd>`).join('')}</dl></div></div>
+    </div>
+    <div class="panel"><div class="panel-h"><h3>Equipo con salario</h3></div><div class="tablewrap"><table><tbody>${equipo.filter(u => (get('cuotas', u.id)?.salario?.monto)).map(u => { const q = get('cuotas', u.id); return `<tr><td>${esc(u.nombre)}</td><td>${esc(ROLES[u.rol])}</td><td class="r num">${money(q.salario.monto)} ${esc(q.salario.periodo || 'mensual')}</td></tr>`; }).join('') || '<tr><td><div class="empty">Sin salarios registrados. Se configuran en Equipo → Pago y comisión.</div></td></tr>'}</tbody></table></div></div>`;
+}
+function tablaAloc(aloc) {
+  return `<div class="panel"><div class="panel-h"><h3>Detalle de lo cobrado</h3></div>${aloc.length ? `<div class="tablewrap"><table><thead><tr><th>Fecha</th><th>Paciente</th><th>Tratamiento</th><th class="r">Cobrado</th><th class="r">Parte</th></tr></thead><tbody>${[...aloc].sort((a, b) => b.fecha.localeCompare(a.fecha)).map(a => `<tr><td class="num">${fechaCorta(a.fecha)}</td><td>${esc(a.cargo.pacienteNombre || '')}</td><td>${esc(a.cargo.concepto)}</td><td class="r num">${money(a.monto)}</td><td class="r num"><b>${money(a.parte)}</b></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Sin cobros en el periodo.</div>'}</div>`;
+}
+function panelCajaInicio() {
+  if (!puedeCaja()) return '';
+  const c = cajaAbierta();
+  if (!c) return `<div class="infowarn" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>Tu caja está cerrada.</b><span>Ábrela para poder cobrar.</span><button class="btn sm" data-act="nav" data-view="caja">Abrir caja</button></div>`;
+  const R = resumenCaja(c);
+  return `<div class="info" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>Caja abierta</b><span>${esc(get('sedes', c.sedeId)?.nombre || '')} · cobrado ${money(R.totalPagos)} · efectivo esperado ${money(R.efectivoEsperado)}</span><button class="btn sm" data-act="cobrar">Cobrar</button><button class="btn sm ghost" data-act="nav" data-view="caja">Ver caja</button></div>`;
+}
 /* ============================ EVENTOS ============================ */
 const ACT = {
   nav: el => go(el.dataset.view), salir, perfil: () => verPerfil(),
@@ -3114,6 +3547,11 @@ const ACT = {
   'odo-sel-limpiar': () => { S.ui.odo.sel = []; render(); }, 'odo-ver': el => { odoTrabajo(S.ui.pacId).ver = +el.dataset.fdi; render(); }, 'odo-ver-cerrar': () => { S.ui.odo.ver = null; render(); },
   'plan-nuevo': async () => { await nuevoPlan(S.ui.pacId); toast('Plan vacío creado. Usa "Agregar tratamiento".'); },
   'plan-sugerido': () => formSugerido(),
+  cobrar: el => formCobro(el.dataset.pid || null), 'cobrar-externa': el => formCobro(el.dataset.pid, { externa: true }),
+  'cargo-manual': () => formCargoManual(S.ui.pacId), 'plan-pagos': () => formPlanPagos(S.ui.pacId),
+  'cargos-generar': async () => { const fl = cargosFaltantes(S.ui.pacId); if (!fl.length) return; await guardarLote(fl.map(x => cargoOp(S.ui.pacId, x.pl, x.it, x.k, x.h.fecha, x.h.dentistaId)), `Generó ${fl.length} cargo(s) de tratamientos ya realizados de ${nombreCompleto(get('pacientes', S.ui.pacId))}`); toast('Cargos generados.'); },
+  'caja-mov': el => formMovCaja(el.dataset.t), 'caja-corte': formCorte, 'corte-ver': el => verCorte(el.dataset.id), recibo: el => verRecibo(el.dataset.id), 'mov-anular': el => anularMov(el.dataset.id),
+  'ing-per': el => { S.ui.ing.per = el.dataset.p; render(); }, 'ing-dent': el => { S.ui.ing.usr = el.dataset.id; render(); window.scrollTo(0, 0); },
   'cita-nueva': () => formCita(), 'cita-ver': el => verCita(el.dataset.id), 'cita-paciente': () => formCita(null, { pacienteId: S.ui.pacId }),
   'cita-sesion': el => { const pl = planVisible(S.ui.pacId), it = pl.items.find(x => x.id === el.dataset.item), k = +el.dataset.k, ci = it.citas?.[k]; const items = ci != null ? sesionesDeCita(pl, ci).filter(x => !(x.it.hechas || [])[x.k] && !citaDeSesion(x.it.id, x.k)).map(x => ({ itemId: x.it.id, k: x.k })) : [{ itemId: it.id, k }]; formCita(null, { pacienteId: S.ui.pacId, dentistaId: it.dentistaId, fecha: ci != null && pl.citas[ci]?.fecha >= hoyISO() ? pl.citas[ci].fecha : hoyISO(), items }); },
   'bloqueo-nuevo': () => formBloqueo(), 'bloqueo-ver': el => formBloqueo(el.dataset.id),
@@ -3187,6 +3625,7 @@ document.addEventListener('change', async e => {
     }
   } catch (err) { toast(errMsg(err)); }
 });
+document.addEventListener('change', e => { const k = e.target.dataset?.changeIng; if (k) { S.ui.ing[k] = e.target.value; render(); } });
 document.addEventListener('change', e => { const k = e.target.dataset?.changeAg; if (k) { agUI()[k] = e.target.value; if (k === 'sede') agUI().dents = []; render(); } });
 document.addEventListener('input', e => { const f = e.target.closest && e.target.closest('#marcaForm'); if (!f || e.target.type === 'file') return; S.ui.marcaTmp = marcaDesdeForm(f); aplicarMarca(S.ui.marcaTmp); const pv = $('.splash-prev b'); if (pv) pv.textContent = S.ui.marcaTmp.nombre; });
 document.addEventListener('change', async e => {
@@ -3196,6 +3635,8 @@ document.addEventListener('change', async e => {
   catch (err) { toast(errMsg(err)); e.target.value = ''; }
 });
 document.addEventListener('submit', async e => {
+  if (e.target.id === 'abrirCaja') { e.preventDefault(); const f = e.target; if (cajaAbierta()) return; try { await guardarLote([{ col: 'cajas', nuevo: true, data: { usuarioId: S.me.id, sedeId: f.elements.sede.value, fondo: r2(f.elements.fondo.value), estado: 'abierta', apertura: { fecha: nowISO(), nota: fv(f, 'nota') } } }], `Abrió caja en ${get('sedes', f.elements.sede.value)?.nombre || ''} con fondo de ${money(f.elements.fondo.value)}`); toast('Caja abierta.'); } catch (err) { toast(errMsg(err)); } return; }
+  if (e.target.id === 'cajaForm') { e.preventDefault(); const f = e.target, com = {}; ['tarjeta_debito', 'tarjeta_credito', ...MSI.map(m => 'msi' + m)].forEach(k => com[k] = Number(f.elements[k].value) || 0); try { await guardarLote([{ col: 'config', id: 'caja', data: { comisiones: com } }], 'Actualizó las comisiones de la terminal'); toast('Comisiones guardadas.'); } catch (err) { toast(errMsg(err)); } return; }
   if (e.target.id === 'marcaForm') { e.preventDefault(); const m = marcaDesdeForm(e.target); try { await guardarLote([{ col: 'config', id: 'marca', data: m }], 'Actualizó la apariencia de la plataforma'); S.ui.marcaTmp = null; toast('Apariencia guardada para todo el equipo.'); } catch (err) { toast(errMsg(err)); } return; }
   if (e.target.id === 'agForm') { e.preventDefault(); const f = e.target; const url = fv(f, 'url'); if (url && !/^https:\/\/script\.google\.com\//.test(url)) { toast('La dirección debe empezar con https://script.google.com/'); return; }
     try { await guardarLote([{ col: 'config', id: 'agenda', data: { bloqueMin: +f.elements.bloque.value, zona: f.elements.zona.value, appsScriptUrl: url } }], 'Actualizó la configuración de la agenda'); toast('Configuración de agenda guardada.'); avisarSync(); } catch (err) { toast(errMsg(err)); } return; }
