@@ -433,7 +433,7 @@ const clavePortal = fn => { if (!fn) return ''; const [y, m, d] = fn.split('-');
 const telDigits = t => String(t || '').replace(/\D/g, '');
 const waLink = t => { let d = telDigits(t); if (d.length === 10) d = '52' + d; return d ? `https://wa.me/${d}` : ''; };
 
-const ROLES = { admin: 'Administrador', dentista: 'Dentista · admin jr', recepcion: 'Recepción y caja' };
+const ROLES = { admin: 'Administrador', dentista: 'Dentista · admin jr', recepcion: 'Recepción y caja', sistema: 'Sincronización' };
 const CATEGORIAS = ['Diagnóstico','Prevención','Operatoria','Endodoncia','Prótesis','Cirugía','Implantología','Ortodoncia','Periodoncia','Estética','Odontopediatría','Radiología','Otro'];
 const ANIMACIONES = { '':'Sin animación', limpieza:'Limpieza', sellador:'Sellador', resina:'Caries → resina', reconstruccion:'Fractura → reconstrucción', endodoncia:'Endodoncia', corona:'Corona', extraccion:'Extracción', extraccion_retenido:'Extracción de muela retenida', implante:'Implante', corona_implante:'Corona sobre implante', ortodoncia:'Ortodoncia (arcada)', blanqueamiento:'Blanqueamiento (boca completa)', perio:'Tratamiento de encías', protesis:'Prótesis fija (puente)', protesis_removible:'Prótesis removible', carilla:'Carilla' };
 const APLICA = { diente:'Por diente', arcada:'Por arcada', boca:'Boca completa', consulta:'Por consulta' };
@@ -763,7 +763,7 @@ function showLogin(msg = '') {
   $('#app').hidden = true; closeModal();
   const L = $('#login'); L.hidden = false;
   if (S.mode === 'demo') {
-    const us = list('usuarios').filter(u => u.activo !== false).sort((a, b) => (a.rol === 'admin' ? -1 : 0) - (b.rol === 'admin' ? -1 : 0) || a.nombre.localeCompare(b.nombre));
+    const us = list('usuarios').filter(u => u.activo !== false && u.rol !== 'sistema').sort((a, b) => (a.rol === 'admin' ? -1 : 0) - (b.rol === 'admin' ? -1 : 0) || a.nombre.localeCompare(b.nombre));
     L.innerHTML = `<div class="login-card">
       <div class="brand"><div class="brand-mark">${markHTML()}</div><div><h1>${esc(marca().nombre)}</h1><p>${esc(clinica().nombre)}</p></div></div>
       <div class="info"><b>Modo demostración.</b> Elige un usuario para ver la plataforma con su rol. Los datos son de ejemplo y se guardan solo en este navegador.</div>
@@ -1193,7 +1193,7 @@ function cuotaPara(uid, t) {
 }
 function vEquipo() {
   const adm = esAdmin();
-  const us = list('usuarios').sort((a, b) => (a.activo === false) - (b.activo === false) || ['admin', 'dentista', 'recepcion'].indexOf(a.rol) - ['admin', 'dentista', 'recepcion'].indexOf(b.rol) || a.nombre.localeCompare(b.nombre));
+  const us = list('usuarios').filter(u => u.rol !== 'sistema').sort((a, b) => (a.activo === false) - (b.activo === false) || ['admin', 'dentista', 'recepcion'].indexOf(a.rol) - ['admin', 'dentista', 'recepcion'].indexOf(b.rol) || a.nombre.localeCompare(b.nombre));
   const sedeN = ids => (ids || []).map(id => get('sedes', id)?.nombre).filter(Boolean).join(', ');
   const yoAtiendo = S.me.rol === 'dentista' || S.me.atiende;
   return `<div class="vhead"><div><h2>Equipo</h2><p>Administradores, dentistas (con acceso de administrador jr) y recepción. ${adm ? 'Aquí defines las cuotas que recibe cada dentista por tratamiento.' : ''}</p></div>
@@ -3062,7 +3062,10 @@ function vAjustes() {
       <div class="span2 quick"><button class="btn primary" type="submit">Guardar</button><button class="btn" type="button" data-act="aj-probar">Probar conexión</button><span id="ajProbar" class="mute" style="font-size:13px"></span></div></div></form>
       <div class="panel"><div class="panel-h"><h3>Calendarios de los dentistas</h3></div>
         <div class="rows">${dentistas().map(d => { const g = gc.find(x => x.id === d.id); return `<div class="row" style="cursor:default"><div><div class="t1"><span class="dot" style="background:${esc(d.color || '#0e6b70')}"></span>${esc(d.nombre)}</div><div class="t2"><span>${esc(d.email)}</span>${g?.ultimaSync ? `<span>Última sincronización ${fechaHora(g.ultimaSync)}</span>` : ''}</div></div><div class="r">${g?.calId ? `<span class="pill ok">Calendario compartido</span>` : '<span class="pill">Sin calendario</span>'}</div></div>`; }).join('')}</div>
-        <div class="panel-b"><p class="mute" style="margin:0;font-size:12.5px">El Apps Script crea un calendario por dentista en la cuenta de la clínica y lo comparte con su correo. Cada dentista recibe una invitación de Google Calendar.</p></div></div></div>`;
+        <div class="panel-b"><p class="mute" style="margin:0;font-size:12.5px">El Apps Script crea un calendario por dentista en la cuenta de la clínica y lo comparte con su correo. Cada dentista recibe una invitación de Google Calendar.</p></div></div></div>
+      <div class="panel"><div class="panel-h"><h3>Usuario de sincronización</h3><span class="mute" style="font-size:13px">Con este usuario el Apps Script entra a la plataforma. Solo puede leer y actualizar la agenda.</span></div><div class="panel-b" style="display:grid;gap:10px">
+        ${(() => { const su = list('usuarios').filter(u => u.rol === 'sistema' && u.activo !== false); return su.length ? `<p style="margin:0">Activo: <b class="mono">${esc(su[0].email)}</b> · creado ${fechaCorta(su[0].creado)}</p><div class="quick"><button class="btn sm" data-act="aj-sync-user">Crear uno nuevo (desactiva el actual)</button></div>` : `<p style="margin:0" class="mute">Aún no existe. Créalo y pega el correo y la contraseña al inicio del código del Apps Script.</p><div><button class="btn primary sm" data-act="aj-sync-user">Crear usuario de sincronización</button></div>`; })()}
+      </div></div>`;
   }
   return head + `<div class="two"><form class="panel" id="marcaForm"><div class="panel-h"><h3>Apariencia</h3></div><div class="panel-b" style="display:grid;gap:14px">
     <div class="grid2"><label class="f">Nombre de la plataforma<input type="text" name="nombre" id="mkNombre" value="${esc(m.nombre)}" maxlength="40" required></label>
@@ -3121,6 +3124,22 @@ const ACT = {
   'ag-dent-todos': () => { agUI().dents = []; render(); },
   'ag-slot': (el, e) => { const r = el.getBoundingClientRect(), b = confAgenda().bloqueMin; const min = +el.dataset.min0 + Math.floor((e.clientY - r.top) / PX / b) * b; formCita(null, { dentistaId: el.dataset.dent, fecha: el.dataset.fecha, inicio: hhmm(min) }); },
   'aj-tab': el => { S.ui.ajTab = el.dataset.tab; render(); },
+  'aj-sync-user': async () => {
+    if (S.mode !== 'firebase') { toast('En la demostración no se crean cuentas reales. Hazlo en tu plataforma.'); return; }
+    const viejos = list('usuarios').filter(u => u.rol === 'sistema' && u.activo !== false);
+    if (viejos.length && !await confirmar('Crear nuevo usuario de sincronización', 'El usuario actual se desactiva y el Apps Script dejará de sincronizar hasta que pegues los datos nuevos en el código.', { ok: 'Crear nuevo' })) return;
+    const rnd = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 55]).join('');
+    const email = `sincronizacion-${rnd(6).toLowerCase()}@sistema.interdental`, pass = rnd(20);
+    const uid = await crearCuentaFirebase(email, pass);
+    const ops = [{ col: 'usuarios', id: uid, data: { nombre: 'Sincronización Google Calendar', email, rol: 'sistema', atiende: false, sedes: [], activo: true }, nuevo: true }, ...viejos.map(v => ({ col: 'usuarios', id: v.id, data: { activo: false } }))];
+    await guardarLote(ops, 'Creó el usuario de sincronización con Google Calendar');
+    modal({ title: 'Usuario de sincronización creado', body: `<div class="infowarn"><b>Copia estos datos ahora.</b> La contraseña no se vuelve a mostrar.</div>
+      <label class="f">SYNC_EMAIL<input type="text" readonly id="suE" value="${esc(email)}" class="mono"></label>
+      <label class="f">SYNC_PASSWORD<input type="text" readonly id="suP" value="${esc(pass)}" class="mono"></label>
+      <div class="quick"><button type="button" class="btn primary" id="suCopy">Copiar las dos líneas para el código</button><span id="suOk" class="mute"></span></div>
+      <p class="mute" style="margin:0;font-size:12.5px">En el Apps Script reemplaza las líneas de SYNC_EMAIL y SYNC_PASSWORD por lo que copiaste, guarda y ejecuta "instalar".</p>`,
+      onOpen: () => { $('#suCopy').onclick = async () => { const t = `const SYNC_EMAIL = '${email}';\nconst SYNC_PASSWORD = '${pass}';`; try { await navigator.clipboard.writeText(t); $('#suOk').textContent = 'Copiado.'; } catch (e) { $('#suP').select(); $('#suOk').textContent = 'Cópialas a mano.'; } }; } });
+  },
   'aj-probar': async () => { const u = (document.getElementById('ajUrl')?.value || confAgenda().appsScriptUrl).trim(), out = $('#ajProbar'); if (!u) { out.textContent = 'Primero escribe la dirección.'; return; } out.textContent = 'Probando…';
     try { const r = await fetch(u + (u.includes('?') ? '&' : '?') + 'accion=estado'); const j = await r.json(); out.textContent = j.ok ? `Conectado. ${j.calendarios || 0} calendario(s) de dentistas.${j.ultimaSync ? ' Última sincronización: ' + fechaHora(j.ultimaSync) + '.' : ''}` : 'Respondió con error: ' + (j.error || ''); }
     catch (err) { out.textContent = 'No se pudo leer la respuesta. Revisa que la implementación permita el acceso a "Cualquier usuario".'; } },
