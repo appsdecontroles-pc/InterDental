@@ -286,6 +286,52 @@ tr.rowdone td{color:var(--mute)}
 .cita-row{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px;align-items:center}
 .cita-row:last-child{border-bottom:0}
 .cita-row .n{font-weight:800;color:var(--accent)}
+/* Fase 3: agenda */
+.ag-bar{gap:10px}
+.ag-chips{display:flex;flex-wrap:wrap;gap:6px;padding-top:10px;padding-bottom:10px}
+.dchip{border:1px solid var(--line);background:var(--surface);color:var(--mute);cursor:pointer;padding:4px 10px;gap:6px}
+.dchip.on{background:var(--surface);color:var(--ink);border-color:var(--dc)}
+.ag-wrap{overflow:auto;max-height:78vh;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.ag-grid{display:grid;min-width:min-content}
+.ag-h{position:sticky;top:0;z-index:3;background:var(--surface);border-bottom:1px solid var(--line);padding:8px;display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:700;min-width:0}
+.ag-h .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-h.hoy{color:var(--accent)}
+.ag-times{position:relative;border-right:1px solid var(--line)}
+.ag-times span{position:absolute;right:6px;transform:translateY(-50%);font:600 11px var(--f-mono);color:var(--mute)}
+.ag-times span:first-child{transform:none}
+.ag-col{position:relative;border-right:1px solid var(--line);background-image:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px var(--hora)),repeating-linear-gradient(to bottom,color-mix(in srgb,var(--line) 45%,transparent) 0 1px,transparent 1px var(--slot))}
+.ag-col.edit{cursor:copy}
+.ag-off{position:absolute;left:0;right:0;background:color-mix(in srgb,var(--surface2) 80%,transparent);pointer-events:none}
+.ag-bloq{position:absolute;left:2px;right:2px;border-radius:6px;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--mute) 22%,transparent) 0 6px,transparent 6px 12px);border:1px dashed var(--mute);color:var(--mute);font-size:11.5px;font-weight:700;padding:3px 6px;overflow:hidden;cursor:pointer;z-index:1}
+.ag-cita{position:absolute;left:3px;right:3px;z-index:2;text-align:left;border:0;border-left:4px solid var(--dc);border-radius:7px;background:color-mix(in srgb,var(--dc) 16%,var(--surface));color:var(--ink);padding:3px 6px;overflow:hidden;display:flex;flex-direction:column;gap:1px;cursor:pointer;font:inherit;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ag-cita b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag-cita span{font-size:11.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag-cita.est-atendida{opacity:.6}
+.ag-cita.est-no_asistio{opacity:.45;text-decoration:line-through}
+.ag-cita.est-llego{box-shadow:0 0 0 2px var(--warn)}
+.ag-cita.est-confirmada b::after{content:" ✓";color:var(--accent)}
+.ag-cita .gerr{position:absolute;top:3px;right:5px;font-style:normal;font-weight:900;color:var(--bad)}
+.ag-now{position:absolute;left:0;right:0;height:2px;background:var(--bad);z-index:4;pointer-events:none}
+.ag-now::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
+.horario{display:grid;gap:6px}
+.hrow{display:grid;grid-template-columns:96px 80px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;font-size:14px}
+/* Ajustes */
+.upl{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.upl-prev{width:84px;height:84px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;background:var(--bg);overflow:hidden;font-size:12px;flex:none}
+.upl-prev img{max-width:100%;max-height:100%;object-fit:contain}
+.swatch{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.swatch.on{box-shadow:0 0 0 2px var(--ink)}
+input[type=color]{width:44px;height:32px;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--surface)}
+.brand-mark.has-logo{background:transparent}
+.brand-mark img{width:100%;height:100%;object-fit:contain;border-radius:inherit}
+.brand-mark.big{width:72px;height:72px;border-radius:20px}
+.brand-mark.big svg{width:40px;height:40px}
+.splash,.splash-prev{display:grid;justify-items:center;gap:10px;text-align:center}
+.splash img{max-width:180px;max-height:180px}
+.splash b{font-size:20px}
+.splash-prev{padding:22px;border:1px dashed var(--line);border-radius:12px;background:var(--bg)}
+.splash-prev img{max-width:110px;max-height:110px}
+@media (prefers-reduced-motion:no-preference){.splash{animation:up .3s ease-out}}
 /* Excel */
 .colpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 14px}
 .colpick .check{font-size:13.5px}
@@ -325,7 +371,7 @@ tr.rowdone td{color:var(--mute)}
 <div id="login" hidden></div>
 <div id="app" hidden>
   <aside class="side">
-    <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><h1 id="sideClinic">Clínica dental</h1><p>Expediente y gestión</p></div></div>
+    <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div style="min-width:0"><h1 id="sideNombre">InterDental</h1><p id="sideClinic">Expediente y gestión</p></div></div>
     <nav class="nav" id="nav"></nav>
     <div class="me" id="meBox"></div>
   </aside>
@@ -366,7 +412,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1234567890:web:abc123"
 };
 */
-const VERSION_APP = '2.2 · Fase 2';
+const VERSION_APP = '3.0 · Fase 3';
 
 /* ============================ UTILIDADES ============================ */
 const $ = (s, el = document) => el.querySelector(s);
@@ -395,7 +441,7 @@ const UNIDADES = ['pieza','par','cartucho','caja','jeringa','g','ml','sobre','pu
 const COLORES = ['#0e6b70','#b5527a','#4f6bd8','#c27c1a','#6a4fc2','#2d8a52','#c4483c','#3c8dad'];
 
 /* ============================ ESTADO ============================ */
-const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora','expedientes','planes','notas'];
+const COLS = ['usuarios','sedes','insumos','tratamientos','pacientes','config','cuotas','bitacora','expedientes','planes','notas','citas','bloqueos','gcal'];
 const S = { mode: FIREBASE_CONFIG ? 'firebase' : 'demo', data: {}, me: null, view: 'inicio', ui: { pacQ: '', pacF: 'activos', catTab: 'tratamientos', catQ: '', catCat: '', bitU: '' }, unsubs: [] };
 COLS.forEach(c => S.data[c] = {});
 const list = c => Object.entries(S.data[c] || {}).map(([id, v]) => ({ id, ...v }));
@@ -407,7 +453,7 @@ const nombreUsuario = id => get('usuarios', id)?.nombre || '—';
 
 /* ============================ CAPA DE DATOS ============================ */
 const fb = {};
-const DEMO_KEY = 'appDentista.demo.v2';
+const DEMO_KEY = 'appDentista.demo.v3';
 function demoPersist() { try { localStorage.setItem(DEMO_KEY, JSON.stringify(S.data)); } catch (e) {} }
 function demoLoad() { try { const r = localStorage.getItem(DEMO_KEY); if (r) { const d = JSON.parse(r); COLS.forEach(c => d[c] = d[c] || {}); S.data = d; return true; } } catch (e) {} return false; }
 
@@ -466,6 +512,10 @@ function subscribe() {
   }, err => toast('No se pudo leer ' + col + ': ' + err.message)));
   ['usuarios','sedes','insumos','tratamientos','pacientes','config','planes'].forEach(c => watch(c));
   if (S.me.rol !== 'recepcion') { watch('expedientes'); watch('notas'); }
+  const desde = sumarDias(hoyISO(), -120);
+  watch('citas', F.query(F.collection(fb.db, 'citas'), F.where('fecha', '>=', desde)));
+  watch('bloqueos', F.query(F.collection(fb.db, 'bloqueos'), F.where('fechaFin', '>=', sumarDias(hoyISO(), -60))));
+  watch('gcal');
   if (esAdmin()) {
     watch('cuotas');
     watch('bitacora', F.query(F.collection(fb.db, 'bitacora'), F.orderBy('fecha', 'desc'), F.limit(300)));
@@ -635,6 +685,19 @@ function seedDemo() {
   D.expedientes.p1 = { pacienteId: 'p1', odontograma: odoHoy, odoInicial: odo1, odoInicialFecha: hace(20) + 'T10:00:00', historia: { motivo: 'Dolor en muela superior derecha al masticar', enfermedades: ['Hipertensión'], alergias: 'Penicilina', medicamentos: 'Losartán 50 mg', cirugias: '', presion: '130/85', ultimaVisita: 'Hace 3 años', embarazo: false, habitos: ['Bruxismo (rechina los dientes)'], observaciones: '', actualizado: t, actualizadoPor: 'u_ana' }, ...sys };
   D.notas.n_demo0 = { pacienteId: 'p1', fecha: hace(20) + 'T10:30:00', autorId: 'u_ana', autor: 'Dra. Ana Robles', tipo: 'nota', texto: 'Valoración inicial. Dolor espontáneo en 16, prueba de frío positiva prolongada. Se indica endodoncia y corona. Radiografía: 38 retenido mesioangulado.' };
   notas.forEach(({ fecha, it, k }, i) => D.notas['n_demo' + (i + 1)] = { pacienteId: 'p1', fecha, autorId: it.dentistaId, autor: D.usuarios[it.dentistaId].nombre, dentistaId: it.dentistaId, tipo: 'tratamiento', planId: 'pl_demo1', itemId: it.id, texto: `${it.nombre}${it.dientes.length ? ' · diente ' + it.dientes.join(', ') : ''}${it.sesiones > 1 ? ` · sesión ${k + 1} de ${it.sesiones}` : ''}\nSin complicaciones.` });
+  /* Agenda de ejemplo: hoy y mañana */
+  const hoy = hoyISO(); let man = sumarDias(hoy, 1); if (diaSemana(man) === 'dom') man = sumarDias(man, 1);
+  const it38 = pl1.items.find(i => i.dientes.includes(38)), it26 = pl1.items.find(i => i.dientes.includes(26)), itLimp = pl1.items.find(i => i.animacion === 'limpieza');
+  const ci = (id, pac, dent, sede, fecha, ini, dur, extra) => { const p = D.pacientes[pac]; D.citas[id] = { pacienteId: pac, pacienteNombre: [p.nombres, p.apPaterno, p.apMaterno].filter(Boolean).join(' '), dentistaId: dent, sedeId: sede, consultorio: '', fecha, inicio: ini, duracionMin: dur, items: [], servicios: [], motivo: '', notas: '', estado: 'agendada', gcal: { sync: 'ok' }, ...extra, ...sys }; D.citas[id].titulo = D.citas[id].pacienteNombre; };
+  ci('ci_1', 'p1', 'u_jorge', 's_norte', hoy, '10:00', 60, { consultorio: 'Consultorio A', estado: 'confirmada', items: [{ planId: 'pl_demo1', itemId: it38.id, k: 0, nombre: it38.nombre, dientes: [38], sesion: 1, sesiones: 1 }] });
+  ci('ci_2', 'p2', 'u_luis', 's_centro', hoy, '09:30', 40, { consultorio: 'Consultorio 2', estado: 'atendida', motivo: 'Revisión de implante' });
+  ci('ci_3', 'p4', 'u_sofia', 's_norte', hoy, '11:00', 30, { consultorio: 'Consultorio B', estado: 'llego', motivo: 'Control de ortodoncia', servicios: [{ tratamientoId: 't_OR-02', nombre: D.tratamientos['t_OR-02'].nombre }] });
+  ci('ci_4', 'p3', 'u_paola', 's_centro', hoy, '13:00', 30, { consultorio: 'Consultorio 1', servicios: [{ tratamientoId: 't_OD-01', nombre: D.tratamientos['t_OD-01'].nombre }] });
+  ci('ci_5', 'p5', 'u_ana', 's_centro', hoy, '12:00', 50, { consultorio: 'Consultorio 1', motivo: 'Valoración', servicios: [{ tratamientoId: 't_DX-01', nombre: D.tratamientos['t_DX-01'].nombre }] });
+  ci('ci_6', 'p1', 'u_ana', 's_centro', man, '09:00', 90, { consultorio: 'Consultorio 1', items: [{ planId: 'pl_demo1', itemId: itLimp.id, k: 0, nombre: itLimp.nombre, dientes: [], sesion: 1, sesiones: 1 }, { planId: 'pl_demo1', itemId: it26.id, k: 0, nombre: it26.nombre, dientes: [26], sesion: 1, sesiones: 1 }] });
+  ci('ci_7', 'p6', 'u_jorge', 's_ext1', man, '17:00', 60, { motivo: 'Extracción en hospital' });
+  D.bloqueos.bq_1 = { dentistaId: 'u_luis', fechaIni: man, fechaFin: man, todoDia: false, horaIni: '13:00', horaFin: '19:00', motivo: 'Congreso de implantología', estado: 'activo', origen: 'app', gcal: { sync: 'ok' }, ...sys };
+  D.config.agenda = { bloqueMin: 10, zona: 'America/Mazatlan', appsScriptUrl: '', ...sys };
   D.bitacora[newId('b')] = { fecha: t, uid: 'u_admin', usuario: 'Administrador principal', coleccion: 'config', docId: 'clinica', accion: 'Alta', resumen: 'Se cargaron los datos de ejemplo' };
   S.data = D; demoPersist();
 }
@@ -648,6 +711,8 @@ const I = {
   team: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg>',
   pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
   doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>',
+  cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h3v3H8z"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 };
 $$('.brand-mark').forEach(el => el.innerHTML = `<span style="color:var(--accent-ink);display:grid">${I.tooth}</span>`);
@@ -700,7 +765,7 @@ function showLogin(msg = '') {
   if (S.mode === 'demo') {
     const us = list('usuarios').filter(u => u.activo !== false).sort((a, b) => (a.rol === 'admin' ? -1 : 0) - (b.rol === 'admin' ? -1 : 0) || a.nombre.localeCompare(b.nombre));
     L.innerHTML = `<div class="login-card">
-      <div class="brand"><div class="brand-mark">${`<span style="color:var(--accent-ink);display:grid">${I.tooth}</span>`}</div><div><h1>${esc(clinica().nombre)}</h1><p>Expediente y gestión de la clínica</p></div></div>
+      <div class="brand"><div class="brand-mark">${markHTML()}</div><div><h1>${esc(marca().nombre)}</h1><p>${esc(clinica().nombre)}</p></div></div>
       <div class="info"><b>Modo demostración.</b> Elige un usuario para ver la plataforma con su rol. Los datos son de ejemplo y se guardan solo en este navegador.</div>
       <div class="demo-users">${us.map(u => `<button class="demo-user" data-uid="${u.id}"><span class="avatar" style="background:${esc(u.color || '#0e6b70')}">${esc(iniciales(u.nombre))}</span><div><b>${esc(u.nombre)}</b><span>${esc(u.especialidad || u.email)}</span></div><span class="pill ${u.rol === 'admin' ? 'acc' : ''}">${ROLES[u.rol]}</span></button>`).join('')}</div>
       <p class="mute" style="margin:0;font-size:12.5px">Versión ${VERSION_APP}</p></div>`;
@@ -708,7 +773,7 @@ function showLogin(msg = '') {
     return;
   }
   L.innerHTML = `<form class="login-card" id="lform">
-    <div class="brand"><div class="brand-mark"><span style="color:var(--accent-ink);display:grid">${I.tooth}</span></div><div><h1>Acceso a la clínica</h1><p>Personal: dentistas, recepción y administración</p></div></div>
+    <div class="brand"><div class="brand-mark">${markHTML()}</div><div><h1>${esc(marca().nombre)}</h1><p>Acceso para dentistas, recepción y administración</p></div></div>
     ${msg ? `<div class="err">${esc(msg)}</div>` : ''}
     <label class="f">Correo<input type="email" name="email" id="lEmail" required autocomplete="username"></label>
     <label class="f">Contraseña<input type="password" name="pass" id="lPass" required autocomplete="current-password"></label>
@@ -765,12 +830,14 @@ async function salir() {
 /* ============================ NAVEGACIÓN ============================ */
 const VIEWS = [
   { id: 'inicio', label: 'Inicio', icon: 'home' },
+  { id: 'agenda', label: 'Agenda', icon: 'cal' },
   { id: 'pacientes', label: 'Pacientes', icon: 'users' },
   { id: 'catalogo', label: 'Catálogo', icon: 'list' },
   { id: 'equipo', label: 'Equipo', icon: 'team' },
   { id: 'sedes', label: 'Sedes', icon: 'pin' },
   { id: 'clinica', label: 'Aviso y clínica', icon: 'doc', admin: true },
-  { id: 'bitacora', label: 'Bitácora', icon: 'clock', admin: true }
+  { id: 'bitacora', label: 'Bitácora', icon: 'clock', admin: true },
+  { id: 'ajustes', label: 'Ajustes', icon: 'gear', admin: true }
 ];
 function showApp() {
   $('#login').hidden = true; $('#app').hidden = false;
@@ -780,7 +847,7 @@ function showApp() {
   }
   render();
 }
-function go(v) { S.view = v; render(); window.scrollTo(0, 0); }
+function go(v) { if (S.ui.marcaTmp) { S.ui.marcaTmp = null; aplicarMarca(marca()); } S.view = v; render(); window.scrollTo(0, 0); }
 function sinConsentimiento() { const v = clinica().aviso?.version || 1; return list('pacientes').filter(p => p.estado !== 'baja' && (!p.consentimiento?.aceptado || (p.consentimiento.version || 1) < v)); }
 
 function render() {
@@ -792,9 +859,10 @@ function render() {
   $('#nav').innerHTML = vis.map(v => `<button data-act="nav" data-view="${v.id}" class="${navV === v.id ? 'on' : ''}">${I[v.icon]}<span>${v.label}</span>${v.id === 'pacientes' && pend ? `<span class="badge" title="Pacientes sin consentimiento vigente">${pend}</span>` : ''}</button>`).join('');
   $('#bnav').innerHTML = vis.map(v => `<button data-act="nav" data-view="${v.id}" class="${navV === v.id ? 'on' : ''}">${I[v.icon]}<span>${v.label.split(' ')[0]}</span></button>`).join('');
   const c = clinica();
-  $('#sideClinic').textContent = c.nombre; $('#topClinic').textContent = c.nombre;
+  const mk = marca(), sig = JSON.stringify(mk); if (S.marcaSig !== sig) { S.marcaSig = sig; aplicarMarca(mk); }
+  $('#sideClinic').textContent = c.nombre; $('#topClinic').textContent = mk.nombre;
   $('#meBox').innerHTML = `<div style="display:flex;gap:10px;align-items:center"><span class="avatar" style="background:${esc(S.me.color || '#0e6b70')}">${esc(iniciales(S.me.nombre))}</span><div style="min-width:0"><b>${esc(S.me.nombre)}</b><span>${ROLES[S.me.rol]}</span></div></div><button class="btn sm" data-act="salir">${S.mode === 'demo' ? 'Cambiar de usuario' : 'Cerrar sesión'}</button>`;
-  const VW = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora, expediente: vExpediente }[S.view];
+  const VW = { inicio: vInicio, pacientes: vPacientes, catalogo: vCatalogo, equipo: vEquipo, sedes: vSedes, clinica: vClinica, bitacora: vBitacora, expediente: vExpediente, agenda: vAgenda, ajustes: vAjustes }[S.view];
   const view = $('#view');
   const ae = document.activeElement, keep = ae && view.contains(ae) && ae.id ? { id: ae.id, s: ae.selectionStart } : null;
   view.innerHTML = VW();
@@ -818,13 +886,14 @@ function vInicio() {
     ['Inventario', 'Existencias por sede y descuento automático de materiales por tratamiento.']
   ];
   return `<div class="vhead"><div><h2>${saludo}, ${esc(S.me.nombre.split(' ').slice(0, 2).join(' '))}</h2><p>${esc(clinica().nombre)} · ${ROLES[S.me.rol]}</p></div>
-    <div class="acts"><button class="btn primary" data-act="pac-nuevo">Registrar paciente</button></div></div>
+    <div class="acts"><button class="btn" data-act="cita-nueva">Nueva cita</button><button class="btn primary" data-act="pac-nuevo">Registrar paciente</button></div></div>
   <div class="stats">
     <div class="stat"><b>${pacs.length}</b><span>Pacientes activos</span></div>
     <div class="stat ${pend.length ? 'warn' : ''}"><b>${pend.length}</b><span>Sin consentimiento vigente</span></div>
     <div class="stat"><b>${ds.length}</b><span>Dentistas en el equipo</span></div>
     <div class="stat"><b>${trs.length}</b><span>Tratamientos en catálogo</span></div>
   </div>
+  ${panelCitasHoy()}
   <div class="two">
     <div class="panel"><div class="panel-h"><h3>Requieren consentimiento</h3><span class="mute" style="font-size:13px">Firma del aviso de privacidad pendiente o desactualizada</span></div>
       ${pend.length ? `<div class="rows">${pend.slice(0, 8).map(p => filaPaciente(p)).join('')}</div>` : `<div class="empty">Todos los pacientes activos tienen su consentimiento vigente.</div>`}
@@ -832,7 +901,7 @@ function vInicio() {
     <div style="display:grid;gap:18px">
       ${S.me.rol !== 'recepcion' ? `<div class="panel"><div class="panel-h"><h3>Mis pacientes</h3><span class="pill acc">${mios.length}</span></div>
         ${mios.length ? `<div class="rows">${mios.slice(0, 5).map(p => filaPaciente(p, true)).join('')}</div>` : `<div class="empty">Aún no tienes pacientes asignados como dentista responsable.</div>`}</div>` : ''}
-      <div class="panel"><div class="panel-h"><h3>Plan del proyecto</h3></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li class="${i === 0 ? 'now' : ''}"><span class="n">${i + 1}</span><div><b>${f[0]}${i === 0 ? ' <span class="pill acc">Actual</span>' : ''}</b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
+      <div class="panel"><div class="panel-h"><h3>Plan del proyecto</h3></div><div class="panel-b"><ol class="roadmap">${fases.map((f, i) => `<li class="${i === 2 ? 'now' : ''}"><span class="n">${i + 1}</span><div><b>${f[0]}${i < 2 ? ' <span class="pill ok">Lista</span>' : i === 2 ? ' <span class="pill acc">Actual</span>' : ''}</b><span class="mute">${f[1]}</span></div></li>`).join('')}</ol></div></div>
     </div>
   </div>`;
 }
@@ -1156,6 +1225,7 @@ function formUsuario(id) {
       <label class="f">Especialidad<input type="text" name="especialidad" id="fuEsp" value="${esc(u.especialidad)}"></label>
       <label class="f">Cédula profesional<input type="text" name="cedula" id="fuCed" value="${esc(u.cedula)}"></label>
       <label class="f">Teléfono<input type="tel" name="telefono" id="fuTel" value="${esc(u.telefono)}"></label>
+      <label class="f span2">Correo de Google Calendar<input type="email" name="gcalEmail" id="fuGcal" value="${esc(u.gcalEmail || '')}" placeholder="Si es distinto al correo de acceso (debe ser una cuenta de Google)"><span class="mute" style="font-weight:500;font-size:12px">Con este correo se comparte su calendario de citas. Si se deja vacío se usa el correo de acceso.</span></label>
       <label class="f">Color en agenda<select name="color" id="fuColor">${COLORES.map((c, i) => opt(c, ['Verde azulado', 'Rosa', 'Azul', 'Ámbar', 'Morado', 'Verde', 'Rojo', 'Celeste'][i], u.color)).join('')}</select></label>
       <fieldset class="span2"><legend>Sedes donde atiende o trabaja</legend><div style="display:flex;flex-wrap:wrap;gap:8px 18px">${sedes.map(s => `<label class="check"><input type="checkbox" name="sedes" value="${s.id}" ${(u.sedes || []).includes(s.id) ? 'checked' : ''}> ${esc(s.nombre)}${s.tipo === 'externa' ? ' <span class="pill">Externa</span>' : ''}</label>`).join('') || '<span class="mute">Primero registra las sedes.</span>'}</div></fieldset>
       ${id && !esYo ? `<label class="check span2"><input type="checkbox" name="activo" id="fuActivo" ${u.activo !== false ? 'checked' : ''}> Tiene acceso a la plataforma (desmarca para quitarle el acceso sin borrar su historial)</label>` : ''}
@@ -1163,7 +1233,7 @@ function formUsuario(id) {
     onOpen: f => { const r = f.elements.rol, a = f.elements.atiende; r.onchange = () => { if (r.value === 'dentista') a.checked = true; if (r.value === 'recepcion') a.checked = false; }; },
     onSubmit: async f => {
       const rol = esYo ? u.rol : fv(f, 'rol');
-      const data = { nombre: fv(f, 'nombre'), email: fv(f, 'email').toLowerCase(), rol, atiende: rol === 'dentista' ? true : f.elements.atiende.checked, especialidad: fv(f, 'especialidad'), cedula: fv(f, 'cedula'), telefono: fv(f, 'telefono'), color: fv(f, 'color'), sedes: $$('input[name=sedes]:checked', f).map(x => x.value) };
+      const data = { nombre: fv(f, 'nombre'), email: fv(f, 'email').toLowerCase(), rol, atiende: rol === 'dentista' ? true : f.elements.atiende.checked, especialidad: fv(f, 'especialidad'), cedula: fv(f, 'cedula'), telefono: fv(f, 'telefono'), gcalEmail: fv(f, 'gcalEmail').toLowerCase(), color: fv(f, 'color'), sedes: $$('input[name=sedes]:checked', f).map(x => x.value) };
       if (id && !esYo) data.activo = f.elements.activo.checked;
       if (!id) data.activo = true;
       if (list('usuarios').some(x => x.id !== id && (x.email || '').toLowerCase() === data.email)) return formErr(f, 'Ya hay un usuario con ese correo.');
@@ -1211,23 +1281,26 @@ function vSedes() {
   const adm = esAdmin(), ss = list('sedes').sort((a, b) => (a.tipo === 'externa') - (b.tipo === 'externa') || a.nombre.localeCompare(b.nombre));
   const quienes = id => list('usuarios').filter(u => u.activo !== false && (u.sedes || []).includes(id) && (u.rol === 'dentista' || u.atiende));
   return `<div class="vhead"><div><h2>Sedes</h2><p>Sedes propias de la clínica y sedes externas donde algunos dentistas también atienden. Las atenciones en sedes externas se registran en agenda, materiales e ingresos.</p></div>
-    <div class="acts">${adm ? '<button class="btn primary" data-act="se-nuevo">Agregar sede</button>' : ''}</div></div>
+    <div class="acts">${adm ? '<button class="btn primary" data-act="se-nuevo">Agregar sede</button>' : '<button class="btn primary" data-act="se-nuevo">Agregar sede externa</button>'}</div></div>
   ${ss.length ? `<div class="cards">${ss.map(s => { const q = quienes(s.id); return `<div class="card"><div class="ch"><b style="flex:1">${esc(s.nombre)}</b><span class="pill ${s.tipo === 'externa' ? '' : 'acc'}">${s.tipo === 'externa' ? 'Externa' : 'Propia'}</span>${s.activo === false ? '<span class="pill bad">Inactiva</span>' : ''}</div>
-    <div class="meta">${s.direccion ? `<span>${esc(s.direccion)}</span>` : ''}${s.telefono ? `<span class="mono">${esc(s.telefono)}</span>` : ''}<span>${(s.consultorios || []).length ? esc(s.consultorios.join(' · ')) : 'Sin consultorios registrados'}</span></div>
+    <div class="meta">${s.direccion ? `<span>${esc(s.direccion)}</span>` : ''}${s.telefono ? `<span class="mono">${esc(s.telefono)}</span>` : ''}<span>${(s.consultorios || []).length ? esc(s.consultorios.join(' · ')) : 'Sin consultorios registrados'}</span><span>${DIAS_ORDEN.map(d => { const h = (s.horario || (s.tipo === 'externa' ? HORARIO_EXT : HORARIO_DEF))[d]; return h ? `${d.slice(0, 2)} ${h.a}–${h.c}` : ''; }).filter(Boolean).join(' · ')}</span></div>
     <div style="display:flex;gap:4px;flex-wrap:wrap">${q.map(u => `<span class="avatar" title="${esc(u.nombre)}" style="width:28px;height:28px;font-size:11px;background:${esc(u.color || '#0e6b70')}">${esc(iniciales(u.nombre))}</span>`).join('') || '<span class="mute" style="font-size:13px">Sin dentistas asignados</span>'}</div>
-    ${adm ? `<div class="acts"><button class="btn sm" data-act="se-editar" data-id="${s.id}">Editar</button></div>` : ''}</div>`; }).join('')}</div>` : `<div class="panel"><div class="empty">Aún no hay sedes registradas.${adm ? ' Agrega las dos sedes de la clínica y las externas donde atienden.' : ''}</div></div>`}`;
+    ${adm || s.tipo === 'externa' ? `<div class="acts"><button class="btn sm" data-act="se-editar" data-id="${s.id}">Editar</button></div>` : ''}</div>`; }).join('')}</div>` : `<div class="panel"><div class="empty">Aún no hay sedes registradas.${adm ? ' Agrega las dos sedes de la clínica y las externas donde atienden.' : ''}</div></div>`}`;
 }
 function formSede(id) {
-  const s = id ? get('sedes', id) : { tipo: 'propia', activo: true, consultorios: [] };
-  modal({ title: id ? 'Editar sede' : 'Agregar sede', body: `<div class="grid2">
+  const s = id ? get('sedes', id) : { tipo: esAdmin() ? 'propia' : 'externa', activo: true, consultorios: [] };
+  const hor = s.horario || (s.tipo === 'externa' ? HORARIO_EXT : HORARIO_DEF);
+  modal({ title: id ? 'Editar sede' : 'Agregar sede', wide: true, body: `<div class="grid2">
       <label class="f span2">Nombre <span class="req">*</span><input type="text" name="nombre" id="fsNombre" required value="${esc(s.nombre)}"></label>
-      <label class="f">Tipo<select name="tipo" id="fsTipo">${opt('propia', 'Sede propia de la clínica', s.tipo)}${opt('externa', 'Sede externa', s.tipo)}</select></label>
+      <label class="f">Tipo<select name="tipo" id="fsTipo" ${esAdmin() ? '' : 'disabled'}>${opt('propia', 'Sede propia de la clínica', s.tipo)}${opt('externa', 'Sede externa', s.tipo)}</select></label>
       <label class="f">Teléfono<input type="tel" name="telefono" id="fsTel" value="${esc(s.telefono)}"></label>
       <label class="f span2">Dirección<input type="text" name="direccion" id="fsDir" value="${esc(s.direccion)}"></label>
       <label class="f span2">Consultorios o sillones<input type="text" name="consultorios" id="fsCons" value="${esc((s.consultorios || []).join(', '))}" placeholder="Consultorio 1, Consultorio 2"><span class="mute" style="font-weight:500;font-size:12.5px">Sepáralos con comas. Se usan para la agenda.</span></label>
+      <fieldset class="span2"><legend>Horario de atención</legend><div class="horario">${DIAS_ORDEN.map(d => { const h = hor[d]; return `<div class="hrow"><span>${DIAS_L[d]}</span><label class="check"><input type="checkbox" name="ab_${d}" ${h ? 'checked' : ''}> Abre</label><input type="time" name="a_${d}" step="600" value="${h?.a || '09:00'}" aria-label="Abre ${DIAS_L[d]}"><input type="time" name="c_${d}" step="600" value="${h?.c || '19:00'}" aria-label="Cierra ${DIAS_L[d]}"></div>`; }).join('')}</div></fieldset>
       <label class="check span2"><input type="checkbox" name="activo" id="fsActivo" ${s.activo !== false ? 'checked' : ''}> Activa</label></div>`,
     onSubmit: async f => {
-      const data = { nombre: fv(f, 'nombre'), tipo: fv(f, 'tipo'), telefono: fv(f, 'telefono'), direccion: fv(f, 'direccion'), consultorios: fv(f, 'consultorios').split(',').map(x => x.trim()).filter(Boolean), activo: f.elements.activo.checked };
+      const horario = {}; for (const d of DIAS_ORDEN) { if (!f.elements['ab_' + d].checked) { horario[d] = null; continue; } const a = f.elements['a_' + d].value, c = f.elements['c_' + d].value; if (hm(c) <= hm(a)) return formErr(f, `En ${DIAS_L[d]} la hora de cierre debe ser posterior a la de apertura.`); horario[d] = { a, c }; }
+      const data = { nombre: fv(f, 'nombre'), tipo: esAdmin() ? fv(f, 'tipo') : 'externa', telefono: fv(f, 'telefono'), direccion: fv(f, 'direccion'), consultorios: fv(f, 'consultorios').split(',').map(x => x.trim()).filter(Boolean), horario, activo: f.elements.activo.checked };
       await guardar('sedes', id, data, (id ? 'Editó sede ' : 'Agregó sede ') + data.nombre, { nuevo: !id }); toast('Sede guardada.');
     } });
 }
@@ -1749,6 +1822,7 @@ function tabResumen(p) {
       ${extrasHTML(p.extras)}
     </div>
     <div style="display:grid;gap:18px">
+      ${panelCitasPaciente(p)}
       <div class="panel"><div class="panel-h"><h3>Plan de tratamiento</h3></div><div class="panel-b">
         ${pa ? `<dl class="kv" style="margin:0"><dt>Versión</dt><dd>v${pa.version} · <span class="pill ${PLAN_EST[pa.estado].c}">${PLAN_EST[pa.estado].l}</span></dd><dt>Total</dt><dd class="num"><b>${money(tot.total)}</b></dd><dt>Realizado</dt><dd class="num">${money(tot.realizado)} · ${tot.pctAvance}% del plan</dd><dt>Citas</dt><dd>${tot.citas} propuestas · ${tot.citasHechas} completadas</dd></dl>
           <div class="bar" style="margin-top:12px"><span style="width:${tot.pctAvance}%"></span></div>
@@ -2016,7 +2090,7 @@ function filaSesion(pl, it, k, ed, clin) {
   return `<tr class="${hecha ? 'rowdone' : ''}"><td class="mono" style="width:72px"><b>${(it.dientes || []).join(', ') || 'Boca'}</b>${it.caras?.length ? `<div class="mute" style="font-size:11.5px">${it.caras.join('')}</div>` : ''}</td>
     <td><b>${esc(it.nombre)}</b><span class="mute">${ses}</span><div class="mute" style="font-size:12.5px">${esc(nombreUsuario(it.dentistaId))}${it.descuentoPct ? ` · ${it.descuentoPct}% desc.` : ''}${hecha ? ` · realizado ${fechaCorta(hecha.fecha)} por ${esc(nombreUsuario(hecha.dentistaId))}` : ''}</div></td>
     <td class="r num" style="white-space:nowrap">${money(precioSesion(it))}</td>
-    <td class="r" style="white-space:nowrap">${citaSel}${clin && !hecha && !['reemplazado', 'cancelado', 'terminado'].includes(pl.estado) && pl.estado !== 'borrador' && pl.estado !== 'presentado' ? `<button class="btn sm" data-act="plan-hecho" data-item="${it.id}" data-k="${k}">Marcar realizado</button>` : ''}${hecha ? '<span class="pill ok">Realizado</span>' : ''}
+    <td class="r" style="white-space:nowrap">${(() => { if (hecha || ['reemplazado', 'cancelado', 'terminado'].includes(pl.estado)) return ''; const ag = citaDeSesion(it.id, k); return ag ? `<button class="pill acc" data-act="cita-ver" data-id="${ag.id}" style="border:0;cursor:pointer;margin-right:6px">Agendada ${fechaCortaD(ag.fecha)} ${ag.inicio}</button>` : (pl.estado === 'borrador' || !puedeEditarCita(it.dentistaId) ? '' : `<button class="btn sm" data-act="cita-sesion" data-item="${it.id}" data-k="${k}">Agendar</button> `); })()}${citaSel}${clin && !hecha && !['reemplazado', 'cancelado', 'terminado'].includes(pl.estado) && pl.estado !== 'borrador' && pl.estado !== 'presentado' ? `<button class="btn sm" data-act="plan-hecho" data-item="${it.id}" data-k="${k}">Marcar realizado</button>` : ''}${hecha ? '<span class="pill ok">Realizado</span>' : ''}
       ${ed ? `<button class="icon-btn sm" data-act="plan-item-editar" data-item="${it.id}" aria-label="Editar tratamiento" title="Editar">✎</button>` : ''}</td></tr>`;
 }
 async function nuevoPlan(pid, items = []) {
@@ -2541,6 +2615,482 @@ async function visorPlay() {
   for (let i = 0; i < n; i++) { if (S.view !== 'expediente' || S.ui.expTab !== 'visor' || !S.ui.vSel) break; S.ui.vEtapa = i; visorAnimarEtapa(i); render(); await new Promise(r => setTimeout(r, 1900)); }
   S.ui.vAnimando = false;
 }
+/* =====================================================================
+   FASE 3 · AGENDA, BLOQUEOS, MATERIALES, GOOGLE CALENDAR Y APARIENCIA
+   ===================================================================== */
+const DIAS = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+const DIAS_L = { lun: 'Lunes', mar: 'Martes', mie: 'Miércoles', jue: 'Jueves', vie: 'Viernes', sab: 'Sábado', dom: 'Domingo' };
+const DIAS_ORDEN = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom'];
+const HORARIO_DEF = { lun: { a: '09:00', c: '19:00' }, mar: { a: '09:00', c: '19:00' }, mie: { a: '09:00', c: '19:00' }, jue: { a: '09:00', c: '19:00' }, vie: { a: '09:00', c: '19:00' }, sab: { a: '09:00', c: '14:00' }, dom: null };
+const HORARIO_EXT = Object.fromEntries(DIAS_ORDEN.map(d => [d, { a: '07:00', c: '21:00' }]));
+const confAgenda = () => ({ bloqueMin: 10, zona: 'America/Mazatlan', appsScriptUrl: '', ...(get('config', 'agenda') || {}) });
+const hm = s => { const [h, m] = String(s || '0:0').split(':').map(Number); return (h || 0) * 60 + (m || 0); };
+const hhmm = n => `${pad2(Math.floor(n / 60))}:${pad2(n % 60)}`;
+const diaSemana = iso => DIAS[new Date(iso + 'T12:00:00').getDay()];
+const fechaLarga = iso => new Date(iso + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+const fechaCortaD = iso => new Date(iso + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
+const lunesDe = iso => { const d = new Date(iso + 'T12:00:00'); return sumarDias(iso, -((d.getDay() + 6) % 7)); };
+const horarioSede = (s, iso) => (s?.horario || (s?.tipo === 'externa' ? HORARIO_EXT : HORARIO_DEF))[diaSemana(iso)] || null;
+const CITA_EST = { agendada: { l: 'Agendada', c: '' }, confirmada: { l: 'Confirmada', c: 'acc' }, llego: { l: 'En sala de espera', c: 'warn' }, atendida: { l: 'Atendida', c: 'ok' }, no_asistio: { l: 'No asistió', c: 'bad' }, cancelada: { l: 'Cancelada', c: 'bad' } };
+const citaActiva = c => c.estado !== 'cancelada';
+const bloqueosEn = (dent, iso) => list('bloqueos').filter(b => b.estado !== 'cancelado' && (!b.dentistaId || b.dentistaId === dent) && b.fechaIni <= iso && b.fechaFin >= iso);
+const puedeEditarCita = dent => S.me.rol !== 'dentista' || dent === S.me.id;
+const citasDePaciente = pid => list('citas').filter(c => c.pacienteId === pid).sort((a, b) => (a.fecha + a.inicio).localeCompare(b.fecha + b.inicio));
+const citaDeSesion = (itemId, k, salvo) => list('citas').find(c => c.id !== salvo && citaActiva(c) && (c.items || []).some(x => x.itemId === itemId && x.k === k));
+const finCita = c => hhmm(hm(c.inicio) + (Number(c.duracionMin) || 10));
+
+/* Avisa al Apps Script que hay cambios para Google Calendar (no bloquea si falla) */
+function avisarSync() {
+  const u = confAgenda().appsScriptUrl;
+  if (u && S.mode === 'firebase') fetch(u + (u.includes('?') ? '&' : '?') + 'accion=sync', { mode: 'no-cors' }).catch(() => {});
+}
+
+function sesionesPendientes(pid, citaId) {
+  const pl = planActivo(pid); if (!pl) return [];
+  const out = [];
+  (pl.items || []).forEach(it => {
+    if (['cancelado', 'realizado'].includes(it.estado)) return;
+    for (let k = 0; k < (it.sesiones || 1); k++) {
+      if ((it.hechas || [])[k]) continue;
+      out.push({ planId: pl.id, itemId: it.id, k, nombre: it.nombre, dientes: it.dientes || [], dur: Number(it.duracionMin) || 30, dentistaId: it.dentistaId, ses: it.sesiones || 1, citaPlan: it.citas?.[k], fechaPlan: it.citas?.[k] != null ? pl.citas?.[it.citas[k]]?.fecha : null, agendada: citaDeSesion(it.id, k, citaId) });
+    }
+  });
+  return out.sort((a, b) => (a.citaPlan ?? 99) - (b.citaPlan ?? 99));
+}
+function conflictos(c, ignorarId) {
+  const out = [], ini = hm(c.inicio), fin = ini + (Number(c.duracionMin) || 10);
+  const s = get('sedes', c.sedeId), h = horarioSede(s, c.fecha);
+  if (s && !h) out.push(`${s.nombre} no abre en ${DIAS_L[diaSemana(c.fecha)].toLowerCase()}`);
+  else if (s && (ini < hm(h.a) || fin > hm(h.c))) out.push(`Fuera del horario de ${s.nombre} (${h.a} a ${h.c})`);
+  list('citas').filter(x => x.id !== ignorarId && citaActiva(x) && x.fecha === c.fecha).forEach(x => {
+    const a = hm(x.inicio), b = a + (Number(x.duracionMin) || 10); if (!(a < fin && ini < b)) return;
+    if (x.dentistaId === c.dentistaId) out.push(`${nombreUsuario(x.dentistaId)} ya tiene cita de ${x.inicio} a ${hhmm(b)} (${x.pacienteNombre})`);
+    else if (c.consultorio && x.sedeId === c.sedeId && x.consultorio === c.consultorio) out.push(`${c.consultorio} está ocupado de ${x.inicio} a ${hhmm(b)}`);
+    if (x.pacienteId === c.pacienteId && x.dentistaId !== c.dentistaId) out.push('El paciente ya tiene otra cita a esa hora');
+  });
+  bloqueosEn(c.dentistaId, c.fecha).forEach(b => { const a = b.todoDia ? 0 : hm(b.horaIni), e = b.todoDia ? 1440 : hm(b.horaFin); if (a < fin && ini < e) out.push(`Horario bloqueado${b.dentistaId ? ' para ' + nombreUsuario(b.dentistaId) : ' en la clínica'}: ${b.motivo || 'sin motivo'}`); });
+  return [...new Set(out)];
+}
+/* Materiales: el material de cada tratamiento se reparte entre sus sesiones */
+function materialesDe(citas) {
+  const m = {};
+  const sumar = (trId, factor, citaId) => { const t = get('tratamientos', trId); (t?.materiales || []).forEach(x => { const r = m[x.insumoId] = m[x.insumoId] || { cant: 0, citas: new Set() }; r.cant += (Number(x.cantidad) || 0) * factor; r.citas.add(citaId); }); };
+  citas.forEach(c => {
+    (c.items || []).forEach(x => { const pl = get('planes', x.planId), it = pl?.items?.find(i => i.id === x.itemId); if (it) sumar(it.tratamientoId, 1 / (it.sesiones || 1), c.id); });
+    (c.servicios || []).forEach(x => sumar(x.tratamientoId, 1, c.id));
+  });
+  return Object.entries(m).map(([id, r]) => ({ ins: get('insumos', id), cant: Math.round(r.cant * 100) / 100, n: r.citas.size })).filter(x => x.ins).sort((a, b) => (a.ins.categoria || '').localeCompare(b.ins.categoria || '') || a.ins.nombre.localeCompare(b.ins.nombre));
+}
+const descCita = c => [...(c.items || []).map(x => x.nombre + (x.dientes?.length ? ` (${x.dientes.join(', ')})` : '')), ...(c.servicios || []).map(x => x.nombre), c.motivo].filter(Boolean).join(' · ') || 'Consulta';
+function waRecordatorio(c) {
+  const p = get('pacientes', c.pacienteId), s = get('sedes', c.sedeId), w = waLink(p?.telefono); if (!w) return '';
+  const txt = `Hola ${p.nombres}, le recordamos su cita en ${clinica().nombre} el ${fechaLarga(c.fecha)} a las ${c.inicio} h${s ? ' en ' + s.nombre : ''} con ${nombreUsuario(c.dentistaId)}. Por favor confírmenos su asistencia. ¡Gracias!`;
+  return w + '?text=' + encodeURIComponent(txt);
+}
+
+/* ---------------- Vista Agenda ---------------- */
+const PX = 1.8; /* píxeles por minuto */
+function agUI() { S.ui.ag = S.ui.ag || { fecha: hoyISO(), modo: 'dia', sede: '', dents: [], dentSemana: (S.me.rol === 'dentista' || S.me.atiende) ? S.me.id : '', rango: 'dia' }; return S.ui.ag; }
+function vAgenda() {
+  const A = agUI(), b = confAgenda().bloqueMin;
+  const todos = dentistas().filter(d => !A.sede || (d.sedes || []).includes(A.sede) || list('citas').some(c => c.dentistaId === d.id && c.sedeId === A.sede && c.fecha === A.fecha));
+  const sel = A.dents.length ? todos.filter(d => A.dents.includes(d.id)) : todos;
+  const sedes = list('sedes').filter(s => s.activo !== false).sort((x, y) => (x.tipo === 'externa') - (y.tipo === 'externa') || x.nombre.localeCompare(y.nombre));
+  const titulo = A.modo === 'semana' ? `Semana del ${fechaCortaD(lunesDe(A.fecha))}` : A.modo === 'materiales' ? 'Materiales' : fechaLarga(A.fecha);
+  const head = `<div class="vhead"><div><h2>Agenda</h2><p style="text-transform:capitalize">${esc(titulo)}${A.fecha === hoyISO() && A.modo === 'dia' ? ' · hoy' : ''}</p></div>
+    <div class="acts"><button class="btn" data-act="bloqueo-nuevo">Bloquear horario</button><button class="btn primary" data-act="cita-nueva">Nueva cita</button></div></div>
+  <div class="panel"><div class="panel-h ag-bar">
+    <div class="seg">${[['dia', 'Día'], ['semana', 'Semana'], ['materiales', 'Materiales']].map(([k, l]) => `<button data-act="ag-modo" data-m="${k}" class="${A.modo === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <div class="quick"><button class="btn sm" data-act="ag-mover" data-d="-1" aria-label="Anterior">‹</button><button class="btn sm" data-act="ag-hoy">Hoy</button><button class="btn sm" data-act="ag-mover" data-d="1" aria-label="Siguiente">›</button><input type="date" id="agFecha" data-change-ag="fecha" value="${A.fecha}" class="cita-fecha" aria-label="Fecha"></div>
+    <select id="agSede" data-change-ag="sede" style="max-width:220px" aria-label="Sede">${opt('', 'Todas las sedes', A.sede)}${sedes.map(s => opt(s.id, s.nombre + (s.tipo === 'externa' ? ' (externa)' : ''), A.sede)).join('')}</select>
+    ${A.modo === 'semana' ? `<select id="agDentSem" data-change-ag="dentSemana" style="max-width:220px" aria-label="Dentista">${opt('', 'Elige dentista', A.dentSemana)}${dentistas().map(d => opt(d.id, d.nombre, A.dentSemana)).join('')}</select>` : ''}
+    </div>
+    ${A.modo !== 'semana' ? `<div class="panel-b chips ag-chips">${todos.map(d => `<button class="chip dchip ${!A.dents.length || A.dents.includes(d.id) ? 'on' : ''}" data-act="ag-dent" data-id="${d.id}" style="--dc:${esc(d.color || '#0e6b70')}"><span class="dot" style="background:${esc(d.color || '#0e6b70')}"></span>${esc(d.nombre)}</button>`).join('') || '<span class="mute">No hay dentistas en esta sede.</span>'}${A.dents.length ? '<button class="btn sm ghost" data-act="ag-dent-todos">Ver todos</button>' : ''}</div>` : ''}
+  </div>`;
+  if (A.modo === 'materiales') return head + vMateriales(sel);
+  const grid = A.modo === 'semana' ? gridSemana(A) : gridDia(A, sel);
+  const proxB = list('bloqueos').filter(x => x.estado !== 'cancelado' && x.fechaFin >= hoyISO()).sort((x, y) => x.fechaIni.localeCompare(y.fechaIni)).slice(0, 12);
+  return head + grid + `<div class="panel"><div class="panel-h"><h3>Horarios bloqueados</h3><span class="mute" style="font-size:13px">Ausencias, vacaciones o compromisos. Los creados en Google Calendar llegan aquí solos.</span></div>
+    ${proxB.length ? `<div class="rows">${proxB.map(x => `<button class="row" data-act="bloqueo-ver" data-id="${x.id}"><div><div class="t1">${x.dentistaId ? esc(nombreUsuario(x.dentistaId)) : 'Toda la clínica'}${x.origen === 'google' ? ' <span class="pill">Google Calendar</span>' : ''}</div><div class="t2"><span>${fechaCortaD(x.fechaIni)}${x.fechaFin !== x.fechaIni ? ' a ' + fechaCortaD(x.fechaFin) : ''}</span><span>${x.todoDia ? 'Todo el día' : x.horaIni + ' a ' + x.horaFin}</span><span>${esc(x.motivo || '')}</span></div></div></button>`).join('')}</div>` : '<div class="empty">Sin horarios bloqueados próximos.</div>'}</div>`;
+}
+function rangoHoras(fecha, sedesIds, citas) {
+  let a = 24 * 60, c = 0;
+  sedesIds.forEach(id => { const h = horarioSede(get('sedes', id), fecha); if (h) { a = Math.min(a, hm(h.a)); c = Math.max(c, hm(h.c)); } });
+  citas.forEach(x => { a = Math.min(a, hm(x.inicio)); c = Math.max(c, hm(x.inicio) + (Number(x.duracionMin) || 10)); });
+  if (a >= c) { a = 8 * 60; c = 20 * 60; }
+  return [Math.floor(a / 60) * 60, Math.ceil(c / 60) * 60];
+}
+function bloqueCita(c, min0, ancho) {
+  const top = (hm(c.inicio) - min0) * PX, h = Math.max(18, (Number(c.duracionMin) || 10) * PX - 2), d = get('usuarios', c.dentistaId), e = CITA_EST[c.estado] || CITA_EST.agendada;
+  return `<button class="ag-cita est-${c.estado}" style="top:${top}px;height:${h}px;--dc:${esc(d?.color || '#0e6b70')}" data-act="cita-ver" data-id="${c.id}" title="${esc(c.pacienteNombre)} · ${c.inicio}–${finCita(c)} · ${esc(descCita(c))}">
+    <b>${c.inicio} ${esc(c.pacienteNombre)}</b>${h > 30 ? `<span>${esc(descCita(c))}</span>` : ''}${h > 48 ? `<span class="ag-st">${e.l}${c.consultorio ? ' · ' + esc(c.consultorio) : ''}${ancho ? '' : ''}</span>` : ''}${c.gcal?.sync === 'error' ? '<i class="gerr" title="Error al sincronizar con Google">!</i>' : ''}</button>`;
+}
+function bloqueBloqueo(b, min0, min1) {
+  const a = b.todoDia ? min0 : Math.max(min0, hm(b.horaIni)), e = b.todoDia ? min1 : Math.min(min1, hm(b.horaFin)); if (e <= a) return '';
+  return `<div class="ag-bloq" style="top:${(a - min0) * PX}px;height:${(e - a) * PX}px" data-act="bloqueo-ver" data-id="${b.id}"><span>${esc(b.motivo || 'Bloqueado')}</span></div>`;
+}
+function columnaCerrada(fecha, sedesIds, min0, min1) {
+  /* sombrea lo que queda fuera del horario de todas las sedes del dentista */
+  const hs = sedesIds.map(id => horarioSede(get('sedes', id), fecha)).filter(Boolean);
+  if (!hs.length) return `<div class="ag-off" style="top:0;height:${(min1 - min0) * PX}px"></div>`;
+  const a = Math.min(...hs.map(h => hm(h.a))), c = Math.max(...hs.map(h => hm(h.c)));
+  return (a > min0 ? `<div class="ag-off" style="top:0;height:${(a - min0) * PX}px"></div>` : '') + (c < min1 ? `<div class="ag-off" style="top:${(c - min0) * PX}px;height:${(min1 - c) * PX}px"></div>` : '');
+}
+function lineaAhora(fecha, min0, min1) {
+  if (fecha !== hoyISO()) return ''; const d = new Date(), n = d.getHours() * 60 + d.getMinutes();
+  return n > min0 && n < min1 ? `<div class="ag-now" style="top:${(n - min0) * PX}px"></div>` : '';
+}
+function horasCol(min0, min1) { let h = ''; for (let m = min0; m < min1; m += 60) h += `<span style="top:${(m - min0) * PX}px">${hhmm(m)}</span>`; return `<div class="ag-times" style="height:${(min1 - min0) * PX}px">${h}</div>`; }
+function gridDia(A, dents) {
+  if (!dents.length) return '<div class="panel"><div class="empty">No hay dentistas para mostrar.</div></div>';
+  const citas = list('citas').filter(c => c.fecha === A.fecha && citaActiva(c) && (!A.sede || c.sedeId === A.sede) && dents.some(d => d.id === c.dentistaId));
+  const sedesIds = A.sede ? [A.sede] : [...new Set(dents.flatMap(d => d.sedes || []))];
+  const [min0, min1] = rangoHoras(A.fecha, sedesIds, citas), H = (min1 - min0) * PX, b = confAgenda().bloqueMin;
+  return `<div class="ag-wrap"><div class="ag-grid" style="grid-template-columns:52px repeat(${dents.length},minmax(150px,1fr))">
+    <div class="ag-h"></div>${dents.map(d => { const n = citas.filter(c => c.dentistaId === d.id).length; return `<div class="ag-h"><span class="avatar" style="width:26px;height:26px;font-size:11px;background:${esc(d.color || '#0e6b70')}">${esc(iniciales(d.nombre))}</span><span class="nm">${esc(d.nombre)}</span><span class="mute num">${n}</span></div>`; }).join('')}
+    ${horasCol(min0, min1)}
+    ${dents.map(d => { const sd = A.sede ? [A.sede] : (d.sedes || []); const edit = puedeEditarCita(d.id);
+      return `<div class="ag-col ${edit ? 'edit' : ''}" style="height:${H}px;--slot:${b * PX}px;--hora:${60 * PX}px" ${edit ? `data-act="ag-slot" data-dent="${d.id}" data-fecha="${A.fecha}" data-min0="${min0}"` : ''}>
+        ${columnaCerrada(A.fecha, sd, min0, min1)}${bloqueosEn(d.id, A.fecha).map(x => bloqueBloqueo(x, min0, min1)).join('')}${citas.filter(c => c.dentistaId === d.id).map(c => bloqueCita(c, min0)).join('')}${lineaAhora(A.fecha, min0, min1)}</div>`; }).join('')}
+  </div></div>`;
+}
+function gridSemana(A) {
+  const d = get('usuarios', A.dentSemana);
+  if (!d) return '<div class="panel"><div class="empty">Elige un dentista para ver su semana.</div></div>';
+  const l = lunesDe(A.fecha), dias = Array.from({ length: 7 }, (_, i) => sumarDias(l, i));
+  const sd = A.sede ? [A.sede] : (d.sedes || []);
+  const citas = list('citas').filter(c => c.dentistaId === d.id && citaActiva(c) && dias.includes(c.fecha) && (!A.sede || c.sedeId === A.sede));
+  const visibles = dias.filter(f => sd.some(id => horarioSede(get('sedes', id), f)) || citas.some(c => c.fecha === f));
+  let min0 = 24 * 60, min1 = 0; visibles.forEach(f => { const [a, c] = rangoHoras(f, sd, citas.filter(x => x.fecha === f)); min0 = Math.min(min0, a); min1 = Math.max(min1, c); });
+  if (min0 >= min1) { min0 = 480; min1 = 1200; }
+  const H = (min1 - min0) * PX, b = confAgenda().bloqueMin, edit = puedeEditarCita(d.id);
+  return `<div class="ag-wrap"><div class="ag-grid" style="grid-template-columns:52px repeat(${visibles.length},minmax(130px,1fr))">
+    <div class="ag-h"></div>${visibles.map(f => `<div class="ag-h ${f === hoyISO() ? 'hoy' : ''}"><span class="nm" style="text-transform:capitalize">${esc(fechaCortaD(f))}</span><span class="mute num">${citas.filter(c => c.fecha === f).length}</span></div>`).join('')}
+    ${horasCol(min0, min1)}
+    ${visibles.map(f => `<div class="ag-col ${edit ? 'edit' : ''}" style="height:${H}px;--slot:${b * PX}px;--hora:${60 * PX}px" ${edit ? `data-act="ag-slot" data-dent="${d.id}" data-fecha="${f}" data-min0="${min0}"` : ''}>${columnaCerrada(f, sd, min0, min1)}${bloqueosEn(d.id, f).map(x => bloqueBloqueo(x, min0, min1)).join('')}${citas.filter(c => c.fecha === f).map(c => bloqueCita(c, min0)).join('')}${lineaAhora(f, min0, min1)}</div>`).join('')}
+  </div></div>`;
+}
+function vMateriales(dents) {
+  const A = agUI(), rango = A.rango || 'dia';
+  const ini = rango === 'semana' ? lunesDe(A.fecha) : A.fecha, fin = rango === 'semana' ? sumarDias(ini, 6) : A.fecha;
+  const citas = list('citas').filter(c => citaActiva(c) && c.estado !== 'no_asistio' && c.fecha >= ini && c.fecha <= fin && (!A.sede || c.sedeId === A.sede) && dents.some(d => d.id === c.dentistaId)).sort((a, b) => (a.fecha + a.inicio).localeCompare(b.fecha + b.inicio));
+  const mats = materialesDe(citas);
+  return `<div class="two"><div class="panel"><div class="panel-h"><h3>Materiales necesarios</h3><div class="seg">${[['dia', 'Del día'], ['semana', 'De la semana']].map(([k, l]) => `<button data-act="ag-rango" data-r="${k}" class="${rango === k ? 'on' : ''}">${l}</button>`).join('')}</div><span class="mute" style="font-size:13px">${citas.length} citas · ${rango === 'semana' ? fechaCortaD(ini) + ' a ' + fechaCortaD(fin) : fechaCortaD(ini)}</span></div>
+    ${mats.length ? `<div class="tablewrap"><table><thead><tr><th>Insumo</th><th>Categoría</th><th class="r">Cantidad</th><th class="r">Citas</th></tr></thead><tbody>${mats.map(m => `<tr><td><b>${esc(m.ins.nombre)}</b></td><td class="mute">${esc(m.ins.categoria || '')}</td><td class="r num"><b>${m.cant}</b> ${esc(m.ins.unidad)}</td><td class="r num">${m.n}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No hay materiales para este periodo. Se calculan con los tratamientos de las citas y los materiales registrados en el catálogo.</div>'}
+    <div class="panel-b"><p class="mute" style="margin:0;font-size:12.5px">Cálculo: el material de cada tratamiento se reparte entre sus sesiones. Las existencias por sede se controlan en la fase 6.</p></div></div>
+    <div class="panel"><div class="panel-h"><h3>Citas incluidas</h3></div>${citas.length ? `<div class="rows">${citas.map(c => `<button class="row" data-act="cita-ver" data-id="${c.id}"><div><div class="t1"><span class="dot" style="background:${esc(get('usuarios', c.dentistaId)?.color || '#0e6b70')}"></span>${esc(c.pacienteNombre)}</div><div class="t2"><span style="text-transform:capitalize">${fechaCortaD(c.fecha)} ${c.inicio}</span><span>${esc(nombreUsuario(c.dentistaId))}</span><span>${esc(descCita(c))}</span></div></div></button>`).join('')}</div>` : '<div class="empty">Sin citas.</div>'}</div></div>`;
+}
+
+/* ---------------- Formulario de cita ---------------- */
+function formCita(id, pre = {}) {
+  const c = id ? get('citas', id) : null;
+  const dentsOk = dentistas().filter(d => puedeEditarCita(d.id));
+  if (!dentsOk.length) { toast('No tienes permiso para agendar citas.'); return; }
+  let pid = c?.pacienteId || pre.pacienteId || '';
+  const dentDef = c?.dentistaId || pre.dentistaId || (dentsOk.find(d => d.id === S.me.id) || dentsOk[0]).id;
+  const dDef = get('usuarios', dentDef);
+  const sedeDef = c?.sedeId || pre.sedeId || agUI().sede || dDef?.sedes?.[0] || '';
+  const sedes = list('sedes').filter(s => s.activo !== false);
+  const pacs = list('pacientes').filter(p => p.estado !== 'baja').sort((a, b) => nombreCompleto(a).localeCompare(nombreCompleto(b)));
+  const b = confAgenda().bloqueMin, horas = []; for (let m = 6 * 60; m <= 22 * 60; m += b) horas.push(hhmm(m));
+  const durs = []; for (let m = b; m <= 300; m += b) durs.push(m);
+  const trs = list('tratamientos').filter(t => t.activo !== false).sort((x, y) => x.nombre.localeCompare(y.nombre));
+  const ini = c?.inicio || pre.inicio || '10:00';
+  modal({ title: id ? 'Editar cita' : 'Nueva cita', wide: true, submit: id ? 'Guardar cambios' : 'Agendar cita', body: `
+    <div class="grid2">
+      <label class="f span2">Paciente <span class="req">*</span>${pid ? `<input type="text" value="${esc(nombreCompleto(get('pacientes', pid)))}" readonly id="fcPacFijo"><input type="hidden" name="pac" value="${pid}">` : `<input type="text" name="pacTxt" id="fcPac" list="fcPacs" placeholder="Escribe nombre o teléfono" autocomplete="off" required><datalist id="fcPacs">${pacs.map(p => `<option value="${esc(nombreCompleto(p))} · ${esc(p.telefono || '')}">`).join('')}</datalist><input type="hidden" name="pac" value="">`}</label>
+      <label class="f">Dentista <span class="req">*</span><select name="dent" id="fcDent">${dentsOk.map(d => opt(d.id, d.nombre, dentDef)).join('')}</select></label>
+      <label class="f">Sede <span class="req">*</span><select name="sede" id="fcSede" required>${opt('', 'Elige sede', sedeDef)}${sedes.map(s => opt(s.id, s.nombre + (s.tipo === 'externa' ? ' (externa)' : ''), sedeDef)).join('')}<option value="__nueva">+ Nueva sede externa…</option></select></label>
+      <div class="span2 grid2" id="fcNuevaSede" hidden><label class="f">Nombre de la sede externa<input type="text" name="nsNombre" id="fcNsN" placeholder="Ej. Hospital Sharp"></label><label class="f">Dirección<input type="text" name="nsDir" id="fcNsD"></label></div>
+      <label class="f">Consultorio<select name="cons" id="fcCons"></select></label>
+      <label class="f">Fecha <span class="req">*</span><input type="date" name="fecha" id="fcFecha" required value="${esc(c?.fecha || pre.fecha || agUI().fecha || hoyISO())}"></label>
+      <label class="f">Hora <span class="req">*</span><select name="hora" id="fcHora">${horas.map(h => opt(h, h, ini)).join('')}${!horas.includes(ini) ? opt(ini, ini, ini) : ''}</select></label>
+      <label class="f">Duración<select name="dur" id="fcDur">${durs.map(m => opt(m, m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ' ' + (m % 60) + ' min' : ''}` : m + ' min', c?.duracionMin || 30)).join('')}</select></label>
+    </div>
+    <fieldset id="fcSesBox"></fieldset>
+    <div class="grid2">
+      <label class="f">Otro servicio del catálogo<select name="serv" id="fcServ">${opt('', 'Ninguno', c?.servicios?.[0]?.tratamientoId || '')}${trs.map(t => opt(t.id, `${t.nombre} · ${t.duracionMin} min`, c?.servicios?.[0]?.tratamientoId || '')).join('')}</select></label>
+      <label class="f">Motivo<input type="text" name="motivo" id="fcMotivo" value="${esc(c?.motivo || pre.motivo || '')}" placeholder="Ej. valoración, urgencia, revisión"></label>
+      <label class="f span2">Notas para recepción<input type="text" name="notas" id="fcNotas" value="${esc(c?.notas || '')}"></label>
+    </div>
+    <div id="fcConf"></div>`,
+    onOpen: f => {
+      let durManual = !!c;
+      const pacId = () => f.elements.pac.value;
+      const consultorios = () => { const s = get('sedes', f.elements.sede.value), cur = c?.consultorio || f.elements.cons.value; f.elements.cons.innerHTML = opt('', 'Sin asignar', cur) + (s?.consultorios || []).map(x => opt(x, x, cur)).join(''); $('#fcNuevaSede').hidden = f.elements.sede.value !== '__nueva'; };
+      const sesiones = () => {
+        const p = pacId(), box = $('#fcSesBox'); if (!p) { box.innerHTML = ''; return; }
+        const ss = sesionesPendientes(p, id), marcados = (c?.items || []).map(x => x.itemId + ':' + x.k);
+        if (!ss.length) { box.innerHTML = '<legend>Tratamientos del plan</legend><p class="mute" style="margin:0;font-size:13px">El paciente no tiene tratamientos pendientes en su plan.</p>'; return; }
+        const sug = !c && !pre.items ? ss.find(x => !x.agendada) : null;
+        box.innerHTML = '<legend>Tratamientos del plan para esta cita</legend>' + ss.map(x => { const key = x.itemId + ':' + x.k, on = marcados.includes(key) || (pre.items || []).some(y => y.itemId + ':' + y.k === key) || (sug && sug.citaPlan != null && x.citaPlan === sug.citaPlan && !x.agendada);
+          return `<label class="check"><input type="checkbox" name="ses" value="${key}" data-dur="${x.dur}" ${on ? 'checked' : ''}> <span>${x.citaPlan != null ? `<b>Cita ${x.citaPlan + 1} del plan</b> · ` : ''}${esc(x.nombre)}${x.dientes.length ? ' (' + x.dientes.join(', ') + ')' : ''}${x.ses > 1 ? ` · sesión ${x.k + 1} de ${x.ses}` : ''} · ${x.dur} min${x.agendada ? ` <span class="pill warn">Ya agendada ${fechaCortaD(x.agendada.fecha)} ${x.agendada.inicio}</span>` : ''}</span></label>`; }).join('');
+      };
+      const durAuto = () => { if (durManual) return; let t = $$('input[name=ses]:checked', f).reduce((a, x) => a + Number(x.dataset.dur), 0); const s = get('tratamientos', f.elements.serv.value); if (s) t += Number(s.duracionMin) || 0; if (t) { t = Math.ceil(t / b) * b; if (![...f.elements.dur.options].some(o => +o.value === t)) f.elements.dur.insertAdjacentHTML('beforeend', opt(t, t + ' min', t)); f.elements.dur.value = t; } };
+      const revisar = () => {
+        const sede = f.elements.sede.value; if (!pacId() || !sede || sede === '__nueva') { $('#fcConf').innerHTML = ''; return; }
+        const cf = conflictos({ pacienteId: pacId(), dentistaId: f.elements.dent.value, sedeId: sede, consultorio: f.elements.cons.value, fecha: f.elements.fecha.value, inicio: f.elements.hora.value, duracionMin: +f.elements.dur.value }, id);
+        $('#fcConf').innerHTML = cf.length ? `<div class="infowarn"><b>Revisa antes de agendar:</b><ul style="margin:6px 0 0;padding-left:18px">${cf.map(x => `<li>${esc(x)}</li>`).join('')}</ul><label class="check" style="margin-top:8px"><input type="checkbox" name="forzar" id="fcForzar"> Agendar de todos modos</label></div>` : `<div class="info">Horario disponible: ${esc(nombreUsuario(f.elements.dent.value))}, ${f.elements.hora.value} a ${hhmm(hm(f.elements.hora.value) + +f.elements.dur.value)}.</div>`;
+      };
+      const pac = f.elements.pacTxt;
+      if (pac) pac.addEventListener('input', () => { const v = pac.value.trim(); const p = pacs.find(x => `${nombreCompleto(x)} · ${x.telefono || ''}` === v) || pacs.find(x => norm(nombreCompleto(x)) === norm(v)); f.elements.pac.value = p ? p.id : ''; if (p && !f.dataset.dentTocado && p.dentistaResp && dentsOk.some(d => d.id === p.dentistaResp)) f.elements.dent.value = p.dentistaResp; sesiones(); durAuto(); revisar(); });
+      f.elements.dent.addEventListener('change', () => { f.dataset.dentTocado = 1; revisar(); });
+      f.elements.sede.addEventListener('change', () => { consultorios(); revisar(); });
+      f.elements.dur.addEventListener('change', () => { durManual = true; revisar(); });
+      f.addEventListener('change', e => { if (e.target.name === 'ses' || e.target.name === 'serv') { durAuto(); revisar(); } if (['fecha', 'hora', 'cons'].includes(e.target.name)) revisar(); });
+      consultorios(); sesiones(); durAuto(); revisar();
+    },
+    onSubmit: async f => {
+      const pacId = f.elements.pac.value; if (!pacId) return formErr(f, 'Elige un paciente de la lista. Si es nuevo, regístralo primero en Pacientes.');
+      const p = get('pacientes', pacId);
+      let sedeId = f.elements.sede.value; const ops = [];
+      if (sedeId === '__nueva') {
+        const n = fv(f, 'nsNombre'); if (!n) return formErr(f, 'Escribe el nombre de la sede externa.');
+        sedeId = newId('s_'); ops.push({ col: 'sedes', id: sedeId, data: { nombre: n, tipo: 'externa', direccion: fv(f, 'nsDir'), telefono: '', consultorios: [], horario: HORARIO_EXT, activo: true }, nuevo: true });
+        const u = get('usuarios', f.elements.dent.value);
+        if (u && !(u.sedes || []).includes(sedeId) && esAdmin()) ops.push({ col: 'usuarios', id: u.id, data: { sedes: [...(u.sedes || []), sedeId] } });
+      }
+      const ss = sesionesPendientes(pacId, id);
+      const items = $$('input[name=ses]:checked', f).map(x => { const [itemId, k] = x.value.split(':'); const s = ss.find(y => y.itemId === itemId && y.k === +k); return s ? { planId: s.planId, itemId, k: +k, nombre: s.nombre, dientes: s.dientes, sesion: s.k + 1, sesiones: s.ses } : null; }).filter(Boolean);
+      const sv = get('tratamientos', f.elements.serv.value);
+      const data = { pacienteId: pacId, pacienteNombre: nombreCompleto(p), dentistaId: f.elements.dent.value, sedeId, consultorio: f.elements.cons.value || '', fecha: f.elements.fecha.value, inicio: f.elements.hora.value, duracionMin: +f.elements.dur.value,
+        items, servicios: sv ? [{ tratamientoId: sv.id, nombre: sv.nombre }] : [], motivo: fv(f, 'motivo'), notas: fv(f, 'notas') };
+      if (!items.length && !sv && !data.motivo) return formErr(f, 'Indica al menos un tratamiento del plan, un servicio o el motivo de la cita.');
+      const cf = sedeId.startsWith('s_') && !get('sedes', sedeId) ? [] : conflictos(data, id);
+      if (cf.length && !f.elements.forzar?.checked) return formErr(f, 'Hay conflictos en el horario. Revísalos o marca "Agendar de todos modos".');
+      data.titulo = `${data.pacienteNombre} · ${descCita(data)}`;
+      if (!c) data.estado = 'agendada';
+      data.gcal = { ...(c?.gcal || {}), sync: 'pendiente' };
+      if (c && (c.fecha !== data.fecha || c.inicio !== data.inicio)) data.historial = [...(c.historial || []), { fecha: nowISO(), por: S.me.id, de: `${c.fecha} ${c.inicio}`, a: `${data.fecha} ${data.inicio}` }];
+      const cid = id || newId('ci');
+      ops.push({ col: 'citas', id: cid, data, nuevo: !c });
+      await guardarLote(ops, `${c ? 'Modificó' : 'Agendó'} cita de ${data.pacienteNombre} el ${data.fecha} ${data.inicio} con ${nombreUsuario(data.dentistaId)}`);
+      avisarSync(); toast(c ? 'Cita actualizada.' : 'Cita agendada.');
+      S.ui.ag = { ...agUI(), fecha: data.fecha };
+      setTimeout(() => verCita(cid), 0);
+    } });
+}
+function verCita(id) {
+  const c = get('citas', id); if (!c) return;
+  const p = get('pacientes', c.pacienteId), s = get('sedes', c.sedeId), e = CITA_EST[c.estado] || CITA_EST.agendada;
+  const edit = puedeEditarCita(c.dentistaId) && citaActiva(c), clin = esClinico() && (S.me.rol === 'admin' || c.dentistaId === S.me.id);
+  const mats = materialesDe([c]), wa = waRecordatorio(c), tel = telDigits(p?.telefono);
+  const sync = !confAgenda().appsScriptUrl ? 'Google Calendar sin configurar' : c.gcal?.sync === 'ok' ? 'Sincronizada con Google Calendar' : c.gcal?.sync === 'error' ? 'Error al sincronizar: ' + (c.gcal.error || '') : 'Pendiente de sincronizar con Google Calendar';
+  const al = esClinico() ? alertasClinicas(expedienteDe(c.pacienteId).historia) : [];
+  const btn = (est, l, cls = '') => `<button type="button" class="btn sm ${cls}" data-cest="${est}">${l}</button>`;
+  modal({ title: esc(c.pacienteNombre), wide: true, body: `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill ${e.c}">${e.l}</span><span class="pill">${esc(sync)}</span>${c.origenCambio === 'google' ? '<span class="pill acc">Último cambio desde Google Calendar</span>' : ''}</div>
+    ${al.length ? `<div class="alerta"><b>Atención clínica</b><span>${al.map(esc).join(' · ')}</span></div>` : ''}
+    <dl class="kv" style="margin:0">
+      <dt>Fecha</dt><dd style="text-transform:capitalize">${fechaLarga(c.fecha)}</dd>
+      <dt>Horario</dt><dd class="num">${c.inicio} a ${finCita(c)} · ${c.duracionMin} min</dd>
+      <dt>Dentista</dt><dd>${esc(nombreUsuario(c.dentistaId))}</dd>
+      <dt>Sede</dt><dd>${s ? esc(s.nombre) + (s.tipo === 'externa' ? ' (externa)' : '') : '—'}${c.consultorio ? ' · ' + esc(c.consultorio) : ''}</dd>
+      <dt>Tratamientos</dt><dd>${(c.items || []).map(x => `${esc(x.nombre)}${x.dientes?.length ? ' (' + x.dientes.join(', ') + ')' : ''}${x.sesiones > 1 ? ` · sesión ${x.sesion} de ${x.sesiones}` : ''}`).join('<br>') || '—'}</dd>
+      ${(c.servicios || []).length ? `<dt>Servicio</dt><dd>${c.servicios.map(x => esc(x.nombre)).join(', ')}</dd>` : ''}
+      ${c.motivo ? `<dt>Motivo</dt><dd>${esc(c.motivo)}</dd>` : ''}${c.notas ? `<dt>Notas</dt><dd>${esc(c.notas)}</dd>` : ''}
+      ${c.motivoCancelacion ? `<dt>Cancelación</dt><dd>${esc(c.motivoCancelacion)}</dd>` : ''}
+      <dt>Teléfono</dt><dd class="mono">${esc(p?.telefono || '—')}</dd>
+    </dl>
+    <div class="quick">${tel ? `<a class="btn sm" href="tel:${tel}">Llamar</a>` : ''}${wa ? `<a class="btn sm" href="${wa}" target="_blank" rel="noopener">Enviar recordatorio por WhatsApp</a>` : ''}<button type="button" class="btn sm" id="vcExp">Abrir expediente</button></div>
+    ${mats.length ? `<details><summary class="mute" style="cursor:pointer;font-weight:600">Materiales para esta cita (${mats.length})</summary><div class="tablewrap"><table><tbody>${mats.map(m => `<tr><td>${esc(m.ins.nombre)}</td><td class="r num">${m.cant} ${esc(m.ins.unidad)}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
+    ${(c.historial || []).length ? `<details><summary class="mute" style="cursor:pointer;font-weight:600">Cambios de horario (${c.historial.length})</summary><ul style="margin:6px 0 0;padding-left:18px;font-size:13px">${c.historial.map(h => `<li>${fechaHora(h.fecha)}: ${esc(h.de)} → ${esc(h.a)} ${h.por === 'google' ? '(desde Google Calendar)' : 'por ' + esc(nombreUsuario(h.por))}</li>`).join('')}</ul></details>` : ''}`,
+    footerLeft: edit ? `${['agendada'].includes(c.estado) ? btn('confirmada', 'Confirmó') : ''}${['agendada', 'confirmada'].includes(c.estado) ? btn('llego', 'Llegó') : ''}${clin && ['agendada', 'confirmada', 'llego'].includes(c.estado) ? btn('atendida', 'Atendida', 'primary') : ''}${['agendada', 'confirmada'].includes(c.estado) ? btn('no_asistio', 'No asistió') : ''}<button type="button" class="btn sm" id="vcEdit">Reagendar o editar</button><button type="button" class="btn sm danger" id="vcCancel">Cancelar cita</button>` : '',
+    onOpen: f => {
+      $('#vcExp').onclick = () => abrirExpediente(c.pacienteId, 'resumen');
+      const ed = $('#vcEdit'); if (ed) ed.onclick = () => formCita(id);
+      const ca = $('#vcCancel'); if (ca) ca.onclick = () => formCancelarCita(id);
+      $$('[data-cest]', f).forEach(b => b.onclick = async () => {
+        const est = b.dataset.cest;
+        if (est === 'atendida') { formAtendida(id); return; }
+        await guardarLote([{ col: 'citas', id, data: { estado: est, gcal: { ...(c.gcal || {}), sync: 'pendiente' } } }], `Marcó la cita de ${c.pacienteNombre} (${c.fecha} ${c.inicio}) como "${CITA_EST[est].l}"`);
+        avisarSync(); toast('Cita actualizada.'); verCita(id);
+      });
+    } });
+}
+function formCancelarCita(id) {
+  const c = get('citas', id);
+  modal({ title: 'Cancelar cita', submit: 'Cancelar cita', body: `<p style="margin:0">${esc(c.pacienteNombre)} · <span style="text-transform:capitalize">${fechaLarga(c.fecha)}</span> ${c.inicio}</p>
+    <label class="f">Motivo<select name="mot" id="ccMot"><option>El paciente canceló</option><option>El paciente pidió cambiar la fecha</option><option>El dentista no puede asistir</option><option>Error al agendar</option><option>Otro</option></select></label>
+    <label class="f">Detalle (opcional)<input type="text" name="det" id="ccDet"></label>
+    <p class="mute" style="margin:0;font-size:12.5px">La cita queda en el historial como cancelada y se quita del calendario de Google.</p>`,
+    onSubmit: async f => {
+      await guardarLote([{ col: 'citas', id, data: { estado: 'cancelada', motivoCancelacion: [f.elements.mot.value, fv(f, 'det')].filter(Boolean).join(': '), gcal: { ...(c.gcal || {}), sync: 'pendiente' } } }], `Canceló la cita de ${c.pacienteNombre} (${c.fecha} ${c.inicio})`);
+      avisarSync(); toast('Cita cancelada.');
+    } });
+}
+/* Registra tratamientos realizados: actualiza plan, odontograma y notas (una sola operación) */
+function opsHechos(pid, pl, sel, fecha, dent, texto) {
+  const p = get('pacientes', pid), n = deep(pl), ops = [], lineas = [];
+  let odo = null; const ex = get('expedientes', pid);
+  sel.forEach(({ itemId, k }) => {
+    const ni = n.items.find(x => x.id === itemId); if (!ni) return;
+    ni.hechas = Array.from({ length: Math.max((ni.hechas || []).length, ni.sesiones || 1) }, (_, i) => (ni.hechas || [])[i] || null);
+    ni.hechas[k] = { fecha, dentistaId: dent, registradoPor: S.me.id };
+    const completas = ni.hechas.slice(0, ni.sesiones || 1).every(Boolean);
+    ni.estado = completas ? 'realizado' : 'en_proceso';
+    if (completas && EFECTO[ni.animacion] && (ni.dientes || []).length) { odo = odo || deep(ex?.odontograma || {}); ni.dientes.forEach(d => { const t = dNorm(odo[d]); aplicarEfecto(t, ni); if (dTieneAlgo(t)) odo[d] = t; else delete odo[d]; }); }
+    lineas.push(`${ni.nombre}${(ni.dientes || []).length ? ' · diente ' + ni.dientes.join(', ') : ''}${(ni.sesiones || 1) > 1 ? ` · sesión ${k + 1} de ${ni.sesiones}` : ''}`);
+  });
+  const vivos = n.items.filter(x => x.estado !== 'cancelado');
+  n.estado = vivos.length && vivos.every(x => x.estado === 'realizado') ? 'terminado' : 'en_tratamiento';
+  const { id, creado, creadoPor, actualizado, actualizadoPor, ...d } = n;
+  ops.push({ col: 'planes', id: pl.id, data: d });
+  if (odo) { ops.push({ col: 'expedientes', id: pid, data: { pacienteId: pid, odontograma: odo }, nuevo: !ex }); if (S.ui.odo?.pacId === pid && !S.ui.odo.dirty) S.ui.odo = null; }
+  if (lineas.length || texto) ops.push({ col: 'notas', data: { pacienteId: pid, fecha: fecha + 'T' + new Date().toTimeString().slice(0, 8), autorId: S.me.id, autor: S.me.nombre, dentistaId: dent, tipo: lineas.length ? 'tratamiento' : 'nota', planId: pl.id, texto: [...lineas, texto].filter(Boolean).join('\n') }, nuevo: true });
+  return { ops, terminado: n.estado === 'terminado', p };
+}
+function formAtendida(id) {
+  const c = get('citas', id), pl = planActivo(c.pacienteId);
+  const pend = (c.items || []).filter(x => { const it = pl?.items?.find(i => i.id === x.itemId); return it && pl.id === x.planId && !(it.hechas || [])[x.k]; });
+  modal({ title: 'Cita atendida · ' + esc(c.pacienteNombre), submit: 'Registrar', body: `
+    ${pend.length ? `<fieldset><legend>Tratamientos realizados en esta cita</legend>${pend.map(x => `<label class="check"><input type="checkbox" name="hx" value="${x.itemId}:${x.k}" checked> ${esc(x.nombre)}${x.dientes?.length ? ' (' + x.dientes.join(', ') + ')' : ''}${x.sesiones > 1 ? ` · sesión ${x.sesion} de ${x.sesiones}` : ''}</label>`).join('')}</fieldset>` : '<p class="mute" style="margin:0">La cita no tiene tratamientos pendientes del plan. Se registrará como atendida con la nota.</p>'}
+    <label class="f">Nota de evolución<textarea name="nota" id="atNota" placeholder="Procedimiento, anestesia, indicaciones al paciente"></textarea></label>
+    <p class="mute" style="margin:0;font-size:12.5px">El odontograma se actualiza cuando se completa la última sesión de cada tratamiento.</p>`,
+    onSubmit: async f => {
+      const sel = $$('input[name=hx]:checked', f).map(x => { const [itemId, k] = x.value.split(':'); return { itemId, k: +k }; });
+      const texto = fv(f, 'nota');
+      const ops = [{ col: 'citas', id, data: { estado: 'atendida', atendida: { fecha: nowISO(), por: S.me.id }, gcal: { ...(c.gcal || {}), sync: 'pendiente' } } }];
+      let fin = false;
+      if (pl && (sel.length || texto)) { const r = opsHechos(c.pacienteId, pl, sel, c.fecha, c.dentistaId, texto); ops.push(...r.ops); fin = r.terminado; }
+      else if (texto) ops.push({ col: 'notas', data: { pacienteId: c.pacienteId, fecha: nowISO(), autorId: S.me.id, autor: S.me.nombre, tipo: 'nota', texto }, nuevo: true });
+      await guardarLote(ops, `Registró la cita de ${c.pacienteNombre} (${c.fecha}) como atendida${sel.length ? ` con ${sel.length} tratamiento(s)` : ''}`);
+      avisarSync(); toast(fin ? 'Cita atendida. ¡El plan quedó terminado!' : 'Cita atendida y registrada en el expediente.');
+    } });
+}
+function formBloqueo(id) {
+  const x = id ? get('bloqueos', id) : null;
+  const dentsOk = S.me.rol === 'dentista' ? dentistas().filter(d => d.id === S.me.id) : dentistas();
+  const f0 = x?.fechaIni || agUI().fecha || hoyISO();
+  modal({ title: id ? 'Horario bloqueado' : 'Bloquear horario', submit: id ? 'Guardar' : 'Bloquear', body: `
+    ${x?.origen === 'google' ? '<div class="info">Este bloqueo viene de un evento de Google Calendar. Para cambiarlo, edítalo en Google Calendar.</div>' : ''}
+    <div class="grid2">
+      <label class="f span2">¿Quién no estará disponible?<select name="dent" id="fbDent" ${x?.origen === 'google' ? 'disabled' : ''}>${S.me.rol !== 'dentista' ? opt('', 'Toda la clínica (día festivo, cierre)', x?.dentistaId || '') : ''}${dentsOk.map(d => opt(d.id, d.nombre, x?.dentistaId ?? (S.me.rol === 'dentista' ? S.me.id : ''))).join('')}</select></label>
+      <label class="f">Desde<input type="date" name="ini" id="fbIni" required value="${esc(f0)}"></label>
+      <label class="f">Hasta<input type="date" name="fin" id="fbFin" required value="${esc(x?.fechaFin || f0)}"></label>
+      <label class="check span2"><input type="checkbox" name="todo" id="fbTodo" ${!x || x.todoDia ? 'checked' : ''}> Todo el día</label>
+      <label class="f">Hora inicio<input type="time" name="hi" id="fbHi" step="600" value="${esc(x?.horaIni || '09:00')}"></label>
+      <label class="f">Hora fin<input type="time" name="hf" id="fbHf" step="600" value="${esc(x?.horaFin || '14:00')}"></label>
+      <label class="f span2">Motivo<input type="text" name="mot" id="fbMot" value="${esc(x?.motivo || '')}" placeholder="Ej. vacaciones, congreso, cita médica"></label>
+    </div>`,
+    footerLeft: x && x.origen !== 'google' && puedeEditarCita(x.dentistaId || '') ? '<button type="button" class="btn sm danger" id="fbQuitar">Quitar bloqueo</button>' : '',
+    onOpen: f => {
+      const t = () => { f.elements.hi.disabled = f.elements.hf.disabled = f.elements.todo.checked; }; f.elements.todo.onchange = t; t();
+      const q = $('#fbQuitar'); if (q) q.onclick = async () => { await guardarLote([{ col: 'bloqueos', id, data: { estado: 'cancelado', gcal: { ...(x.gcal || {}), sync: 'pendiente' } } }], 'Quitó un bloqueo de horario'); avisarSync(); closeModal(); toast('Bloqueo quitado.'); };
+      if (x?.origen === 'google') $$('input', f).forEach(i => i.disabled = true);
+    },
+    onSubmit: async f => {
+      if (x?.origen === 'google') return true;
+      const data = { dentistaId: f.elements.dent.value, fechaIni: f.elements.ini.value, fechaFin: f.elements.fin.value, todoDia: f.elements.todo.checked, horaIni: f.elements.hi.value, horaFin: f.elements.hf.value, motivo: fv(f, 'mot'), estado: 'activo', origen: 'app', gcal: { ...(x?.gcal || {}), sync: 'pendiente' } };
+      if (data.fechaFin < data.fechaIni) return formErr(f, 'La fecha final no puede ser anterior a la inicial.');
+      if (!data.todoDia && hm(data.horaFin) <= hm(data.horaIni)) return formErr(f, 'La hora final debe ser posterior a la inicial.');
+      const choques = list('citas').filter(c => citaActiva(c) && c.fecha >= data.fechaIni && c.fecha <= data.fechaFin && (!data.dentistaId || c.dentistaId === data.dentistaId) && (data.todoDia || (hm(c.inicio) < hm(data.horaFin) && hm(data.horaIni) < hm(c.inicio) + c.duracionMin)));
+      await guardarLote([{ col: 'bloqueos', id: id || newId('bq'), data, nuevo: !x }], `Bloqueó horario de ${data.dentistaId ? nombreUsuario(data.dentistaId) : 'toda la clínica'} del ${data.fechaIni} al ${data.fechaFin}`);
+      avisarSync(); toast(choques.length ? `Horario bloqueado. Atención: hay ${choques.length} cita(s) en ese horario que debes reagendar.` : 'Horario bloqueado.');
+    } });
+}
+function panelCitasHoy() {
+  const dent = S.me.rol === 'dentista' || (S.me.atiende && S.me.rol !== 'admin');
+  const cs = list('citas').filter(c => c.fecha === hoyISO() && citaActiva(c) && (!dent || c.dentistaId === S.me.id)).sort((a, b) => a.inicio.localeCompare(b.inicio));
+  return `<div class="panel"><div class="panel-h"><h3>${dent ? 'Mis citas de hoy' : 'Citas de hoy'}</h3><span class="pill acc">${cs.length}</span><span class="sp"></span><button class="btn sm" data-act="nav" data-view="agenda">Ver agenda</button></div>
+    ${cs.length ? `<div class="rows">${cs.map(c => `<button class="row" data-act="cita-ver" data-id="${c.id}"><div style="min-width:0"><div class="t1"><span class="mono">${c.inicio}</span> ${esc(c.pacienteNombre)}</div><div class="t2"><span>${esc(descCita(c))}</span>${dent ? '' : `<span>${esc(nombreUsuario(c.dentistaId))}</span>`}<span>${esc(get('sedes', c.sedeId)?.nombre || '')}</span></div></div><div class="r"><span class="pill ${(CITA_EST[c.estado] || CITA_EST.agendada).c}">${(CITA_EST[c.estado] || CITA_EST.agendada).l}</span></div></button>`).join('')}</div>` : '<div class="empty">No hay citas para hoy.</div>'}</div>`;
+}
+function panelCitasPaciente(p) {
+  const cs = citasDePaciente(p.id), hoy = hoyISO(), prox = cs.filter(c => c.fecha >= hoy && citaActiva(c)), pas = cs.filter(c => c.fecha < hoy || !citaActiva(c)).reverse().slice(0, 5);
+  const fila = c => `<button class="row" data-act="cita-ver" data-id="${c.id}"><div style="min-width:0"><div class="t1" style="text-transform:capitalize">${fechaCortaD(c.fecha)} · ${c.inicio}</div><div class="t2"><span>${esc(descCita(c))}</span><span>${esc(nombreUsuario(c.dentistaId))}</span></div></div><div class="r"><span class="pill ${(CITA_EST[c.estado] || CITA_EST.agendada).c}">${(CITA_EST[c.estado] || CITA_EST.agendada).l}</span></div></button>`;
+  return `<div class="panel"><div class="panel-h"><h3>Citas</h3><span class="sp"></span><button class="btn sm primary" data-act="cita-paciente">Agendar cita</button></div>
+    ${prox.length ? `<div class="rows">${prox.map(fila).join('')}</div>` : '<div class="panel-b"><p class="mute" style="margin:0">Sin citas próximas.</p></div>'}
+    ${pas.length ? `<div class="panel-b" style="padding-bottom:0"><span class="mute" style="font-size:12px;font-weight:700">ANTERIORES</span></div><div class="rows">${pas.map(fila).join('')}</div>` : ''}</div>`;
+}
+
+/* ---------------- Ajustes: apariencia y agenda ---------------- */
+const FUENTES = { 'Plus Jakarta Sans': 'Plus+Jakarta+Sans:wght@400;500;600;700;800', 'Inter': 'Inter:wght@400;500;600;700;800', 'Montserrat': 'Montserrat:wght@400;500;600;700;800', 'Poppins': 'Poppins:wght@400;500;600;700;800', 'Nunito': 'Nunito:wght@400;600;700;800', 'Roboto': 'Roboto:wght@400;500;700;900', 'Lato': 'Lato:wght@400;700;900', 'DM Sans': 'DM+Sans:wght@400;500;600;700;800', 'Work Sans': 'Work+Sans:wght@400;500;600;700;800', 'Source Sans 3': 'Source+Sans+3:wght@400;600;700;800' };
+const TAMANOS = { chico: { l: 'Chico', px: 13.5 }, normal: { l: 'Normal', px: 14.5 }, grande: { l: 'Grande', px: 16 }, xgrande: { l: 'Muy grande', px: 17.5 } };
+const COLORES_MARCA = ['#0e6b70', '#1f5fbf', '#6a3fb5', '#b03a6f', '#c2571a', '#2f7a3e', '#1d3557', '#8a6d3b'];
+const MARCA_DEF = { nombre: 'InterDental', subtitulo: 'Expediente y gestión', color: '#0e6b70', fuente: 'Plus Jakarta Sans', tamano: 'normal', tema: 'auto', logo: '', carga: '' };
+const marca = () => ({ ...MARCA_DEF, ...(get('config', 'marca') || S.marcaCache || {}) });
+const hex2rgb = h => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(x => x + x).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgb2hex = a => '#' + a.map(x => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
+const mezcla = (a, b, t) => { const x = hex2rgb(a), y = hex2rgb(b); return rgb2hex(x.map((v, i) => v + (y[i] - v) * t)); };
+const luminancia = h => { const [r, g, b] = hex2rgb(h).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; };
+function aplicarMarca(m) {
+  m = { ...MARCA_DEF, ...(m || {}) };
+  const col = /^#[0-9a-f]{6}$/i.test(m.color) ? m.color : MARCA_DEF.color;
+  const ink = luminancia(col) > .4 ? '#0b1a1c' : '#ffffff';
+  const dk = luminancia(col) < .25 ? mezcla(col, '#ffffff', .45) : col, dkInk = luminancia(dk) > .4 ? '#0b1a1c' : '#ffffff';
+  const fam = FUENTES[m.fuente] ? m.fuente : MARCA_DEF.fuente, px = (TAMANOS[m.tamano] || TAMANOS.normal).px;
+  const vars = `--accent:${col};--accent-ink:${ink};--accent-soft:${mezcla(col, '#ffffff', .86)};--f-ui:"${fam}",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
+  const varsD = `--accent:${dk};--accent-ink:${dkInk};--accent-soft:${mezcla(dk, '#0d1618', .78)}`;
+  let st = document.getElementById('marcaCSS'); if (!st) { st = document.createElement('style'); st.id = 'marcaCSS'; document.head.appendChild(st); }
+  st.textContent = `:root{${vars}}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${varsD}}}:root[data-theme="dark"]{${varsD}}body{font-size:${px}px}`;
+  let lk = document.getElementById('marcaFont');
+  if (fam !== 'Plus Jakarta Sans') { if (!lk) { lk = document.createElement('link'); lk.id = 'marcaFont'; lk.rel = 'stylesheet'; document.head.appendChild(lk); } const href = `https://fonts.googleapis.com/css2?family=${FUENTES[fam]}&display=swap`; if (lk.href !== href) lk.href = href; }
+  if (m.tema === 'claro' || m.tema === 'oscuro') document.documentElement.dataset.theme = m.tema === 'claro' ? 'light' : 'dark';
+  else if (S.temaPuesto) delete document.documentElement.dataset.theme;
+  S.temaPuesto = m.tema !== 'auto';
+  document.title = m.nombre || MARCA_DEF.nombre;
+  $$('.brand-mark').forEach(el => { el.classList.toggle('has-logo', !!m.logo); el.innerHTML = markHTML(m); });
+  const sn = $('#sideNombre'); if (sn) sn.textContent = m.nombre;
+  try { localStorage.setItem('appDentista.marca', JSON.stringify(m)); } catch (e) {}
+}
+const markHTML = (m = marca()) => m.logo ? `<img src="${esc(m.logo)}" alt="">` : `<span style="color:var(--accent-ink);display:grid">${I.tooth}</span>`;
+function leerImagen(file, { max = 512, svgMax = 300000 } = {}) {
+  return new Promise((res, rej) => {
+    if (!file) return rej(new Error('Elige un archivo.'));
+    const rd = new FileReader();
+    if (file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)) {
+      if (file.size > svgMax) return rej(new Error('El SVG pesa más de 300 KB. Optimízalo o usa PNG.'));
+      rd.onload = () => { const txt = String(rd.result); if (/<script|on\w+\s*=|javascript:/i.test(txt)) return rej(new Error('El SVG contiene código ejecutable y no se puede usar por seguridad.')); res('data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(txt)))); };
+      rd.onerror = () => rej(new Error('No se pudo leer el archivo.')); rd.readAsText(file); return;
+    }
+    if (file.type === 'image/gif') { if (file.size > svgMax) return rej(new Error('El GIF pesa más de 300 KB.')); rd.onload = () => res(rd.result); rd.readAsDataURL(file); return; }
+    rd.onload = () => { const img = new Image(); img.onload = () => { const k = Math.min(1, max / Math.max(img.width, img.height)); const cv = document.createElement('canvas'); cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k); cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); res(cv.toDataURL('image/png')); }; img.onerror = () => rej(new Error('El archivo no es una imagen válida.')); img.src = rd.result; };
+    rd.onerror = () => rej(new Error('No se pudo leer el archivo.')); rd.readAsDataURL(file);
+  });
+}
+function vAjustes() {
+  const m = { ...marca(), ...(S.ui.marcaTmp || {}) }, a = confAgenda(), gc = list('gcal');
+  const tabs = [['apariencia', 'Apariencia'], ['agenda', 'Agenda y Google Calendar']];
+  S.ui.ajTab = S.ui.ajTab || 'apariencia';
+  const head = `<div class="vhead"><div><h2>Ajustes</h2><p>Personaliza la plataforma y conecta la agenda con Google Calendar.</p></div></div>
+    <nav class="tabs">${tabs.map(([k, l]) => `<button data-act="aj-tab" data-tab="${k}" class="${S.ui.ajTab === k ? 'on' : ''}">${l}</button>`).join('')}</nav>`;
+  if (S.ui.ajTab === 'agenda') {
+    return head + `<div class="two"><form class="panel" id="agForm"><div class="panel-h"><h3>Agenda</h3></div><div class="panel-b grid2">
+      <label class="f">Bloques de la agenda<select name="bloque" id="ajBloque">${[5, 10, 15, 20, 30].map(x => opt(x, x + ' minutos', a.bloqueMin)).join('')}</select></label>
+      <label class="f">Zona horaria de la clínica<select name="zona" id="ajZona">${[['America/Mazatlan', 'Sinaloa (Mazatlán, Culiacán)'], ['America/Mexico_City', 'Centro (CDMX)'], ['America/Tijuana', 'Baja California'], ['America/Hermosillo', 'Sonora'], ['America/Cancun', 'Quintana Roo']].map(([k, l]) => opt(k, l, a.zona)).join('')}</select></label>
+      <label class="f span2">Dirección del Apps Script (aplicación web)<input type="url" name="url" id="ajUrl" value="${esc(a.appsScriptUrl)}" placeholder="https://script.google.com/macros/s/.../exec"><span class="mute" style="font-weight:500;font-size:12.5px">Se obtiene al implementar el Apps Script de sincronización. Ver la guía.</span></label>
+      <div class="span2 quick"><button class="btn primary" type="submit">Guardar</button><button class="btn" type="button" data-act="aj-probar">Probar conexión</button><span id="ajProbar" class="mute" style="font-size:13px"></span></div></div></form>
+      <div class="panel"><div class="panel-h"><h3>Calendarios de los dentistas</h3></div>
+        <div class="rows">${dentistas().map(d => { const g = gc.find(x => x.id === d.id); return `<div class="row" style="cursor:default"><div><div class="t1"><span class="dot" style="background:${esc(d.color || '#0e6b70')}"></span>${esc(d.nombre)}</div><div class="t2"><span>${esc(d.email)}</span>${g?.ultimaSync ? `<span>Última sincronización ${fechaHora(g.ultimaSync)}</span>` : ''}</div></div><div class="r">${g?.calId ? `<span class="pill ok">Calendario compartido</span>` : '<span class="pill">Sin calendario</span>'}</div></div>`; }).join('')}</div>
+        <div class="panel-b"><p class="mute" style="margin:0;font-size:12.5px">El Apps Script crea un calendario por dentista en la cuenta de la clínica y lo comparte con su correo. Cada dentista recibe una invitación de Google Calendar.</p></div></div></div>`;
+  }
+  return head + `<div class="two"><form class="panel" id="marcaForm"><div class="panel-h"><h3>Apariencia</h3></div><div class="panel-b" style="display:grid;gap:14px">
+    <div class="grid2"><label class="f">Nombre de la plataforma<input type="text" name="nombre" id="mkNombre" value="${esc(m.nombre)}" maxlength="40" required></label>
+    <label class="f">Subtítulo<input type="text" name="subtitulo" id="mkSub" value="${esc(m.subtitulo)}" maxlength="60"></label></div>
+    <div class="grid2">
+      <div class="f">Logo<div class="upl"><div class="upl-prev" id="mkLogoPrev">${m.logo ? `<img src="${esc(m.logo)}" alt="Logo">` : '<span class="mute">Sin logo</span>'}</div><div style="display:grid;gap:6px"><input type="file" id="mkLogo" accept="image/png,image/jpeg,image/svg+xml,image/webp"><button type="button" class="btn sm ghost" data-act="mk-quitar" data-k="logo">Quitar logo</button></div></div><span class="mute" style="font-weight:500;font-size:12px">PNG, JPG o SVG. Ideal cuadrado.</span></div>
+      <div class="f">Imagen de carga<div class="upl"><div class="upl-prev" id="mkCargaPrev">${m.carga ? `<img src="${esc(m.carga)}" alt="Imagen de carga">` : '<span class="mute">Usa el logo</span>'}</div><div style="display:grid;gap:6px"><input type="file" id="mkCarga" accept="image/svg+xml,image/png,image/gif,image/jpeg"><button type="button" class="btn sm ghost" data-act="mk-quitar" data-k="carga">Quitar imagen</button></div></div><span class="mute" style="font-weight:500;font-size:12px">Se muestra mientras carga la página. SVG animado o GIF de hasta 300 KB.</span></div>
+    </div>
+    <div class="f">Color principal<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${COLORES_MARCA.map(c => `<button type="button" class="swatch ${c === m.color ? 'on' : ''}" style="background:${c}" data-act="mk-color" data-c="${c}" aria-label="Color ${c}"></button>`).join('')}<input type="color" id="mkColor" name="color" value="${esc(m.color)}" aria-label="Color personalizado"></div></div>
+    <div class="grid3"><label class="f">Letra<select name="fuente" id="mkFuente">${Object.keys(FUENTES).map(f => opt(f, f, m.fuente)).join('')}</select></label>
+      <label class="f">Tamaño de letra<select name="tamano" id="mkTam">${Object.entries(TAMANOS).map(([k, t]) => opt(k, t.l, m.tamano)).join('')}</select></label>
+      <label class="f">Tema<select name="tema" id="mkTema">${opt('auto', 'Automático (según el dispositivo)', m.tema)}${opt('claro', 'Claro', m.tema)}${opt('oscuro', 'Oscuro', m.tema)}</select></label></div>
+    <div class="quick"><button class="btn primary" type="submit">Guardar apariencia</button><button class="btn ghost" type="button" data-act="mk-restaurar">Restaurar valores originales</button></div>
+    <p class="mute" style="margin:0;font-size:12.5px">Los cambios se ven al momento como vista previa y se aplican a todo el equipo al guardar.</p>
+  </div></form>
+  <div class="panel"><div class="panel-h"><h3>Vista previa</h3></div><div class="panel-b" style="display:grid;gap:14px">
+    <div class="brand"><div class="brand-mark">${markHTML(m)}</div><div><h1 style="font-size:17px">${esc(m.nombre)}</h1><p>${esc(m.subtitulo)}</p></div></div>
+    <div class="quick"><button type="button" class="btn primary">Botón principal</button><button type="button" class="btn">Secundario</button><span class="pill acc">Etiqueta</span><span class="pill ok">Atendida</span></div>
+    <div class="splash-prev">${m.carga || m.logo ? `<img src="${esc(m.carga || m.logo)}" alt="">` : `<div class="brand-mark big">${markHTML(m)}</div>`}<b>${esc(m.nombre)}</b><span class="mute">Cargando…</span></div>
+  </div></div></div>`;
+}
+function marcaDesdeForm(f) { return { ...marca(), ...(S.ui.marcaTmp || {}), nombre: fv(f, 'nombre') || MARCA_DEF.nombre, subtitulo: fv(f, 'subtitulo'), color: f.elements.color.value, fuente: f.elements.fuente.value, tamano: f.elements.tamano.value, tema: f.elements.tema.value }; }
+function mostrarSplash() {
+  let m = MARCA_DEF; try { m = { ...MARCA_DEF, ...JSON.parse(localStorage.getItem('appDentista.marca') || '{}') }; } catch (e) {}
+  S.marcaCache = m; aplicarMarca(m);
+  const L = $('#login'); L.hidden = false;
+  L.innerHTML = `<div class="splash">${m.carga || m.logo ? `<img src="${esc(m.carga || m.logo)}" alt="">` : `<div class="brand-mark big">${markHTML(m)}</div>`}<b>${esc(m.nombre)}</b><span class="mute">Cargando…</span></div>`;
+}
 /* ============================ EVENTOS ============================ */
 const ACT = {
   nav: el => go(el.dataset.view), salir, perfil: () => verPerfil(),
@@ -2561,6 +3111,22 @@ const ACT = {
   'odo-sel-limpiar': () => { S.ui.odo.sel = []; render(); }, 'odo-ver': el => { odoTrabajo(S.ui.pacId).ver = +el.dataset.fdi; render(); }, 'odo-ver-cerrar': () => { S.ui.odo.ver = null; render(); },
   'plan-nuevo': async () => { await nuevoPlan(S.ui.pacId); toast('Plan vacío creado. Usa "Agregar tratamiento".'); },
   'plan-sugerido': () => formSugerido(),
+  'cita-nueva': () => formCita(), 'cita-ver': el => verCita(el.dataset.id), 'cita-paciente': () => formCita(null, { pacienteId: S.ui.pacId }),
+  'cita-sesion': el => { const pl = planVisible(S.ui.pacId), it = pl.items.find(x => x.id === el.dataset.item), k = +el.dataset.k, ci = it.citas?.[k]; const items = ci != null ? sesionesDeCita(pl, ci).filter(x => !(x.it.hechas || [])[x.k] && !citaDeSesion(x.it.id, x.k)).map(x => ({ itemId: x.it.id, k: x.k })) : [{ itemId: it.id, k }]; formCita(null, { pacienteId: S.ui.pacId, dentistaId: it.dentistaId, fecha: ci != null && pl.citas[ci]?.fecha >= hoyISO() ? pl.citas[ci].fecha : hoyISO(), items }); },
+  'bloqueo-nuevo': () => formBloqueo(), 'bloqueo-ver': el => formBloqueo(el.dataset.id),
+  'ag-modo': el => { agUI().modo = el.dataset.m; if (el.dataset.m === 'semana' && !agUI().dentSemana) agUI().dentSemana = dentistas()[0]?.id || ''; render(); },
+  'ag-mover': el => { const A = agUI(), d = +el.dataset.d; A.fecha = sumarDias(A.fecha, d * (A.modo === 'semana' || (A.modo === 'materiales' && A.rango === 'semana') ? 7 : 1)); render(); },
+  'ag-hoy': () => { agUI().fecha = hoyISO(); render(); }, 'ag-rango': el => { agUI().rango = el.dataset.r; render(); },
+  'ag-dent': el => { const A = agUI(), id = el.dataset.id; if (!A.dents.length) A.dents = [id]; else A.dents = A.dents.includes(id) ? A.dents.filter(x => x !== id) : [...A.dents, id]; render(); },
+  'ag-dent-todos': () => { agUI().dents = []; render(); },
+  'ag-slot': (el, e) => { const r = el.getBoundingClientRect(), b = confAgenda().bloqueMin; const min = +el.dataset.min0 + Math.floor((e.clientY - r.top) / PX / b) * b; formCita(null, { dentistaId: el.dataset.dent, fecha: el.dataset.fecha, inicio: hhmm(min) }); },
+  'aj-tab': el => { S.ui.ajTab = el.dataset.tab; render(); },
+  'aj-probar': async () => { const u = (document.getElementById('ajUrl')?.value || confAgenda().appsScriptUrl).trim(), out = $('#ajProbar'); if (!u) { out.textContent = 'Primero escribe la dirección.'; return; } out.textContent = 'Probando…';
+    try { const r = await fetch(u + (u.includes('?') ? '&' : '?') + 'accion=estado'); const j = await r.json(); out.textContent = j.ok ? `Conectado. ${j.calendarios || 0} calendario(s) de dentistas.${j.ultimaSync ? ' Última sincronización: ' + fechaHora(j.ultimaSync) + '.' : ''}` : 'Respondió con error: ' + (j.error || ''); }
+    catch (err) { out.textContent = 'No se pudo leer la respuesta. Revisa que la implementación permita el acceso a "Cualquier usuario".'; } },
+  'mk-color': el => { const f = $('#marcaForm'); f.elements.color.value = el.dataset.c; S.ui.marcaTmp = marcaDesdeForm(f); aplicarMarca(S.ui.marcaTmp); $$('.swatch', f).forEach(x => x.classList.toggle('on', x === el)); },
+  'mk-quitar': el => { S.ui.marcaTmp = { ...marcaDesdeForm($('#marcaForm')), [el.dataset.k]: '' }; aplicarMarca(S.ui.marcaTmp); render(); },
+  'mk-restaurar': async () => { if (!await confirmar('Restaurar apariencia', 'Se vuelve al nombre, colores y letra originales, y se quitan el logo y la imagen de carga.', { ok: 'Restaurar' })) return; S.ui.marcaTmp = null; await guardarLote([{ col: 'config', id: 'marca', data: { ...MARCA_DEF } }], 'Restauró la apariencia original'); toast('Apariencia restaurada.'); },
   'odo-plan-quitar': el => { const O = S.ui.odo, f = +el.dataset.fdi, t = dNorm(O.data[f]); t.plan.splice(+el.dataset.i, 1); if (dTieneAlgo(t)) O.data[f] = t; else delete O.data[f]; O.dirty = true; render(); },
   'odo-plan-subir': el => { const O = S.ui.odo, f = +el.dataset.fdi, t = dNorm(O.data[f]), i = +el.dataset.i; [t.plan[i - 1], t.plan[i]] = [t.plan[i], t.plan[i - 1]]; O.data[f] = t; O.dirty = true; render(); },
   'plan-item-nuevo': () => { const pl = planActivo(S.ui.pacId); if (pl && !editable(pl)) { toast(`El plan v${pl.version} ya fue aceptado. Para agregar tratamientos crea una nueva versión desde la pestaña Plan.`); return; } formItem(); },
@@ -2581,7 +3147,7 @@ function verPerfil() {
 }
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el || el.closest('#modalRoot form') && !el.closest('.mbody')) return;
-  const fn = ACT[el.dataset.act]; if (fn) { e.preventDefault(); Promise.resolve(fn(el)).catch(err => toast(errMsg(err))); }
+  const fn = ACT[el.dataset.act]; if (fn) { e.preventDefault(); Promise.resolve(fn(el, e)).catch(err => toast(errMsg(err))); }
 });
 document.addEventListener('input', e => { const k = e.target.dataset?.input; if (k) { S.ui[k] = e.target.value; render(); } });
 document.addEventListener('change', e => { const k = e.target.dataset?.change; if (k) { S.ui[k] = e.target.value; render(); } });
@@ -2602,7 +3168,18 @@ document.addEventListener('change', async e => {
     }
   } catch (err) { toast(errMsg(err)); }
 });
+document.addEventListener('change', e => { const k = e.target.dataset?.changeAg; if (k) { agUI()[k] = e.target.value; if (k === 'sede') agUI().dents = []; render(); } });
+document.addEventListener('input', e => { const f = e.target.closest && e.target.closest('#marcaForm'); if (!f || e.target.type === 'file') return; S.ui.marcaTmp = marcaDesdeForm(f); aplicarMarca(S.ui.marcaTmp); const pv = $('.splash-prev b'); if (pv) pv.textContent = S.ui.marcaTmp.nombre; });
+document.addEventListener('change', async e => {
+  if (!['mkLogo', 'mkCarga'].includes(e.target.id)) return;
+  const k = e.target.id === 'mkLogo' ? 'logo' : 'carga';
+  try { const data = await leerImagen(e.target.files[0], { max: k === 'logo' ? 400 : 600 }); S.ui.marcaTmp = { ...marcaDesdeForm($('#marcaForm')), [k]: data }; aplicarMarca(S.ui.marcaTmp); render(); toast('Imagen cargada. Guarda para aplicarla a todos.'); }
+  catch (err) { toast(errMsg(err)); e.target.value = ''; }
+});
 document.addEventListener('submit', async e => {
+  if (e.target.id === 'marcaForm') { e.preventDefault(); const m = marcaDesdeForm(e.target); try { await guardarLote([{ col: 'config', id: 'marca', data: m }], 'Actualizó la apariencia de la plataforma'); S.ui.marcaTmp = null; toast('Apariencia guardada para todo el equipo.'); } catch (err) { toast(errMsg(err)); } return; }
+  if (e.target.id === 'agForm') { e.preventDefault(); const f = e.target; const url = fv(f, 'url'); if (url && !/^https:\/\/script\.google\.com\//.test(url)) { toast('La dirección debe empezar con https://script.google.com/'); return; }
+    try { await guardarLote([{ col: 'config', id: 'agenda', data: { bloqueMin: +f.elements.bloque.value, zona: f.elements.zona.value, appsScriptUrl: url } }], 'Actualizó la configuración de la agenda'); toast('Configuración de agenda guardada.'); avisarSync(); } catch (err) { toast(errMsg(err)); } return; }
   if (e.target.id !== 'clinForm') return; e.preventDefault(); const f = e.target;
   try { await guardar('config', 'clinica', { nombre: fv(f, 'nombre'), responsable: fv(f, 'responsable'), domicilio: fv(f, 'domicilio'), telefono: fv(f, 'telefono'), correo: fv(f, 'correo') }, 'Actualizó los datos de la clínica'); toast('Datos de la clínica guardados.'); }
   catch (err) { toast(errMsg(err)); }
@@ -2611,9 +3188,12 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (!$('#c
 
 /* ============================ ARRANQUE ============================ */
 (async function start() {
-  if (S.mode === 'demo') { if (!demoLoad() || !Object.keys(S.data.usuarios).length) seedDemo(); showLogin(); return; }
-  $('#login').hidden = false; $('#login').innerHTML = '<div class="login-card"><p class="mute" style="margin:0">Conectando…</p></div>';
-  try { await initFirebase(); }
+  mostrarSplash();
+  if (S.mode === 'demo') { if (!demoLoad() || !Object.keys(S.data.usuarios).length) seedDemo(); aplicarMarca(marca()); setTimeout(() => showLogin(), 450); return; }
+  try {
+    await initFirebase();
+    try { const mk = await fb.F.getDoc(fb.F.doc(fb.db, 'config', 'marca')); if (mk.exists()) { S.marcaCache = mk.data(); aplicarMarca(S.marcaCache); } } catch (e) {}
+  }
   catch (e) { $('#login').innerHTML = `<div class="login-card"><div class="err">No se pudo conectar con Firebase. Revisa la configuración y tu conexión.<br><small>${esc(e.message)}</small></div></div>`; }
 })();
 </script>
