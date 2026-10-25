@@ -229,6 +229,11 @@ svg.odo .mk.thin{stroke-width:1}
 svg.odo .imp{fill:#9aa4ad;stroke:var(--ink);stroke-width:1}
 svg.odo .tag{font:800 11px var(--f-ui);fill:#8a6d3b;text-anchor:end}
 svg.odo .notadot{fill:var(--mute)}
+svg.odo .plantx{font:800 7.6px var(--f-mono);fill:var(--bad);text-anchor:middle;cursor:pointer;letter-spacing:-.02em}
+.toolbtn.plan .ab{font:800 10px var(--f-mono);color:var(--bad);background:var(--bad-soft);border-radius:4px;padding:1px 4px}
+.plantx-sw{font:800 10px var(--f-mono);color:var(--bad)}
+.plantxt{font-size:12.5px;color:var(--bad);font-weight:600;margin-top:2px}
+.chip.planchip{background:var(--bad-soft);color:var(--bad)}
 svg.odo .pend{fill:var(--accent)}
 svg.odo .axis{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
 svg.odo .side{font:600 10px var(--f-ui);fill:var(--mute);text-transform:uppercase;letter-spacing:.08em}
@@ -361,7 +366,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1234567890:web:abc123"
 };
 */
-const VERSION_APP = '2.0 · Fase 2';
+const VERSION_APP = '2.2 · Fase 2';
 
 /* ============================ UTILIDADES ============================ */
 const $ = (s, el = document) => el.querySelector(s);
@@ -384,7 +389,7 @@ const waLink = t => { let d = telDigits(t); if (d.length === 10) d = '52' + d; r
 
 const ROLES = { admin: 'Administrador', dentista: 'Dentista · admin jr', recepcion: 'Recepción y caja' };
 const CATEGORIAS = ['Diagnóstico','Prevención','Operatoria','Endodoncia','Prótesis','Cirugía','Implantología','Ortodoncia','Periodoncia','Estética','Odontopediatría','Radiología','Otro'];
-const ANIMACIONES = { '':'Sin animación', limpieza:'Limpieza', sellador:'Sellador', resina:'Caries → resina', reconstruccion:'Fractura → reconstrucción', endodoncia:'Endodoncia', corona:'Corona', extraccion:'Extracción', extraccion_retenido:'Extracción de muela retenida', implante:'Implante', corona_implante:'Corona sobre implante', ortodoncia:'Ortodoncia (arcada)', blanqueamiento:'Blanqueamiento (boca completa)', perio:'Tratamiento de encías' };
+const ANIMACIONES = { '':'Sin animación', limpieza:'Limpieza', sellador:'Sellador', resina:'Caries → resina', reconstruccion:'Fractura → reconstrucción', endodoncia:'Endodoncia', corona:'Corona', extraccion:'Extracción', extraccion_retenido:'Extracción de muela retenida', implante:'Implante', corona_implante:'Corona sobre implante', ortodoncia:'Ortodoncia (arcada)', blanqueamiento:'Blanqueamiento (boca completa)', perio:'Tratamiento de encías', protesis:'Prótesis fija (puente)', protesis_removible:'Prótesis removible', carilla:'Carilla' };
 const APLICA = { diente:'Por diente', arcada:'Por arcada', boca:'Boca completa', consulta:'Por consulta' };
 const UNIDADES = ['pieza','par','cartucho','caja','jeringa','g','ml','sobre','punta','rollo','kit'];
 const COLORES = ['#0e6b70','#b5527a','#4f6bd8','#c27c1a','#6a4fc2','#2d8a52','#c4483c','#3c8dad'];
@@ -573,6 +578,9 @@ function catalogoEjemplo() {
     ['OR-01','Ortodoncia: colocación de brackets','Ortodoncia',8000,90,1,'boca','ortodoncia',[['brackets',1],['arco',2],['ligas',40],['grabador',1],['adhesivo',.3]]],
     ['OR-02','Ortodoncia: control mensual','Ortodoncia',800,30,1,'boca','ortodoncia',[['arco',1],['ligas',40]]],
     ['PE-01','Raspado y alisado por cuadrante','Periodoncia',1100,45,1,'arcada','perio',[['anest',2]]],
+    ['PT-03','Prótesis fija (puente), por pieza','Prótesis',4800,60,2,'diente','protesis',[['anest',1],['impresion',20],['provisional',2],['cemento',1]]],
+    ['PT-04','Prótesis parcial removible','Prótesis',6500,45,3,'arcada','protesis_removible',[['impresion',30]]],
+    ['ES-02','Carilla de porcelana','Estética',6500,60,2,'diente','carilla',[['impresion',10],['cemento',1]]],
     ['ES-01','Blanqueamiento en consultorio','Estética',4500,90,1,'boca','blanqueamiento',[['blanq',2]]],
     ['OD-01','Consulta odontopediátrica','Odontopediatría',450,30,1,'consulta','',[['fluor',1]]]
   ];
@@ -622,7 +630,7 @@ function seedDemo() {
   pl1.items.forEach(it => { it.citas.forEach((c, k) => { if (c <= 1) { it.hechas[k] = { fecha: pl1.citas[c].fecha, dentistaId: it.dentistaId, registradoPor: it.dentistaId }; notas.push({ fecha: pl1.citas[c].fecha + 'T11:00:00', it, k }); } });
     it.hechas = Array.from({ length: it.sesiones }, (_, i) => it.hechas[i] || null);
     const n = it.hechas.filter(Boolean).length; it.estado = n === it.sesiones ? 'realizado' : n ? 'en_proceso' : 'pendiente';
-    if (it.estado === 'realizado' && EFECTO[it.animacion]) it.dientes.forEach(d => { const tt = dNorm(odoHoy[d]); EFECTO[it.animacion](tt, it); odoHoy[d] = tt; }); });
+    if (it.estado === 'realizado' && EFECTO[it.animacion]) it.dientes.forEach(d => { const tt = dNorm(odoHoy[d]); aplicarEfecto(tt, it); odoHoy[d] = tt; }); });
   D.planes.pl_demo1 = { pacienteId: 'p1', version: 1, estado: 'en_tratamiento', items: pl1.items, citas: pl1.citas, notas: 'Prefiere citas por la mañana.', aceptado: { fecha: hace(16) + 'T10:00:00', por: 'u_ana', medio: 'Firmó presupuesto en papel' }, ...sys };
   D.expedientes.p1 = { pacienteId: 'p1', odontograma: odoHoy, odoInicial: odo1, odoInicialFecha: hace(20) + 'T10:00:00', historia: { motivo: 'Dolor en muela superior derecha al masticar', enfermedades: ['Hipertensión'], alergias: 'Penicilina', medicamentos: 'Losartán 50 mg', cirugias: '', presion: '130/85', ultimaVisita: 'Hace 3 años', embarazo: false, habitos: ['Bruxismo (rechina los dientes)'], observaciones: '', actualizado: t, actualizadoPor: 'u_ana' }, ...sys };
   D.notas.n_demo0 = { pacienteId: 'p1', fecha: hace(20) + 'T10:30:00', autorId: 'u_ana', autor: 'Dra. Ana Robles', tipo: 'nota', texto: 'Valoración inicial. Dolor espontáneo en 16, prueba de frío positiva prolongada. Se indica endodoncia y corona. Radiografía: 38 retenido mesioangulado.' };
@@ -1014,7 +1022,7 @@ function vCatalogo() {
   const head = `<div class="vhead"><div><h2>Catálogo</h2><p>Tratamientos con precio, duración y materiales que usa cada uno. ${adm ? 'Solo el administrador puede modificarlo.' : 'Solo lectura: los cambios los hace el administrador.'}</p></div>
     <div class="acts">${adm ? `<button class="btn" data-act="excel" data-ent="${tab}">Excel: plantilla e importación</button>` + (tab === 'tratamientos' ? '<button class="btn primary" data-act="tr-nuevo">Nuevo tratamiento</button>' : '<button class="btn primary" data-act="in-nuevo">Nuevo insumo</button>') : ''}</div></div>
     <div class="seg"><button data-act="cat-tab" data-tab="tratamientos" class="${tab === 'tratamientos' ? 'on' : ''}">Tratamientos · ${trs.length}</button><button data-act="cat-tab" data-tab="insumos" class="${tab === 'insumos' ? 'on' : ''}">Insumos y materiales · ${ins.length}</button></div>`;
-  if (!trs.length && !ins.length) return head + `<div class="panel"><div class="empty"><b>El catálogo está vacío.</b><span>${adm ? 'Puedes empezar con un catálogo de ejemplo (20 tratamientos y 28 insumos con precios de referencia) y ajustarlo a los precios de la clínica.' : 'El administrador aún no carga el catálogo.'}</span>${adm ? '<div class="quick" style="justify-content:center"><button class="btn primary" data-act="cat-ejemplo">Cargar catálogo de ejemplo</button><button class="btn" data-act="excel" data-ent="tratamientos">Subir mis tratamientos desde Excel</button></div>' : ''}</div></div>`;
+  if (!trs.length && !ins.length) return head + `<div class="panel"><div class="empty"><b>El catálogo está vacío.</b><span>${adm ? 'Puedes empezar con un catálogo de ejemplo (23 tratamientos y 28 insumos con precios de referencia) y ajustarlo a los precios de la clínica.' : 'El administrador aún no carga el catálogo.'}</span>${adm ? '<div class="quick" style="justify-content:center"><button class="btn primary" data-act="cat-ejemplo">Cargar catálogo de ejemplo</button><button class="btn" data-act="excel" data-ent="tratamientos">Subir mis tratamientos desde Excel</button></div>' : ''}</div></div>`;
   const q = norm(S.ui.catQ).trim();
   if (tab === 'tratamientos') {
     const rows = trs.filter(t => (!S.ui.catCat || t.categoria === S.ui.catCat) && (!q || norm(t.nombre + ' ' + t.clave).includes(q))).sort((a, b) => (a.clave || '').localeCompare(b.clave || ''));
@@ -1033,7 +1041,7 @@ function vCatalogo() {
     </tbody></table></div></div>`;
 }
 async function cargarCatalogoEjemplo() {
-  if (!await confirmar('Cargar catálogo de ejemplo', 'Se agregan 20 tratamientos y 28 insumos con precios de referencia. Después puedes editar o desactivar lo que no uses.', { ok: 'Cargar' })) return;
+  if (!await confirmar('Cargar catálogo de ejemplo', 'Se agregan 23 tratamientos y 28 insumos con precios de referencia. Después puedes editar o desactivar lo que no uses.', { ok: 'Cargar' })) return;
   const { ins, base, tr } = catalogoEjemplo();
   const F = S.mode === 'firebase' ? fb.F : null, b = F ? F.writeBatch(fb.db) : null, t = nowISO(), st = { creado: t, creadoPor: S.me.id, actualizado: t, actualizadoPor: S.me.id };
   const put = (col, id, d) => { if (b) b.set(F.doc(fb.db, col, id), { ...d, ...st }); else S.data[col][id] = { ...d, ...st }; };
@@ -1607,17 +1615,33 @@ const T_CARA = {
 };
 const T_DIENTE = {
   pulpa: { l: 'Nervio afectado', c: '#a3201c', g: 'hall' }, fractura: { l: 'Diente fracturado', c: '#d39a12', g: 'hall' },
-  extraccion: { l: 'Extracción indicada', c: '#c4302b', g: 'hall' }, movilidad: { l: 'Movilidad', c: '#8a6d3b', g: 'hall' },
+  movilidad: { l: 'Movilidad', c: '#8a6d3b', g: 'hall' },
   corona: { l: 'Corona existente', c: '#3a6fd8', g: 'prev' }, endodoncia: { l: 'Endodoncia previa', c: '#3a6fd8', g: 'prev' },
-  ausente: { l: 'Ausente', c: '#8794a3', g: 'estado' }, retenido: { l: 'Retenido', c: '#7b5bd6', g: 'estado' }, implante: { l: 'Implante', c: '#5d6f80', g: 'estado' },
+  ausente: { l: 'Ausente', c: '#8794a3', g: 'estado' }, retenido: { l: 'Retenido', c: '#7b5bd6', g: 'estado' }, implante: { l: 'Implante', c: '#5d6f80', g: 'estado' }, protesis: { l: 'Prótesis existente', c: '#3a6fd8', g: 'estado' },
   sano: { l: 'Limpiar diente', c: '', g: 'reset' }
 };
-const dVacio = () => ({ estado: 'presente', caras: {}, hall: [], prev: [], nota: '' });
-const dNorm = t => ({ ...dVacio(), ...(t || {}), caras: { ...(t?.caras || {}) }, hall: [...(t?.hall || [])], prev: [...(t?.prev || [])] });
-const dTieneAlgo = t => t && (t.estado !== 'presente' || Object.keys(t.caras || {}).length || (t.hall || []).length || (t.prev || []).length || t.nota);
+/* Lo que se le va a hacer al diente, en orden (capa "por hacer" del odontograma) */
+const PLAN_T = {
+  extraccion: { l: 'Extracción', ab: 'EXT', anim: ['extraccion', 'extraccion_retenido'], re: /EXTRACC/ },
+  endodoncia: { l: 'Endodoncia', ab: 'ENDO', anim: ['endodoncia'], re: /ENDODONCIA/ },
+  resina: { l: 'Resina', ab: 'RES', anim: ['resina'], re: /RESINA/ },
+  reconstruccion: { l: 'Reconstrucción', ab: 'REC', anim: ['reconstruccion'], re: /RECONSTRUCC/ },
+  corona: { l: 'Corona', ab: 'COR', anim: ['corona'], re: /CORONA/, ex: /IMPLANTE/ },
+  implante: { l: 'Implante', ab: 'IMP', anim: ['implante'], re: /IMPLANTE/, ex: /CORONA/ },
+  corona_implante: { l: 'Corona sobre implante', ab: 'C·IMP', anim: ['corona_implante'], re: /CORONA.*IMPLANTE|IMPLANTE.*CORONA/ },
+  protesis: { l: 'Prótesis fija (puente)', ab: 'P.FIJA', anim: ['protesis'], re: /PUENTE|PROTESIS FIJA|PONTICO/ },
+  protesis_removible: { l: 'Prótesis removible', ab: 'P.REM', anim: ['protesis_removible'], re: /REMOVIBLE|PROTESIS (PARCIAL|TOTAL)/ },
+  carilla: { l: 'Carilla', ab: 'CAR', anim: ['carilla'], re: /CARILLA/ }
+};
+const planKeyDeAnim = a => Object.keys(PLAN_T).find(k => PLAN_T[k].anim.includes(a));
+const dVacio = () => ({ estado: 'presente', caras: {}, hall: [], prev: [], plan: [], nota: '' });
+const dNorm = t => { const n = { ...dVacio(), ...(t || {}), caras: { ...(t?.caras || {}) }, hall: [...(t?.hall || [])], prev: [...(t?.prev || [])], plan: [...(t?.plan || [])] };
+  if (n.hall.includes('extraccion')) { n.hall = n.hall.filter(h => h !== 'extraccion'); if (!n.plan.includes('extraccion')) n.plan.unshift('extraccion'); } return n; };
+const dTieneAlgo = t => t && (t.estado !== 'presente' || Object.keys(t.caras || {}).length || (t.hall || []).length || (t.prev || []).length || (t.plan || []).length || t.nota);
+const planTexto = t => (dNorm(t).plan || []).map((k, i) => `${i + 1}. ${PLAN_T[k]?.l || k}`).join(' → ');
 function dxTexto(t) {
   t = dNorm(t); const out = [];
-  if (t.estado === 'ausente') out.push('Ausente'); if (t.estado === 'retenido') out.push('Muela o diente retenido'); if (t.estado === 'implante') out.push('Implante');
+  if (t.estado === 'ausente') out.push('Ausente'); if (t.estado === 'retenido') out.push('Muela o diente retenido'); if (t.estado === 'implante') out.push('Implante'); if (t.estado === 'protesis') out.push('Prótesis');
   const porTipo = {}; Object.entries(t.caras).forEach(([k, v]) => (porTipo[v] = porTipo[v] || []).push(CARAS[k].split(' /')[0]));
   if (porTipo.caries) out.push('Caries en cara ' + porTipo.caries.join(', '));
   if (porTipo.fractura) out.push('Fractura en cara ' + porTipo.fractura.join(', '));
@@ -1633,7 +1657,7 @@ function dColor(t) {
   if (Object.values(t.caras).includes('caries')) return T_CARA.caries.c;
   if (t.hall.includes('fractura') || Object.values(t.caras).includes('fractura')) return T_CARA.fractura.c;
   if (t.estado === 'retenido') return T_DIENTE.retenido.c;
-  if (t.hall.includes('extraccion')) return T_DIENTE.extraccion.c;
+  if (t.plan.includes('extraccion')) return '#c4302b';
   if (t.estado === 'ausente') return T_DIENTE.ausente.c;
   return '';
 }
@@ -1647,8 +1671,17 @@ const EFECTO = {
   extraccion: t => { Object.assign(t, dVacio(), { estado: 'ausente' }); },
   extraccion_retenido: t => { Object.assign(t, dVacio(), { estado: 'ausente' }); },
   implante: t => { Object.assign(t, dVacio(), { estado: 'implante' }); },
-  corona_implante: t => { t.estado = 'implante'; t.prev = ['corona']; t.hall = []; t.caras = {}; }
+  corona_implante: t => { t.estado = 'implante'; t.prev = ['corona']; t.hall = []; t.caras = {}; },
+  protesis: t => { const pl = t.plan; Object.assign(t, dVacio(), { estado: 'protesis', plan: pl }); },
+  protesis_removible: t => { const pl = t.plan; Object.assign(t, dVacio(), { estado: 'protesis', plan: pl }); },
+  carilla: t => { t.caras.V = 'resina'; }
 };
+function aplicarEfecto(t, it) {
+  const plan = [...(t.plan || [])], nota = t.nota;
+  EFECTO[it.animacion](t, it);
+  const k = planKeyDeAnim(it.animacion), i = plan.indexOf(k); if (i >= 0) plan.splice(i, 1);
+  t.plan = plan; if (!t.nota) t.nota = nota;
+}
 
 /* ---------------- Datos del paciente ---------------- */
 const expedienteDe = pid => get('expedientes', pid) || { odontograma: {}, historia: {} };
@@ -1796,7 +1829,7 @@ function odoSVG(data, { sel = [], pend = {}, interactivo = true } = {}) {
     const cv = t.caras.O, ccol = cv ? T_CARA[cv]?.c : '';
     out.push(`<rect x="${x + 12}" y="${y + 12}" width="16" height="16" class="face${cv ? ' on' : ''}" ${ccol ? `style="fill:${ccol}"` : ''} ${interactivo ? `data-act="odo" data-fdi="${fdi}" data-cara="O"` : ''}><title>${fdi} · cara oclusal / incisal${cv ? ': ' + T_CARA[cv].l : ''}</title></rect>`);
     if (ausente) out.push(`<path d="M${x - 2} ${y - 2} L${x + W + 2} ${y + W + 2} M${x + W + 2} ${y - 2} L${x - 2} ${y + W + 2}" class="mk" style="stroke:${T_DIENTE.ausente.c}" ${act}/>`);
-    if (t.hall.includes('extraccion')) out.push(`<path d="M${x - 2} ${y - 2} L${x + W + 2} ${y + W + 2} M${x + W + 2} ${y - 2} L${x - 2} ${y + W + 2}" class="mk" style="stroke:${T_DIENTE.extraccion.c}" ${act}/>`);
+    if (t.estado === 'protesis') out.push(`<path d="M${x - 3} ${y + W / 2 - 5} H${x + W + 3} M${x - 3} ${y + W / 2 + 5} H${x + W + 3}" class="mk" style="stroke:${T_DIENTE.protesis.c}" ${act}/>`);
     if (t.estado === 'retenido') out.push(`<rect x="${x - 4}" y="${y - 4}" width="${W + 8}" height="${W + 8}" rx="8" class="mk dash" style="stroke:${T_DIENTE.retenido.c}" ${act}/>`);
     if (t.prev.includes('corona')) out.push(`<circle cx="${x + W / 2}" cy="${y + W / 2}" r="${W / 2 + 3}" class="mk" style="stroke:${T_DIENTE.corona.c}" ${act}/>`);
     if (t.estado === 'implante') out.push(`<g ${act}><rect x="${x + 15}" y="${y + 6}" width="10" height="28" rx="3" class="imp"/><path d="M${x + 13} ${y + 13}h14M${x + 13} ${y + 20}h14M${x + 13} ${y + 27}h14" class="mk thin" style="stroke:var(--ink)"/></g>`);
@@ -1804,9 +1837,13 @@ function odoSVG(data, { sel = [], pend = {}, interactivo = true } = {}) {
     if (t.prev.includes('endodoncia')) out.push(`<path d="M${x + W / 2 - 4} ${ry} v${rl}" class="mk" style="stroke:${T_DIENTE.endodoncia.c}" ${act}/>`);
     if (t.hall.includes('pulpa')) out.push(`<path d="M${x + W / 2 + 4} ${ry} v${rl}" class="mk" style="stroke:${T_DIENTE.pulpa.c}" ${act}/>`);
     if (t.hall.includes('fractura')) out.push(`<path d="M${x + 4} ${y + 6} l8 8 l-4 6 l10 10 l-3 6" class="mk" style="stroke:${T_DIENTE.fractura.c}" ${act}/>`);
-    if (t.hall.includes('movilidad')) out.push(`<text x="${x + W - 2}" y="${numY}" class="tag" ${act}>M</text>`);
-    if (t.nota) out.push(`<circle cx="${x + 3}" cy="${numY - 4}" r="2.5" class="notadot" ${act}><title>${esc(t.nota)}</title></circle>`);
-    if (pend[fdi]) out.push(`<circle cx="${x + W / 2}" cy="${numY < y ? y + W + 9 : y - 9}" r="3.4" class="pend" ${act}><title>${pend[fdi]} tratamiento(s) en el plan</title></circle>`);
+    if (t.hall.includes('movilidad')) out.push(`<text x="${x + W - 4}" y="${numY}" class="tag" ${act}>M</text>`);
+    if (t.nota) out.push(`<circle cx="${x + W}" cy="${numY - 4}" r="2.5" class="notadot" ${act}><title>${esc(t.nota)}</title></circle>`);
+    if (pend[fdi]) out.push(`<circle cx="${x + 4}" cy="${numY - 4}" r="3.4" class="pend" ${act}><title>${pend[fdi]} tratamiento(s) en el plan</title></circle>`);
+    if (t.plan.length) {
+      const arriba = numY < y, lines = t.plan.slice(0, 2).map((k, i) => `${i + 1} ${PLAN_T[k]?.ab || k}`); if (t.plan.length > 2) lines[1] += ' +' + (t.plan.length - 2);
+      lines.forEach((l, i) => out.push(`<text x="${x + W / 2}" y="${arriba ? y + W + 9 + i * 8 : y - 4 - (lines.length - 1 - i) * 8}" class="plantx" ${act}><title>${esc(planTexto(t))}</title>${esc(l)}</text>`));
+    }
     out.push('</g>');
   };
   D_SUP.forEach((f, i) => tooth(f, xOf(i), 30, 20));
@@ -1829,21 +1866,23 @@ function tabOdontograma(p) {
   const ex = expedienteDe(p.id);
   return `<div class="panel">
     <div class="panel-h"><h3>Odontograma</h3><span class="mute" style="font-size:13px">Numeración FDI · vista del dentista (la derecha del paciente a tu izquierda)</span><span class="sp"></span>
-      ${O.dirty ? '<span class="pill warn">Cambios sin guardar</span><button class="btn sm ghost" data-act="odo-descartar">Descartar</button>' : ''}<button class="btn sm primary" data-act="odo-guardar" ${O.dirty ? '' : 'disabled'}>Guardar odontograma</button></div>
+      ${O.dirty ? '<span class="pill warn">Cambios sin guardar</span><button class="btn sm ghost" data-act="odo-descartar">Descartar</button>' : ''}<button class="btn sm" data-act="odo-guardar" ${O.dirty ? '' : 'disabled'}>Guardar odontograma</button><button class="btn sm primary" data-act="plan-sugerido">Generar plan de tratamiento</button></div>
     <div class="panel-b" style="display:grid;gap:12px">
       <div class="tools"><span class="tl">Pintar cara</span>${Object.entries(T_CARA).map(([k, d]) => toolBtn('c:' + k, d)).join('')}</div>
-      <div class="tools"><span class="tl">Marcar diente</span>${Object.entries(T_DIENTE).map(([k, d]) => toolBtn('d:' + k, d)).join('')}</div>
+      <div class="tools"><span class="tl">Lo que tiene</span>${Object.entries(T_DIENTE).map(([k, d]) => toolBtn('d:' + k, d)).join('')}</div>
+      <div class="tools"><span class="tl">Por hacer, en orden</span>${Object.entries(PLAN_T).map(([k, d]) => `<button data-act="odo-tool" data-tool="p:${k}" class="toolbtn plan ${O.tool === 'p:' + k ? 'on' : ''}"><span class="ab">${esc(d.ab)}</span>${esc(d.l)}</button>`).join('')}<button data-act="odo-tool" data-tool="p:__quitar" class="toolbtn ${O.tool === 'p:__quitar' ? 'on' : ''}">Quitar último paso</button></div>
       <div class="tools"><span class="tl">Plan</span><button data-act="odo-tool" data-tool="sel" class="toolbtn ${O.tool === 'sel' ? 'on' : ''}">Seleccionar dientes para el plan</button><button data-act="odo-tool" data-tool="ver" class="toolbtn ${O.tool === 'ver' ? 'on' : ''}">Ver / anotar diente</button>
         ${sel.length ? `<span class="pill acc">${sel.length} seleccionados: ${sel.join(', ')}</span><button class="btn sm primary" data-act="plan-item-nuevo">Agregar tratamiento a estos dientes</button><button class="btn sm ghost" data-act="odo-sel-limpiar">Quitar selección</button>` : ''}</div>
       <div class="odowrap">${odoSVG(O.data, { sel, pend: pendientesPorDiente(p.id) })}</div>
-      <div class="legend-row"><span><span class="sw" style="background:${T_CARA.caries.c}"></span>Problema / pendiente</span><span><span class="sw" style="background:${T_CARA.resina.c}"></span>Tratamiento existente</span><span><span class="pendsw"></span>Tiene tratamiento en el plan</span>${ex.odoInicialFecha ? `<span class="mute">"Cómo llegó" guardado el ${fechaCorta(ex.odoInicialFecha)}</span>` : ''}</div>
+      <div class="legend-row"><span><span class="sw" style="background:${T_CARA.caries.c}"></span>Problema / pendiente</span><span><span class="sw" style="background:${T_CARA.resina.c}"></span>Tratamiento existente</span><span><span class="plantx-sw">1 EXT</span>Por hacer, en orden</span><span><span class="pendsw"></span>Ya está en el plan</span>${ex.odoInicialFecha ? `<span class="mute">"Cómo llegó" guardado el ${fechaCorta(ex.odoInicialFecha)}</span>` : ''}</div>
     </div></div>
     ${vt ? `<div class="panel"><div class="panel-h"><h3>${ver} · ${nombreDiente(ver)}</h3><span class="sp"></span><button class="btn sm ghost" data-act="odo-ver-cerrar">Cerrar</button></div><div class="panel-b" style="display:grid;gap:10px">
       <p style="margin:0">${esc(dxTexto(vt))}</p>
+      ${vt.plan.length ? `<div style="display:grid;gap:6px"><span class="mute" style="font-size:12.5px;font-weight:700">POR HACER EN ESTE DIENTE</span><div class="chips">${vt.plan.map((k, i) => `<span class="chip planchip">${i + 1}. ${esc(PLAN_T[k]?.l || k)}${i > 0 ? `<button type="button" data-act="odo-plan-subir" data-fdi="${ver}" data-i="${i}" aria-label="Subir">↑</button>` : ''}<button type="button" data-act="odo-plan-quitar" data-fdi="${ver}" data-i="${i}" aria-label="Quitar">×</button></span>`).join('')}</div></div>` : '<p class="mute" style="margin:0;font-size:13px">Para indicar qué se le hará y en qué orden, usa la fila "Por hacer, en orden" y toca el diente una vez por cada paso.</p>'}
       <label class="f">Nota del diente<input type="text" id="odoNota" data-fdi="${ver}" value="${esc(vt.nota)}" placeholder="Ej. sensibilidad al frío, fisura vertical"></label>
       ${(planActivo(p.id)?.items || []).filter(it => (it.dientes || []).includes(ver)).map(it => `<div class="mini">${ITEM_EST[it.estado] || ''} ${esc(it.nombre)} · ${money(precioItem(it))}</div>`).join('')}
     </div></div>` : ''}
-    <div class="panel"><div class="panel-h"><h3>Hallazgos registrados</h3></div>${D_TODOS.filter(f => dTieneAlgo(O.data[f])).length ? `<div class="tablewrap"><table><tbody>${D_TODOS.filter(f => dTieneAlgo(O.data[f])).map(f => `<tr class="click" data-act="odo-ver" data-fdi="${f}"><td class="mono" style="width:60px"><b>${f}</b></td><td>${esc(nombreDiente(f))}</td><td>${dColor(O.data[f]) ? `<span class="dot" style="background:${dColor(O.data[f])}"></span> ` : ''}${esc(dxTexto(O.data[f]))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Sin hallazgos. Elige una herramienta y toca las caras o los dientes.</div>'}</div>`;
+    <div class="panel"><div class="panel-h"><h3>Hallazgos registrados</h3></div>${D_TODOS.filter(f => dTieneAlgo(O.data[f])).length ? `<div class="tablewrap"><table><tbody>${D_TODOS.filter(f => dTieneAlgo(O.data[f])).map(f => `<tr class="click" data-act="odo-ver" data-fdi="${f}"><td class="mono" style="width:60px"><b>${f}</b></td><td>${esc(nombreDiente(f))}</td><td>${dColor(O.data[f]) ? `<span class="dot" style="background:${dColor(O.data[f])}"></span> ` : ''}${esc(dxTexto(O.data[f]))}${dNorm(O.data[f]).plan.length ? `<div class="plantxt">Por hacer: ${esc(planTexto(O.data[f]))}</div>` : ''}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Sin hallazgos. Elige una herramienta y toca las caras o los dientes.</div>'}</div>`;
 }
 function odoClick(el) {
   const O = S.ui.odo; if (!O) return;
@@ -1856,10 +1895,14 @@ function odoClick(el) {
     if (!cara) { toast('Toca una cara del diente para pintarla.'); return; }
     if (tool === 'borrar' || t.caras[cara] === tool) delete t.caras[cara]; else t.caras[cara] = tool;
     if (t.estado === 'ausente') t.estado = 'presente';
+  } else if (grupo === 'p:') {
+    if (tool === '__quitar') t.plan.pop();
+    else if (t.plan[t.plan.length - 1] === tool) { toast(`${PLAN_T[tool].l} ya es el último paso de este diente.`); return; }
+    else t.plan.push(tool);
   } else if (grupo === 'd:' && T_DIENTE[tool]) {
     const d = T_DIENTE[tool];
     if (d.g === 'reset') { Object.assign(t, dVacio(), { nota: t.nota }); }
-    else if (d.g === 'estado') { t.estado = t.estado === tool ? 'presente' : tool; if (tool === 'ausente' || tool === 'implante') { t.caras = {}; t.hall = t.hall.filter(h => h === 'extraccion' && tool !== 'ausente'); if (tool === 'ausente') t.prev = []; } }
+    else if (d.g === 'estado') { t.estado = t.estado === tool ? 'presente' : tool; if (tool === 'ausente' || tool === 'implante') { t.caras = {}; t.hall = []; if (tool === 'ausente') t.prev = []; } }
     else { const arr = t[d.g]; const i = arr.indexOf(tool); if (i >= 0) arr.splice(i, 1); else arr.push(tool); }
   }
   if (dTieneAlgo(t)) O.data[fdi] = t; else delete O.data[fdi];
@@ -1891,12 +1934,14 @@ function totalesPlan(pl) {
   const citasHechas = (pl.citas || []).filter((c, i) => { const ss = sesionesDeCita(pl, i); return ss.length && ss.every(({ it, k }) => (it.hechas || [])[k]); }).length;
   return { subtotal, descuento: subtotal - total, total, realizado, pendiente: total - realizado, citas, citasHechas, pctAvance: total ? Math.round(realizado / total * 100) : 0, sinCita: its.filter(it => it.estado !== 'realizado' && (it.citas || []).some(c => c == null)).length };
 }
-const PRIORIDAD = { extraccion: 0, extraccion_retenido: 0, endodoncia: 0, perio: 1, limpieza: 1, '': 2, resina: 2, reconstruccion: 2, sellador: 2, implante: 3, corona: 4, corona_implante: 5, ortodoncia: 6, blanqueamiento: 6 };
+const PRIORIDAD = { extraccion: 0, extraccion_retenido: 0, endodoncia: 0, perio: 1, limpieza: 1, '': 2, resina: 2, reconstruccion: 2, sellador: 2, implante: 3, corona: 4, corona_implante: 5, protesis: 5, protesis_removible: 6, carilla: 6, ortodoncia: 6, blanqueamiento: 6 };
 /* Agrupa los tratamientos en citas: urgencias primero, respeta el orden por diente, la duración máxima por cita y el mismo dentista */
 function organizarCitas(pl, { maxMin = 90, inicio = sumarDias(hoyISO(), 7), intervalo = 7 } = {}) {
   const its = (pl.items || []).filter(it => !['cancelado', 'realizado'].includes(it.estado));
   (pl.items || []).filter(it => it.estado === 'realizado').forEach(it => it.citas = (it.citas || []).map(() => null));
-  const orden = [...its].sort((a, b) => (PRIORIDAD[a.animacion] ?? 2) - (PRIORIDAD[b.animacion] ?? 2) || (D_TODOS.indexOf(a.dientes?.[0]) - D_TODOS.indexOf(b.dientes?.[0])));
+  /* prioridad efectiva: un paso nunca va antes que los anteriores del mismo diente */
+  const pr = {}; [...its].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0)).forEach(it => { let p = PRIORIDAD[it.animacion] ?? 2; its.forEach(x => { if (x !== it && x.seq != null && it.seq != null && x.seq < it.seq && (x.dientes || []).some(d => (it.dientes || []).includes(d))) p = Math.max(p, (pr[x.id] ?? PRIORIDAD[x.animacion] ?? 2)); }); pr[it.id] = p; });
+  const orden = [...its].sort((a, b) => pr[a.id] - pr[b.id] || (a.seq ?? 0) - (b.seq ?? 0) || (D_TODOS.indexOf(a.dientes?.[0]) - D_TODOS.indexOf(b.dientes?.[0])));
   const citas = [], ultimaPorDiente = {};
   orden.forEach(it => {
     let min = 0; (it.dientes || []).forEach(d => { if (ultimaPorDiente[d] != null) min = Math.max(min, ultimaPorDiente[d] + 1); });
@@ -1925,11 +1970,11 @@ function tabPlan(p) {
   const planes = planesDe(p.id), clin = esClinico();
   const vid = S.ui.planVer && planes.find(x => x.id === S.ui.planVer) ? S.ui.planVer : planes.find(x => !['reemplazado', 'cancelado'].includes(x.estado))?.id || planes[0]?.id;
   const pl = planes.find(x => x.id === vid);
-  if (!pl) return `<div class="panel"><div class="empty"><b>Este paciente aún no tiene plan de tratamiento.</b><span>${clin ? 'Marca el diagnóstico en el odontograma, selecciona los dientes y agrega los tratamientos del catálogo. También puedes crear el plan vacío.' : 'El dentista lo creará después de la valoración.'}</span>${clin ? '<div class="quick" style="justify-content:center"><button class="btn primary" data-act="plan-nuevo">Crear plan de tratamiento</button><button class="btn" data-act="exp-tab" data-tab="odontograma">Ir al odontograma</button></div>' : ''}</div></div>`;
+  if (!pl) return `<div class="panel"><div class="empty"><b>Este paciente aún no tiene plan de tratamiento.</b><span>${clin ? 'Marca los hallazgos en el odontograma y genera el plan: el sistema propone los tratamientos del catálogo y los acomoda en citas. También puedes empezar un plan vacío.' : 'El dentista lo creará después de la valoración.'}</span>${clin ? '<div class="quick" style="justify-content:center"><button class="btn primary" data-act="plan-sugerido">Generar plan desde el odontograma</button><button class="btn" data-act="plan-nuevo">Plan vacío</button></div>' : ''}</div></div>`;
   const T = totalesPlan(pl), ed = clin && editable(pl), vigente = !['reemplazado', 'cancelado'].includes(pl.estado);
   const acciones = [];
   if (clin && vigente) {
-    if (ed) acciones.push('<button class="btn sm primary" data-act="plan-item-nuevo">Agregar tratamiento</button>', '<button class="btn sm" data-act="plan-organizar">Organizar citas</button>', '<button class="btn sm" data-act="plan-cita-nueva">Agregar cita</button>');
+    if (ed) acciones.push('<button class="btn sm" data-act="plan-sugerido">Sugerir desde odontograma</button>', '<button class="btn sm primary" data-act="plan-item-nuevo">Agregar tratamiento</button>', '<button class="btn sm" data-act="plan-organizar">Organizar citas</button>', '<button class="btn sm" data-act="plan-cita-nueva">Agregar cita</button>');
     if (pl.estado === 'borrador') acciones.push('<button class="btn sm" data-act="plan-estado" data-est="presentado">Marcar como presentado</button>');
     if (ed) acciones.push('<button class="btn sm" data-act="plan-aceptar">Registrar aceptación</button>');
     if (!ed && ['aceptado', 'en_tratamiento'].includes(pl.estado)) acciones.push('<button class="btn sm" data-act="plan-version">Modificar (nueva versión)</button>');
@@ -2116,13 +2161,107 @@ function formHecho(itemId, k) {
       const ops = [{ col: 'planes', id: pl.id, data: (({ id, creado, creadoPor, actualizado, actualizadoPor, ...d }) => d)(n) }];
       if (completas && EFECTO[ni.animacion] && (ni.dientes || []).length) {
         const ex = get('expedientes', p.id), odo = deep(ex?.odontograma || {});
-        ni.dientes.forEach(d => { const t = dNorm(odo[d]); EFECTO[ni.animacion](t, ni); if (dTieneAlgo(t)) odo[d] = t; else delete odo[d]; });
+        ni.dientes.forEach(d => { const t = dNorm(odo[d]); aplicarEfecto(t, ni); if (dTieneAlgo(t)) odo[d] = t; else delete odo[d]; });
         ops.push({ col: 'expedientes', id: p.id, data: { pacienteId: p.id, odontograma: odo }, nuevo: !ex });
         if (S.ui.odo?.pacId === p.id && !S.ui.odo.dirty) S.ui.odo = null;
       }
       ops.push({ col: 'notas', data: { pacienteId: p.id, fecha: fecha + 'T' + new Date().toTimeString().slice(0, 8), autorId: S.me.id, autor: S.me.nombre, dentistaId: dent, tipo: 'tratamiento', planId: pl.id, itemId, texto: `${ni.nombre}${(ni.dientes || []).length ? ' · diente ' + ni.dientes.join(', ') : ''}${(ni.sesiones || 1) > 1 ? ` · sesión ${k + 1} de ${ni.sesiones}` : ''}${texto ? '\n' + texto : ''}` }, nuevo: true });
       await guardarLote(ops, `Registró ${ni.nombre} realizado a ${nombreCompleto(p)}`);
       toast(n.estado === 'terminado' ? '¡Plan terminado!' : 'Tratamiento registrado.');
+    } });
+}
+
+
+/* ---------------- Plan sugerido a partir del odontograma ---------------- */
+function buscarTrat(anim, patron, excluir) {
+  const trs = list('tratamientos').filter(t => t.activo !== false);
+  let r = trs.filter(t => t.animacion === anim);
+  if (!r.length && patron) r = trs.filter(t => patron.test(norm(t.nombre)) && !(excluir && excluir.test(norm(t.nombre))));
+  return r.sort((a, b) => (Number(a.precio) || 0) - (Number(b.precio) || 0));
+}
+function sugerencias(odo) {
+  const out = [], anterior = f => f % 10 <= 3;
+  const res = buscarTrat('resina', /RESINA/), endo = buscarTrat('endodoncia', /ENDODONCIA/), cor = buscarTrat('corona', /CORONA/, /IMPLANTE/),
+    rec = buscarTrat('reconstruccion', /RECONSTRUCC/), ext = buscarTrat('extraccion', /EXTRACC/, /TERCER|RETENID|QUIRURG/), extR = buscarTrat('extraccion_retenido', /TERCER|RETENID|QUIRURG/),
+    imp = buscarTrat('implante', /IMPLANTE/, /CORONA/), corImp = buscarTrat('corona_implante', /CORONA.*IMPLANTE|IMPLANTE.*CORONA/), limp = buscarTrat('limpieza', /LIMPIEZA|PROFILAXIS/);
+  const add = (f, hall, lista, pick, caras = [], seq) => out.push({ id: newId('sg'), dientes: f ? [f] : [], hallazgo: hall, opciones: lista, tratId: (pick || lista[0])?.id || '', caras, on: !!lista.length, seq });
+  const remov = {};
+  D_TODOS.forEach(f => {
+    const t = dNorm(odo[f]); if (!dTieneAlgo(t)) return;
+    const caries = Object.keys(t.caras).filter(k => t.caras[k] === 'caries');
+    if (t.plan.length) {
+      t.plan.forEach((k, i) => {
+        const d = PLAN_T[k]; if (!d) return;
+        const paso = `Paso ${i + 1}: ${d.l}`;
+        if (k === 'protesis_removible') { const arco = Math.floor(f / 10) <= 2 ? 'sup' : 'inf'; (remov[arco] = remov[arco] || { dientes: [], seq: i }).dientes.push(f); return; }
+        let lista = d.anim.map(a => buscarTrat(a)).flat(); if (!lista.length) lista = buscarTrat('__', d.re, d.ex);
+        let pick = null;
+        if (k === 'extraccion') { const r = buscarTrat('extraccion_retenido', /TERCER|RETENID|QUIRURG/), sim = buscarTrat('extraccion', /EXTRACC/, /TERCER|RETENID|QUIRURG/); pick = (t.estado === 'retenido' ? r[0] : sim[0]) || null; }
+        if (k === 'endodoncia') pick = lista.find(x => f % 10 <= 3 ? /ANTERIOR/.test(norm(x.nombre)) : /MOLAR|POSTERIOR|PREMOLAR/.test(norm(x.nombre))) || null;
+        if (k === 'resina' && caries.length > 1) pick = lista[lista.length - 1];
+        add(f, paso, lista, pick, k === 'resina' ? caries : [], i);
+      });
+      return;
+    }
+    if (t.estado === 'retenido') { add(f, 'Diente retenido', extR.length ? extR : ext); return; }
+    if (t.hall.includes('extraccion')) { add(f, 'Extracción indicada', ext.length ? ext : extR); return; }
+    if (t.estado === 'ausente') { add(f, 'Diente ausente', imp); add(f, 'Diente ausente · corona', corImp); return; }
+    if (t.hall.includes('pulpa')) {
+      const e = endo.filter(x => anterior(f) ? /ANTERIOR/.test(norm(x.nombre)) : /MOLAR|POSTERIOR|PREMOLAR/.test(norm(x.nombre)));
+      add(f, 'Nervio afectado', endo, e[0] || (anterior(f) ? endo[0] : endo[endo.length - 1]));
+      if (!t.prev.includes('corona')) add(f, 'Protección después de la endodoncia', cor);
+      return;
+    }
+    if (caries.length) add(f, 'Caries en ' + caries.length + (caries.length === 1 ? ' cara' : ' caras'), res, caries.length > 1 ? res[res.length - 1] : res[0], caries);
+    if (t.hall.includes('fractura') || Object.values(t.caras).includes('fractura')) add(f, 'Fractura', anterior(f) ? (rec.length ? rec : res) : (cor.length ? cor : rec), null);
+  });
+  Object.entries(remov).forEach(([arco, g]) => { let lista = buscarTrat('protesis_removible'); if (!lista.length) lista = buscarTrat('__', PLAN_T.protesis_removible.re); out.push({ id: newId('sg'), dientes: g.dientes, hallazgo: `Prótesis removible ${arco === 'sup' ? 'superior' : 'inferior'}`, opciones: lista, tratId: lista[0]?.id || '', caras: [], on: !!lista.length, seq: g.seq }); });
+  if (out.length) add(null, 'Limpieza general', limp);
+  return out;
+}
+function formSugerido() {
+  const p = get('pacientes', S.ui.pacId), O = odoTrabajo(p.id), sg = sugerencias(O.data);
+  const yaEn = (planActivo(p.id)?.items || []).filter(it => it.estado !== 'cancelado');
+  sg.forEach(x => { if (yaEn.some(it => it.tratamientoId === x.tratId && (it.dientes || []).join() === x.dientes.join())) { x.on = false; x.hallazgo += ' (ya está en el plan)'; } });
+  if (!sg.length) { toast('Marca primero los hallazgos en el odontograma (caries, nervio afectado, ausente, etc.).'); return; }
+  const trs = list('tratamientos').filter(t => t.activo !== false).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  const dentDef = (S.me.rol === 'dentista' || S.me.atiende) ? S.me.id : p.dentistaResp;
+  const pa = planActivo(p.id), agrega = pa && editable(pa);
+  modal({ title: 'Plan sugerido · ' + esc(nombreCompleto(p)), wide: true, submit: 'Crear plan', body: `
+    <p style="margin:0">Propuesta a partir del odontograma. Desmarca lo que no aplique o cambia el tratamiento; después podrás ajustar precios, citas y fechas.</p>
+    ${O.dirty ? '<div class="info">El odontograma tiene cambios sin guardar: se guardarán junto con el plan.</div>' : ''}
+    ${agrega ? `<div class="infowarn">Ya existe el plan v${pa.version} en borrador: los tratamientos se agregarán a ese plan.</div>` : ''}
+    <div class="tablewrap"><table><thead><tr><th></th><th>Diente</th><th>Hallazgo</th><th>Tratamiento</th><th class="r">Precio</th></tr></thead><tbody>
+    ${sg.map(x => `<tr><td><input type="checkbox" class="sgOn" data-id="${x.id}" ${x.on ? 'checked' : ''} aria-label="Incluir"></td><td class="mono"><b>${x.dientes.join(', ') || 'Boca'}</b></td><td>${esc(x.hallazgo)}</td>
+      <td><select class="sgTr" data-id="${x.id}" id="sg_${x.id}" aria-label="Tratamiento">${opt('', x.opciones.length ? 'Elige' : 'No hay en el catálogo, elige otro', x.tratId)}${trs.map(t => opt(t.id, `${t.nombre}`, x.tratId)).join('')}</select></td>
+      <td class="r num" data-pr="${x.id}">${x.tratId ? money(get('tratamientos', x.tratId).precio) : '—'}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="grid3" style="align-items:end">
+      <label class="f">Dentista responsable<select name="dent" id="sgDent">${dentistas().map(d => opt(d.id, d.nombre, dentDef)).join('')}</select></label>
+      <label class="f">Primera cita<input type="date" name="inicio" id="sgIni" value="${sumarDias(hoyISO(), 7)}"></label>
+      <label class="f">Días entre citas<input type="number" name="int" id="sgInt" min="1" value="7"></label>
+    </div>
+    <div class="tot"><span>Total estimado</span><b class="num" id="sgTot"></b></div>`,
+    onOpen: f => {
+      const upd = () => { let tot = 0; sg.forEach(x => { x.on = $(`.sgOn[data-id="${x.id}"]`, f).checked; x.tratId = $(`.sgTr[data-id="${x.id}"]`, f).value; const t = get('tratamientos', x.tratId); $(`[data-pr="${x.id}"]`, f).textContent = t ? money(t.precio) : '—'; if (x.on && t) tot += Number(t.precio) || 0; }); $('#sgTot').textContent = money(tot); };
+      f.addEventListener('change', upd); upd();
+    },
+    onSubmit: async f => {
+      const sel = sg.filter(x => x.on && x.tratId);
+      if (!sel.length) return formErr(f, 'Marca al menos un tratamiento con su tratamiento del catálogo.');
+      const dent = f.elements.dent.value;
+      let pl = agrega ? deep(pa) : { id: newId('pl'), pacienteId: p.id, version: Math.max(0, ...planesDe(p.id).map(x => x.version)) + 1, estado: 'borrador', items: [], citas: [], notas: '' };
+      sel.forEach(x => { const t = get('tratamientos', x.tratId);
+        const n = t.aplicaA === 'diente' ? Math.max(1, x.dientes.length) : 1;
+        (t.aplicaA === 'diente' && x.dientes.length > 1 ? x.dientes.map(d => [d]) : [x.dientes]).forEach(dd => pl.items.push({ id: newId('it'), tratamientoId: t.id, clave: t.clave, nombre: t.nombre, categoria: t.categoria, animacion: t.animacion || '', aplicaA: t.aplicaA, duracionMin: Number(t.duracionMin) || 30, sesiones: Math.max(1, t.sesiones || 1), precio: Number(t.precio) || 0, descuentoPct: 0, dentistaId: dent, caras: t.animacion === 'resina' ? x.caras : [], dientes: dd, seq: x.seq ?? null, estado: 'pendiente', hechas: [], citas: Array.from({ length: Math.max(1, t.sesiones || 1) }, () => null) })); });
+      pl = organizarCitas(pl, { inicio: f.elements.inicio.value || sumarDias(hoyISO(), 7), intervalo: Number(f.elements.int.value) || 7, maxMin: 90 });
+      const { id, creado, creadoPor, actualizado, actualizadoPor, ...data } = pl;
+      const ops = [{ col: 'planes', id, data, nuevo: !agrega }];
+      const ex = get('expedientes', p.id);
+      if (O.dirty || !ex) { const d = { pacienteId: p.id, odontograma: O.data }; if (!ex?.odoInicial) { d.odoInicial = deep(O.data); d.odoInicialFecha = nowISO(); } ops.push({ col: 'expedientes', id: p.id, data: d, nuevo: !ex }); O.dirty = false; }
+      await guardarLote(ops, `${agrega ? 'Agregó al' : 'Creó el'} plan v${pl.version} de ${nombreCompleto(p)} desde el odontograma (${sel.length} tratamientos, ${pl.citas.length} citas)`);
+      S.ui.planVer = id; S.ui.expTab = 'plan';
+      toast(`Plan creado con ${sel.length} tratamientos en ${pl.citas.length} citas. Revísalo y ajústalo.`);
     } });
 }
 
@@ -2152,6 +2291,7 @@ function estado3D(t) {
   if (t.estado === 'ausente') s.present = 0;
   if (t.estado === 'implante') { s.nat = 0; s.implant = 1; s.present = t.prev.includes('corona') ? 1 : 0; s.cap = s.present; }
   if (t.estado === 'retenido') { s.tilt = .75; s.sink = .55; }
+  if (t.estado === 'protesis') { s.nat = 0; s.cap = 1; }
   const nc = cv.filter(v => v === 'caries').length; if (nc) s.caries = Math.min(1, .4 + .15 * nc);
   const nr = cv.filter(v => v === 'resina' || v === 'sellador').length; if (nr) s.resin = Math.min(1, .45 + .15 * nr);
   if (t.hall.includes('pulpa')) { s.pulp = 1; s.caries = Math.max(s.caries, .9); }
@@ -2169,7 +2309,10 @@ const ETAPAS = {
   extraccion: () => [{ t: 'Extracción', d: 'Se retira el diente con anestesia local. La encía cicatriza en 1 a 2 semanas.', s: { sink: -1.4, present: 0 } }],
   extraccion_retenido: () => [{ t: 'Extracción', d: 'Se retira la muela retenida con anestesia local.', s: { sink: -1.4, present: 0 }, xray: true }],
   implante: () => [{ t: 'Implante', d: 'Se coloca un tornillo de titanio en el hueso. Se esperan 3 a 4 meses para que se integre.', s: { present: 0, nat: 0, implant: 1, sink: 0, tilt: 0, cap: 0, caries: 0, resin: 0, chip: 0, pulp: 0, canal: 0 }, xray: true }],
-  corona_implante: () => [{ t: 'Corona sobre implante', d: 'Sobre el implante se fija una corona que funciona como un diente natural.', s: { nat: 0, implant: 1, present: 1, cap: 1, sink: 0 } }]
+  corona_implante: () => [{ t: 'Corona sobre implante', d: 'Sobre el implante se fija una corona que funciona como un diente natural.', s: { nat: 0, implant: 1, present: 1, cap: 1, sink: 0 } }],
+  protesis: () => [{ t: 'Prótesis fija', d: 'Se coloca un diente artificial unido a los dientes vecinos (puente).', s: { nat: 0, present: 1, cap: 1, sink: 0, tilt: 0, caries: 0, cavity: 0, resin: 0, chip: 0, pulp: 0, canal: 0 } }],
+  protesis_removible: () => [{ t: 'Prótesis removible', d: 'Se coloca un aparato con dientes artificiales que el paciente puede retirar para limpiarlo.', s: { nat: 0, present: 1, cap: 1, sink: 0, tilt: 0, caries: 0, cavity: 0, resin: 0, chip: 0, pulp: 0, canal: 0 } }],
+  carilla: () => [{ t: 'Carilla', d: 'Se adhiere una lámina delgada de porcelana en la cara visible del diente.', s: { resin: 0, caries: 0, chip: 0, cap: .7 } }]
 };
 /* Etapas de un diente: cómo está hoy + cada tratamiento pendiente del plan, en orden de cita */
 function etapasDiente(fdi, odo, pl) {
@@ -2416,7 +2559,10 @@ const ACT = {
   odo: el => odoClick(el), 'odo-tool': el => { S.ui.odo.tool = el.dataset.tool; if (el.dataset.tool !== 'ver') S.ui.odo.ver = S.ui.odo.ver; render(); },
   'odo-guardar': odoGuardar, 'odo-descartar': async () => { if (!await confirmar('Descartar cambios', 'Se pierden los cambios del odontograma que no guardaste.', { ok: 'Descartar', peligro: true })) return; S.ui.odo = null; render(); },
   'odo-sel-limpiar': () => { S.ui.odo.sel = []; render(); }, 'odo-ver': el => { odoTrabajo(S.ui.pacId).ver = +el.dataset.fdi; render(); }, 'odo-ver-cerrar': () => { S.ui.odo.ver = null; render(); },
-  'plan-nuevo': async () => { await nuevoPlan(S.ui.pacId); toast('Plan creado. Agrega los tratamientos.'); },
+  'plan-nuevo': async () => { await nuevoPlan(S.ui.pacId); toast('Plan vacío creado. Usa "Agregar tratamiento".'); },
+  'plan-sugerido': () => formSugerido(),
+  'odo-plan-quitar': el => { const O = S.ui.odo, f = +el.dataset.fdi, t = dNorm(O.data[f]); t.plan.splice(+el.dataset.i, 1); if (dTieneAlgo(t)) O.data[f] = t; else delete O.data[f]; O.dirty = true; render(); },
+  'odo-plan-subir': el => { const O = S.ui.odo, f = +el.dataset.fdi, t = dNorm(O.data[f]), i = +el.dataset.i; [t.plan[i - 1], t.plan[i]] = [t.plan[i], t.plan[i - 1]]; O.data[f] = t; O.dirty = true; render(); },
   'plan-item-nuevo': () => { const pl = planActivo(S.ui.pacId); if (pl && !editable(pl)) { toast(`El plan v${pl.version} ya fue aceptado. Para agregar tratamientos crea una nueva versión desde la pestaña Plan.`); return; } formItem(); },
   'plan-item-editar': el => formItem(el.dataset.item), 'plan-organizar': formOrganizar, 'plan-aceptar': formAceptar, 'plan-version': nuevaVersion, 'plan-cancelar': cancelarPlan,
   'plan-estado': async el => { const p = get('pacientes', S.ui.pacId), pl = planVisible(p.id); await guardarLote([{ col: 'planes', id: pl.id, data: { estado: el.dataset.est } }], `Cambió el plan v${pl.version} de ${nombreCompleto(p)} a "${PLAN_EST[el.dataset.est].l}"`); toast('Plan actualizado.'); },
