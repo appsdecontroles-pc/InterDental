@@ -415,6 +415,13 @@ tr.rowpago td{background:var(--ok-soft)}
 @media (max-width:640px){.lrow,.lrow:not(:has([data-l=costo])){grid-template-columns:1fr 1fr}.lrow select{grid-column:1/-1}}
 table.cnt input{width:90px;text-align:right}
 .madd select{width:100%}
+html.logo-ancho .brand{flex-direction:column;align-items:stretch;gap:8px;text-align:center}
+html.logo-ancho .brand-mark{width:100%;height:auto;border-radius:10px;background:transparent}
+html.logo-ancho .brand-mark img{width:100%;height:auto;max-height:120px;object-fit:contain;display:block}
+html.logo-ancho .side .brand{padding:4px 4px 8px}
+html.logo-ancho .login-card .brand-mark img{max-height:140px}
+html.logo-ancho .topbar .brand-mark{width:auto;height:34px;border-radius:6px}
+html.logo-ancho .topbar .brand-mark img{height:34px;width:auto;max-width:42vw}
 </style>
 
 </head>
@@ -3398,6 +3405,7 @@ function aplicarMarca(m) {
   S.temaPuesto = m.tema !== 'auto';
   document.title = m.nombre || MARCA_DEF.nombre;
   $$('.brand-mark').forEach(el => { el.classList.toggle('has-logo', !!m.logo); el.innerHTML = markHTML(m); });
+  document.documentElement.classList.toggle('logo-ancho', !!m.logo);
   const sn = $('#sideNombre'); if (sn) sn.textContent = m.nombre;
   try { localStorage.setItem('appDentista.marca', JSON.stringify(m)); } catch (e) {}
 }
